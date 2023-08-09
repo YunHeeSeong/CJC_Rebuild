@@ -1,0 +1,4 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using GMINWEB_CJC.Areas.Identity
+@using GMINWEB_CJC.Areas.Identity.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

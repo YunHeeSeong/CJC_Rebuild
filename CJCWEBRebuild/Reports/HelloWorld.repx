@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="20.1.12.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v20.1, Version=20.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="HelloWorld" Margins="89, 88, 103, 92" PaperKind="A4" PageWidth="827" PageHeight="1169" Version="20.1" RequestParameters="false" FilterString="[WhCd] = ?WhCd" DataMember="TB_Warehouse" DataSource="#Ref-0" Font="Arial, 9.75pt">
+  <Parameters>
+    <Item1 Ref="4" Description="WhCd" ValueSourceSettings="#Ref-2" ValueInfo="0" Name="WhCd" />
+  </Parameters>
+  <Bands>
+    <Item1 Ref="5" ControlType="TopMarginBand" Name="TopMargin" HeightF="103" />
+    <Item2 Ref="6" ControlType="PageHeaderBand" Name="PageHeader" HeightF="168.553314">
+      <Controls>
+        <Item1 Ref="7" ControlType="XRLabel" Name="label5" Multiline="true" Text="작성일자:" TextAlignment="MiddleRight" SizeF="100,23" LocationFloat="507.9899,108.550011" Font="한컴 고딕, 11pt, style=Bold" ForeColor="255,89,89,89" Padding="2,2,0,0,100">
+          <StylePriority Ref="8" UseFont="false" UseForeColor="false" UseTextAlignment="false" />
+        </Item1>
+        <Item2 Ref="9" ControlType="XRLabel" Name="label4" Multiline="true" Text="2021-08-11" TextAlignment="MiddleRight" SizeF="100,23" LocationFloat="507.9899,131.550034" Font="한컴 고딕, 11pt, style=Bold" Padding="2,2,0,0,100">
+          <StylePriority Ref="10" UseFont="false" UseTextAlignment="false" />
+        </Item2>
+        <Item3 Ref="11" ControlType="XRLabel" Name="label3" Multiline="true" Text="작성자명" TextAlignment="MiddleRight" SizeF="100,23" LocationFloat="507.9899,74.66001" Font="한컴 고딕, 11pt, style=Bold" Padding="2,2,0,0,100">
+          <StylePriority Ref="12" UseFont="false" UseTextAlignment="false" />
+        </Item3>
+        <Item4 Ref="13" ControlType="XRLabel" Name="label2" Multiline="true" Text="작성자:" TextAlignment="MiddleRight" SizeF="100,23" LocationFloat="507.9899,51.6600037" Font="한컴 고딕, 11pt, style=Bold" ForeColor="255,89,89,89" Padding="2,2,0,0,100">
+          <StylePriority Ref="14" UseFont="false" UseForeColor="false" UseTextAlignment="false" />
+        </Item4>
+        <Item5 Ref="15" ControlType="XRLabel" Name="label1" Multiline="true" Text="창고 리스트" TextAlignment="MiddleCenter" SizeF="260.34,86.9" LocationFloat="125.007324,33.81668" EvenStyleName="xrControlStyle1" Font="한컴 고딕, 35pt, style=Bold" Padding="2,2,0,0,100">
+          <StylePriority Ref="16" UseFont="false" UseTextAlignment="false" />
+        </Item5>
+      </Controls>
+    </Item2>
+    <Item3 Ref="17" ControlType="DetailBand" Name="Detail" HeightF="707.832764">
+      <Controls>
+        <Item1 Ref="18" ControlType="XRPanel" Name="panel1" SizeF="650,214.139984" LocationFloat="0,492.953278" BackColor="255,0,120,215">
+          <Controls>
+            <Item1 Ref="19" ControlType="XRLabel" Name="label29" Multiline="true" Text="032-1234-5875" SizeF="172.5,23" LocationFloat="240.377167,167.499969" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="20" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item1>
+            <Item2 Ref="21" ControlType="XRLabel" Name="label28" Multiline="true" Text="Fax:" SizeF="100,23" LocationFloat="240.377167,131.666656" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="22" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item2>
+            <Item3 Ref="23" ControlType="XRLabel" Name="label27" Multiline="true" Text="www.gmin.co.kr" SizeF="172.5,23" LocationFloat="32.7272339,167.499969" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="24" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item3>
+            <Item4 Ref="25" ControlType="XRLabel" Name="label26" Multiline="true" Text="Web:" SizeF="100,23" LocationFloat="32.7272339,131.666656" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="26" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item4>
+            <Item5 Ref="27" ControlType="XRLabel" Name="label25" Multiline="true" Text="010-2008-2585" SizeF="129.060089,62.166626" LocationFloat="486.795135,59.99991" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="28" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item5>
+            <Item6 Ref="29" ControlType="XRLabel" Name="label24" Multiline="true" Text="Phone:" SizeF="100,23" LocationFloat="486.795135,25.8333435" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="30" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item6>
+            <Item7 Ref="31" ControlType="XRLabel" Name="label23" Multiline="true" Text="One Portals Way, Twin&#xD;&#xA;Points WA, 98156" SizeF="184.166656,62.166626" LocationFloat="240.377167,59.99997" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="32" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item7>
+            <Item8 Ref="33" ControlType="XRLabel" Name="label22" Multiline="true" Text="Address:" SizeF="100,23" LocationFloat="240.377167,25.8333435" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="34" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item8>
+            <Item9 Ref="35" ControlType="XRLabel" Name="label21" Multiline="true" Text="GMIN" SizeF="100,23" LocationFloat="32.7272339,59.99991" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="36" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item9>
+            <Item10 Ref="37" ControlType="XRLabel" Name="label20" Multiline="true" Text="FROM:" SizeF="100,23" LocationFloat="32.7272339,25.8333435" Font="Arial, 10.8pt, style=Bold, charSet=0" ForeColor="White" Padding="2,2,0,0,100" BorderColor="White" BorderDashStyle="Solid">
+              <StylePriority Ref="38" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorderDashStyle="false" />
+            </Item10>
+          </Controls>
+          <StylePriority Ref="39" UseBackColor="false" />
+        </Item1>
+        <Item2 Ref="40" ControlType="XRLabel" Name="label19" Multiline="true" Text="label12" TextAlignment="MiddleCenter" SizeF="186.53009,36.4100037" LocationFloat="463.4699,161.872131" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="41" EventName="BeforePrint" PropertyName="Text" Expression="[WhLoc]" />
+          </ExpressionBindings>
+          <StylePriority Ref="42" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item2>
+        <Item3 Ref="43" ControlType="XRLabel" Name="label18" Multiline="true" Text="label11" TextAlignment="MiddleCenter" SizeF="123.102722,36.41002" LocationFloat="340.377167,161.882111" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="44" EventName="BeforePrint" PropertyName="Text" Expression="[WhType]" />
+          </ExpressionBindings>
+          <StylePriority Ref="45" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item3>
+        <Item4 Ref="46" ControlType="XRLabel" Name="label17" Multiline="true" Text="label10" TextAlignment="MiddleCenter" SizeF="245.793579,36.4100037" LocationFloat="94.5835953,161.872131" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="47" EventName="BeforePrint" PropertyName="Text" Expression="[WhNm]" />
+          </ExpressionBindings>
+          <StylePriority Ref="48" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item4>
+        <Item5 Ref="49" ControlType="XRLabel" Name="label16" Multiline="true" Text="label9" TextAlignment="MiddleCenter" SizeF="94.57361,36.41002" LocationFloat="0,161.882111" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="50" EventName="BeforePrint" PropertyName="Text" Expression="[WhCd]" />
+          </ExpressionBindings>
+          <StylePriority Ref="51" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item5>
+        <Item6 Ref="52" ControlType="XRLabel" Name="label15" Multiline="true" Text="label12" TextAlignment="MiddleCenter" SizeF="186.53009,36.4100037" LocationFloat="463.4699,125.462112" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="53" EventName="BeforePrint" PropertyName="Text" Expression="[WhLoc]" />
+          </ExpressionBindings>
+          <StylePriority Ref="54" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item6>
+        <Item7 Ref="55" ControlType="XRLabel" Name="label14" Multiline="true" Text="label11" TextAlignment="MiddleCenter" SizeF="123.102722,36.409996" LocationFloat="340.377167,125.472145" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="56" EventName="BeforePrint" PropertyName="Text" Expression="[WhType]" />
+          </ExpressionBindings>
+          <StylePriority Ref="57" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item7>
+        <Item8 Ref="58" ControlType="XRLabel" Name="label13" Multiline="true" Text="label10" TextAlignment="MiddleCenter" SizeF="245.793579,36.4100037" LocationFloat="94.5835953,125.462112" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="59" EventName="BeforePrint" PropertyName="Text" Expression="[WhNm]" />
+          </ExpressionBindings>
+          <StylePriority Ref="60" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item8>
+        <Item9 Ref="61" ControlType="XRLabel" Name="label8" Multiline="true" Text="label9" TextAlignment="MiddleCenter" SizeF="94.57361,36.409996" LocationFloat="0,125.472145" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="62" EventName="BeforePrint" PropertyName="Text" Expression="[WhCd]" />
+          </ExpressionBindings>
+          <StylePriority Ref="63" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item9>
+        <Item10 Ref="64" ControlType="XRTable" Name="table1" SizeF="650,35.0599976" LocationFloat="0,54.0121155" Borders="Top, Bottom" BorderWidth="2">
+          <Rows>
+            <Item1 Ref="65" ControlType="XRTableRow" Name="tableRow1" Weight="1">
+              <Cells>
+                <Item1 Ref="66" ControlType="XRTableCell" Name="tableCell1" Weight="0.43650896441985676" Multiline="true" Text="창고코드" TextAlignment="MiddleCenter" Font="한컴 고딕, 12.75pt" Padding="2,2,0,0,100">
+                  <StylePriority Ref="67" UseFont="false" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="68" ControlType="XRTableCell" Name="tableCell2" Weight="1.1344710401076426" Multiline="true" Text="창고명" TextAlignment="MiddleCenter" Font="한컴 고딕, 12.75pt" Padding="2,2,0,0,100">
+                  <StylePriority Ref="69" UseFont="false" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="70" ControlType="XRTableCell" Name="tableCell4" Weight="0.56818572760729447" Multiline="true" Text="창고타입" TextAlignment="MiddleCenter" Font="한컴 고딕, 12.75pt" Padding="2,2,0,0,100">
+                  <StylePriority Ref="71" UseFont="false" UseTextAlignment="false" />
+                </Item3>
+                <Item4 Ref="72" ControlType="XRTableCell" Name="tableCell3" Weight="0.86093792840847383" Multiline="true" Text="창고위치" TextAlignment="MiddleCenter" Font="한컴 고딕, 12.75pt" Padding="2,2,0,0,100">
+                  <StylePriority Ref="73" UseFont="false" UseTextAlignment="false" />
+                </Item4>
+              </Cells>
+            </Item1>
+          </Rows>
+          <StylePriority Ref="74" UseBorders="false" UseBorderWidth="false" />
+        </Item10>
+        <Item11 Ref="75" ControlType="XRLabel" Name="label12" Multiline="true" Text="label12" TextAlignment="MiddleCenter" SizeF="186.53009,36.40999" LocationFloat="463.4699,89.06213" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="76" EventName="BeforePrint" PropertyName="Text" Expression="[WhLoc]" />
+          </ExpressionBindings>
+          <StylePriority Ref="77" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item11>
+        <Item12 Ref="78" ControlType="XRLabel" Name="label11" Multiline="true" Text="label11" TextAlignment="MiddleCenter" SizeF="123.102722,36.40999" LocationFloat="340.3672,89.07212" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="79" EventName="BeforePrint" PropertyName="Text" Expression="[WhType]" />
+          </ExpressionBindings>
+          <StylePriority Ref="80" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item12>
+        <Item13 Ref="81" ControlType="XRLabel" Name="label10" Multiline="true" Text="label10" TextAlignment="MiddleCenter" SizeF="245.793579,36.40999" LocationFloat="94.57361,89.06213" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="82" EventName="BeforePrint" PropertyName="Text" Expression="[WhNm]" />
+          </ExpressionBindings>
+          <StylePriority Ref="83" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item13>
+        <Item14 Ref="84" ControlType="XRLabel" Name="label9" Multiline="true" Text="label9" TextAlignment="MiddleCenter" SizeF="94.57361,36.40999" LocationFloat="0,89.07212" Font="한컴 고딕, 12.75pt" ForeColor="255,59,59,59" Padding="2,2,0,0,100" BorderColor="255,189,189,189" Borders="Bottom">
+          <ExpressionBindings>
+            <Item1 Ref="85" EventName="BeforePrint" PropertyName="Text" Expression="[WhCd]" />
+          </ExpressionBindings>
+          <StylePriority Ref="86" UseFont="false" UseForeColor="false" UseBorderColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item14>
+        <Item15 Ref="87" ControlType="XRTable" Name="table12" SizeF="130.21,36.41" LocationFloat="511.567841,324.326355">
+          <Rows>
+            <Item1 Ref="88" ControlType="XRTableRow" Name="tableRow12" Weight="1.4564">
+              <Cells>
+                <Item1 Ref="89" ControlType="XRTableCell" Name="tableCell12" Weight="0.7808" Multiline="true" Text="[GrandTotal]" TextAlignment="MiddleRight" Font="한컴 고딕, 12.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderWidth="2">
+                  <StylePriority Ref="90" UseFont="false" UseBorders="false" UseBorderWidth="false" UseTextAlignment="false" />
+                </Item1>
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item15>
+        <Item16 Ref="91" ControlType="XRTable" Name="table11" SizeF="130.21,36.41" LocationFloat="373.897858,324.326355">
+          <Rows>
+            <Item1 Ref="92" ControlType="XRTableRow" Name="tableRow11" Weight="1.4564">
+              <Cells>
+                <Item1 Ref="93" ControlType="XRTableCell" Name="tableCell11" Weight="0.7808" Multiline="true" Text="Grand Total:" TextAlignment="MiddleLeft" Font="한컴 고딕, 12.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderWidth="2">
+                  <StylePriority Ref="94" UseFont="false" UseBorders="false" UseBorderWidth="false" UseTextAlignment="false" />
+                </Item1>
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item16>
+        <Item17 Ref="95" ControlType="XRTable" Name="table10" SizeF="130.21,47.82" LocationFloat="511.567841,266.0464">
+          <Rows>
+            <Item1 Ref="96" ControlType="XRTableRow" Name="tableRow10" Weight="1.2873391497227356">
+              <Cells>
+                <Item1 Ref="97" ControlType="XRTableCell" Name="tableCell10" Weight="0.7808" Multiline="true" Text="[Discount Total]" TextAlignment="MiddleRight" Font="한컴 고딕, 12pt, style=Bold, charSet=129" ForeColor="255,59,59,59" Padding="2,2,0,0,100" Borders="Bottom" BorderWidth="2">
+                  <StylePriority Ref="98" UseFont="false" UseForeColor="false" UseBorders="false" UseBorderWidth="false" UseTextAlignment="false" />
+                </Item1>
+              </Cells>
+            </Item1>
+          </Rows>
+          <StylePriority Ref="99" UseTextAlignment="false" />
+        </Item17>
+        <Item18 Ref="100" ControlType="XRTable" Name="table9" SizeF="130.21,47.82" LocationFloat="373.897858,266.0464">
+          <Rows>
+            <Item1 Ref="101" ControlType="XRTableRow" Name="tableRow9" Weight="1.2873391497227356">
+              <Cells>
+                <Item1 Ref="102" ControlType="XRTableCell" Name="tableCell9" Weight="0.7808" Multiline="true" Text="Discount Total :" TextAlignment="MiddleLeft" Font="한컴 고딕, 12pt, style=Bold, charSet=129" ForeColor="255,59,59,59" Padding="2,2,0,0,100" Borders="Bottom" BorderWidth="2">
+                  <StylePriority Ref="103" UseFont="false" UseForeColor="false" UseBorders="false" UseBorderWidth="false" UseTextAlignment="false" />
+                </Item1>
+              </Cells>
+            </Item1>
+          </Rows>
+          <StylePriority Ref="104" UseTextAlignment="false" />
+        </Item18>
+        <Item19 Ref="105" ControlType="XRLabel" Name="label7" Multiline="true" Text="[Sub Total]" TextAlignment="MiddleRight" SizeF="130.21,35.48" LocationFloat="511.567841,219.406357" Font="한컴 고딕, 12.75pt, style=Bold" Padding="2,2,0,0,100">
+          <StylePriority Ref="106" UseFont="false" UseTextAlignment="false" />
+        </Item19>
+        <Item20 Ref="107" ControlType="XRLabel" Name="label6" Multiline="true" Text="Sub Total :" TextAlignment="MiddleLeft" SizeF="130.21,35.48" LocationFloat="373.897858,219.406357" Font="한컴 고딕, 12.75pt, style=Bold" Padding="2,2,0,0,100">
+          <StylePriority Ref="108" UseFont="false" UseTextAlignment="false" />
+        </Item20>
+        <Item21 Ref="109" ControlType="XRBarCode" Name="barCode1" TextAlignment="BottomCenter" Text="123456" SizeF="228.996582,81.6400146" LocationFloat="411.003357,384.193939" Padding="10,10,0,0,100">
+          <Symbology Ref="110" Name="Code128" />
+          <StylePriority Ref="111" UseTextAlignment="false" />
+        </Item21>
+      </Controls>
+    </Item3>
+    <Item4 Ref="112" ControlType="BottomMarginBand" Name="BottomMargin" HeightF="92" />
+  </Bands>
+  <StyleSheet>
+    <Item1 Ref="113" Name="xrControlStyle1" BorderStyle="Inset" StringFormat="Near;Near;0;None;Character;Default" />
+    <Item2 Ref="114" Name="xrControlStyle2" BorderStyle="Inset" StringFormat="Near;Near;0;None;Character;Default" />
+    <Item3 Ref="115" Name="xrControlStyle3" BorderStyle="Inset" StringFormat="Near;Near;0;None;Character;Default" />
+  </StyleSheet>
+  <ComponentStorage>
+    <Item1 Ref="0" ObjectType="DevExpress.DataAccess.Sql.SqlDataSource,DevExpress.DataAccess.v20.1" Name="sqlDataSource1" Base64="PFNxbERhdGFTb3VyY2UgTmFtZT0ic3FsRGF0YVNvdXJjZTEiPjxDb25uZWN0aW9uIE5hbWU9IkRlZmF1bHQiIEZyb21BcHBDb25maWc9InRydWUiIC8+PFF1ZXJ5IFR5cGU9IlNlbGVjdFF1ZXJ5IiBOYW1lPSJUQl9XYXJlaG91c2UiPjxUYWJsZXM+PFRhYmxlIE5hbWU9IlRCX1dhcmVob3VzZSIgLz48L1RhYmxlcz48Q29sdW1ucz48Q29sdW1uIFRhYmxlPSJUQl9XYXJlaG91c2UiIE5hbWU9IkJpelVuaXQiIC8+PENvbHVtbiBUYWJsZT0iVEJfV2FyZWhvdXNlIiBOYW1lPSJXaENkIiAvPjxDb2x1bW4gVGFibGU9IlRCX1dhcmVob3VzZSIgTmFtZT0iV2hObSIgLz48Q29sdW1uIFRhYmxlPSJUQl9XYXJlaG91c2UiIE5hbWU9IldoVHlwZSIgLz48Q29sdW1uIFRhYmxlPSJUQl9XYXJlaG91c2UiIE5hbWU9IldoTG9jIiAvPjxDb2x1bW4gVGFibGU9IlRCX1dhcmVob3VzZSIgTmFtZT0iUmVnVXNlcklkIiAvPjxDb2x1bW4gVGFibGU9IlRCX1dhcmVob3VzZSIgTmFtZT0iUmVnRGF0ZSIgLz48Q29sdW1uIFRhYmxlPSJUQl9XYXJlaG91c2UiIE5hbWU9IlVwdFVzZXJJZCIgLz48Q29sdW1uIFRhYmxlPSJUQl9XYXJlaG91c2UiIE5hbWU9IlVwdERhdGUiIC8+PC9Db2x1bW5zPjwvUXVlcnk+PFJlc3VsdFNjaGVtYT48RGF0YVNldCBOYW1lPSJzcWxEYXRhU291cmNlMSI+PFZpZXcgTmFtZT0iVEJfV2FyZWhvdXNlIj48RmllbGQgTmFtZT0iQml6VW5pdCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJXaENkIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IldoTm0iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iV2hUeXBlIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IldoTG9jIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IlJlZ1VzZXJJZCIgVHlwZT0iSW50MzIiIC8+PEZpZWxkIE5hbWU9IlJlZ0RhdGUiIFR5cGU9IkRhdGVUaW1lIiAvPjxGaWVsZCBOYW1lPSJVcHRVc2VySWQiIFR5cGU9IkludDMyIiAvPjxGaWVsZCBOYW1lPSJVcHREYXRlIiBUeXBlPSJEYXRlVGltZSIgLz48L1ZpZXc+PC9EYXRhU2V0PjwvUmVzdWx0U2NoZW1hPjxDb25uZWN0aW9uT3B0aW9ucyBDbG9zZUNvbm5lY3Rpb249InRydWUiIC8+PC9TcWxEYXRhU291cmNlPg==" />
+  </ComponentStorage>
+  <ObjectStorage>
+    <Item1 Ref="2" ObjectType="DevExpress.XtraReports.Parameters.DynamicListLookUpSettings, DevExpress.Printing.v20.1.Core" DataSource="#Ref-0" DataMember="TB_Warehouse" ValueMember="WhCd" DisplayMember="WhCd" />
+  </ObjectStorage>
+</XtraReportsLayoutSerializer>

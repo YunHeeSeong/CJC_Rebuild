@@ -1,0 +1,299 @@
+﻿@page "/asEdit"
+@page "/asEdit/{loginId}"
+@page "/asEdit/{loginId}/{selectedAsNo}"
+
+@using GMINWEB_Rebuild.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject IASData _db
+@inject ICustomerData _customerManager 
+@inject IOrderData _orderManager
+@inject ICommonCodeData _codeManager
+@inject IJSRuntime jsRuntime
+@inject IUserData _userManager
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Data="asModel">
+    <div class="row">
+        <div class="col-md">
+            <RadzenFieldset Text="AS 내역">
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="AS번호" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox ReadOnly="true" Placeholder="자동채번" Style="width:100%;" Name="AsNo" @bind-Value="@asModel.AsNo"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="주문번호" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenDropDownDataGrid AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" PageSize="int.MaxValue"
+                                                AllowFiltering="true" Data=@OrderNoList TextProperty="OrderNo" ValueProperty="OrderNo" @bind-Value="asModel.OrderNo"
+                                                SelectedItemChanged="@(args => OnChangeOrderNo(args, "주문번호"))">
+                            <Columns>
+                                <RadzenDropDownDataGridColumn Property="FactBizUnitNm" Title="생산사업장" Width="100px" />
+                                <RadzenDropDownDataGridColumn Property="CustomerNm" Title="고객명" Width="100px" />
+                                <RadzenDropDownDataGridColumn Property="ItemCd" Title="품목코드" Width="100px" />
+                                <RadzenDropDownDataGridColumn Property="ItemNm" Title="품목명" Width="200px" />
+                                <RadzenDropDownDataGridColumn Property="PhoneNo" Title="고객핸드폰번호" Width="200px" />
+                            </Columns>
+                        </RadzenDropDownDataGrid>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="고객명" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" Disabled="true" Data="@CustomerList"
+                                        AllowFiltering="true" TextProperty="CustomerNm" ValueProperty="CustomerCd" @bind-Value="asModel.CustomerCd"/>
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="고객전화번호"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenTextBox Style="width:100%;" Disabled="true" Name="CustomerPhone" @bind-Value="@asModel.CustomerPhone"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="품목코드"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox Style="width:100%;" Name="ItemCd" @bind-Value="@asModel.ItemCd" Disabled="true"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="품목명"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenTextBox Style="width:100%;" Name="ItemNm" @bind-Value="@asModel.ItemNm" Disabled="true"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="AS구분"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100"
+                                        AllowFiltering="true" Data=@AsTypeList TextProperty="CodeSubNm" ValueProperty="CodeSeq" @bind-Value="asModel.AsType"
+                                        Change=@(args => OnChangeAsType(args, "AS구분")) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="AS접수일자"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDatePicker @bind-Value=@asModel.AsRecvDt DateFormat="yyyy-MM-dd" Change="@(arg=> AsRecvDtChanged(arg))" Class="w-100" />
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="AS처리일자"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenDatePicker @bind-Value=@asModel.AsCompDt DateFormat="yyyy-MM-dd" Change="@(arg=> AsCompDtChanged(arg))" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="AS접수자"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@asModel.AsUserId"
+                                        AllowFiltering="true" Data=@AsUserIdList TextProperty="UserNm" ValueProperty="UserCd"
+                                        Change=@(args => OnChangeAsUserId(args, "DropDown with virtualization")) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="AS처리자"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@asModel.AsManagerId"
+                                        AllowFiltering="true" Data=@AsManagerIdList TextProperty="UserNm" ValueProperty="UserCd"
+                                        Change=@(args => OnChangeAsManagerId(args, "DropDown with virtualization")) />
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="처리상태"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100"
+                                        AllowFiltering="true" Data=@ProcStatusList TextProperty="CodeSubNm" ValueProperty="CodeSeq" @bind-Value="asModel.ProcStatus"
+                                        Change=@(args => OnChangeProcStatus(args, "AS구분")) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="요청내용"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextArea @bind-Value="@asModel.ReqDetail" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="개선내용"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextArea @bind-Value="@asModel.ImproveDetail" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="비고"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextArea @bind-Value="@asModel.Remk" Class="w-100" />
+                    </div>
+                </div>
+
+            </RadzenFieldset>
+
+        </div>
+    </div>
+
+    <div>
+        <RadzenButton style="margin: 0 1rem 1rem 500px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [Parameter] public string selectedAsNo { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_Rebuild.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+    private ASModel asModel = new ASModel();
+
+    private List<OrderModel> OrderNoList;
+    private List<CommonCodeModel> AsTypeList;
+    private List<CommonCodeModel> ProcStatusList;
+    private List<UserModel> AsUserIdList;
+    private List<UserModel> AsManagerIdList;
+    private List<CustomerModel> CustomerList;
+
+    private OrderModel selectedOrderModel = new OrderModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedAsNo is not null)
+        {
+            var asList = await _db.GetAS(loginId, selectedAsNo);
+            asModel = asList.FirstOrDefault();
+
+        }
+        else
+        {
+            asModel.AsCompDt = DateTime.Today;
+            asModel.AsRecvDt = DateTime.Today;
+
+        }
+
+        AsTypeList = await _codeManager.FindCommonCodeFromName("AS구분", loginId);
+        ProcStatusList = await _codeManager.FindCommonCodeFromName("처리상태", loginId);
+        AsUserIdList = await _userManager.GetUserFromCodehelp(loginId);
+        AsManagerIdList = await _userManager.GetUserFromCodehelp(loginId);
+        OrderNoList = await _db.GetOrderFromCodehelp(loginId);
+        CustomerList = await _customerManager.GetAllCustomers(loginId);
+    }
+
+    void btnCancleClick()
+    {
+        navigationManager.NavigateTo("/ASManagement");
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckAS(asModel) == true)
+        {
+            if (asModel.AsNo.GetNullToEmpty() == string.Empty)
+            {
+                await _db.InsertData(asModel, loginId);
+            }
+            else
+            {
+                await _db.UpdateData(asModel, loginId);
+            }
+
+            navigationManager.NavigateTo("/ASManagement");
+
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "주문번호와 AS구분을 입력하여 주세요.");
+        }
+
+    }
+
+
+    bool ValidationCheckAS(ASModel asModel)
+    {
+        ////필수값 미입력시 false 반환
+        if (asModel.OrderNo.GetNullToEmpty() == string.Empty || asModel.AsType.GetNullToEmpty() == string.Empty)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void OnChangeOrderNo(object value, string name)
+    {
+        if (value is not null)
+        {
+            asModel.OrderNo = ((OrderModel)value).OrderNo;
+            asModel.CustomerCd = ((OrderModel)value).CustomerCd;
+            asModel.CustomerNm = ((OrderModel)value).CustomerNm;
+            asModel.ItemCd = ((OrderModel)value).ItemCd;
+            asModel.ItemNm = ((OrderModel)value).ItemNm;
+            asModel.FactBizUnit = ((OrderModel)value).FactBizUnit;
+            asModel.CustomerPhone = ((OrderModel)value).PhoneNo;
+        }
+    }
+    void OnChangeAsType(object value, string name)
+    {
+        asModel.AsType = (int)value;
+    }
+    void OnChangeProcStatus(object value, string name)
+    {
+        asModel.ProcStatus = (int)value;
+    }
+    void OnChangeAsManagerId(object value, string name)
+    {
+        asModel.AsManagerId = (int)value;
+    }
+    void OnChangeAsUserId(object value, string name)
+    {
+        asModel.AsUserId = (int)value;
+    }
+    void AsRecvDtChanged(object value)
+    {
+        if (value is not null)
+        {
+            asModel.AsRecvDt = Convert.ToDateTime(value);
+        }
+    }
+    void AsCompDtChanged(object value)
+    {
+        if (value is not null)
+        {
+            asModel.AsCompDt = Convert.ToDateTime(value);
+        }
+    }
+
+}

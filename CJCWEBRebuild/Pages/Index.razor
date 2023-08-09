@@ -1,0 +1,238 @@
+﻿@page "/sdsds"
+@using System.Text.RegularExpressions
+@using Radzen.Blazor.Rendering
+@using GMINWEB_CJC.Model.Github
+@using GMINWEB_CJC.Services
+
+@inject GitHubService GitHub
+@inject NotificationService NotificationService
+@inject IStringLocalizer<App> Localizer
+<h1>@Localizer["안녕하세요"]</h1>
+<RadzenNotification></RadzenNotification>
+<div class="container-fluid" style="position: relative">
+    <div class="row">
+        <div class="col-xl-3 col-lg-6 py-2">
+            <RadzenCard>
+                <h2>Closed Issues <label style="color: #cb2431; position: absolute; font-size: 3rem; right: 2rem; top: 1rem">@closedIssues?.Count()</label></h2>
+                <RadzenChart style="width: 100%; height: 200px">
+                    <RadzenColumnSeries Data=@closedIssuesByDate ValueProperty="Count" CategoryProperty="Week" Title="Issues" Fill="#cb2431" />
+                    <RadzenCategoryAxis FormatString="{0:dd MMM}" Padding="50" />
+                    <RadzenColumnOptions Margin="10" />
+                    <RadzenLegend Visible="false" />
+                </RadzenChart>
+            </RadzenCard>
+        </div>
+        <div class="col-xl-3 col-lg-6 py-2">
+            <RadzenCard>
+                <h2>All Issues <label style="position: absolute; font-size: 3rem; right: 2rem; top: 1rem">@issues?.Count()</label></h2>
+                <RadzenChart style="width: 100%; height: 200px">
+                    <RadzenLineSeries Data=@openIssuesByDate ValueProperty="Count" CategoryProperty="Week" Title="Open Issues" Smooth="true" Stroke="#28a745" />
+                    <RadzenLineSeries Data=@closedIssuesByDate ValueProperty="Count" CategoryProperty="Week" Title="Closed Issues" Smooth="true" Stroke="#cb2431" />
+                    <RadzenCategoryAxis FormatString="{0:dd MMM}" />
+                </RadzenChart>
+            </RadzenCard>
+        </div>
+        <div class="col-xl-3 col-lg-6 py-2">
+            <RadzenCard>
+                <h2>Progress</h2>
+                <RadzenArcGauge style="width: 100%; height: 200px">
+                    <RadzenArcGaugeScale Max="1" Min="0" Y="0.8" Radius="2">
+                        <RadzenArcGaugeScaleValue Value=@closeRatio FormatString="{0:P0}" />
+
+                    </RadzenArcGaugeScale>
+                </RadzenArcGauge>
+            </RadzenCard>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="row">
+            <div class="col-xl-6">
+                <h3>Show notification</h3>
+                <RadzenButton Text="Show notification" Style="margin-bottom: 20px;"
+                              Click=@(args => ShowNotification(new NotificationMessage {  Severity = NotificationSeverity.Info, Summary = "Success Summary", Detail = "Success Detail"})) /> @*, Duration = 4000*@
+            </div>
+            @*<div class="col-xl-6">
+                <EventConsole @ref=@console />
+            </div>*@
+        </div>
+    </div>
+</div>
+@code {
+    IEnumerable<Issue> issues;
+    IEnumerable<Issue> openIssues;
+    IEnumerable<Issue> closedIssues;
+
+    class IssueGroup
+    {
+        public int Count { get; set; }
+        public DateTime Week { get; set; }
+    }
+
+    class LabelGroup
+    {
+        public int Count { get; set; }
+        public string Label { get; set; }
+        public string Color { get; set; }
+    }
+
+    class UserGroup
+    {
+        public int Count { get; set; }
+        public string Name { get; set; }
+    }
+
+    IEnumerable<IssueGroup> openIssuesByDate;
+    IEnumerable<IssueGroup> closedIssuesByDate;
+    IEnumerable<LabelGroup> labelGroups;
+    IEnumerable<UserGroup> openByGroups;
+    IEnumerable<User> users;
+    IEnumerable<Issue> filteredIssues;
+    IEnumerable<string> labels;
+    IEnumerable<string> selectedLabels;
+    IEnumerable<IssueState> issueStates = Enum.GetValues(typeof(IssueState)).Cast<IssueState>();
+    IEnumerable<string> labelColors;
+    IssueState selectedState = IssueState.All;
+    User mostActiveMember;
+    User selectedUser;
+    double closeRatio = 0;
+    int currentPage = 0;
+    int totalPages = 0;
+    bool fetchingData = false;
+    string error = null;
+
+    //class UserComparer : IEqualityComparer<User>
+    //{
+    //    public bool Equals(User x, User y)
+    //    {
+    //        return x.Login.Equals(y.Login);
+    //    }
+
+    //    public int GetHashCode(User user)
+    //    {
+    //        return user.Login.GetHashCode();
+    //    }
+    //}
+
+    class LabelComparer : IEqualityComparer<Label>
+    {
+        public bool Equals(Label x, Label y)
+        {
+            return x.Name.Equals(y.Name);
+        }
+
+        public int GetHashCode(Label user)
+        {
+            return user.Name.GetHashCode();
+        }
+    }
+
+    void FilterIssues()
+    {
+        filteredIssues = issues.OrderByDescending(issue => issue.CreatedAt);
+
+        if (selectedUser != null)
+        {
+            //filteredIssues = issues.Where(issue => issue.User.Login == selectedUser.Login);
+        }
+
+        if (selectedLabels != null)
+        {
+            foreach (var selectedLabel in selectedLabels)
+            {
+                filteredIssues = filteredIssues.Where(issue => issue.Labels.Any(label => label.Name == selectedLabel));
+            }
+        }
+
+        if (selectedState != IssueState.All)
+        {
+            filteredIssues = filteredIssues.Where(issue => issue.State == selectedState);
+        }
+    }
+
+    void OnProgress(FetchProgressEventArgs args)
+    {
+        currentPage = args.Current;
+        totalPages = args.Total;
+
+        StateHasChanged();
+    }
+
+    EventConsole console;
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+
+       // console.Log($"{message.Severity} notification");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            GitHub.OnProgress += OnProgress;
+            fetchingData = true;
+            try
+            {
+                issues = await GitHub.GetIssues(DateTime.Now);
+                filteredIssues = issues.OrderByDescending(issue => issue.CreatedAt);
+                openIssues = issues.Where(issue => issue.State == IssueState.Open);
+                closedIssues = issues.Where(issue => issue.State == IssueState.Closed);
+
+                closeRatio = closedIssues.Count() / (double)issues.Count();
+
+                openIssuesByDate = openIssues.GroupBy(issue => issue.CreatedAt.EndOfWeek())
+                        .Select(group => new IssueGroup
+                        {
+                            Week = group.Key,
+                            Count = group.Count()
+                        });
+
+                closedIssuesByDate = closedIssues.GroupBy(issue => issue.ClosedAt.Value.EndOfWeek())
+                        .Select(group => new IssueGroup
+                        {
+                            Week = group.Key,
+                            Count = group.Count()
+                        });
+
+                labels = issues.SelectMany(issue => issue.Labels).Select(label => label.Name).Distinct();
+
+                labelGroups = issues.SelectMany(issue => issue.Labels)
+                                    .GroupBy(label => label, new LabelComparer())
+                                    .Select(group => new LabelGroup { Label = Regex.Replace(group.Key.Name, ":\\w+:", ""), Color = $"#{group.Key.Color}", Count = group.Count() })
+                                    .Where(group => group.Label != "area-blazor")
+                                    .OrderByDescending(group => group.Count)
+                                    .Take(5);
+
+                labelColors = labelGroups.Select(label => label.Color);
+
+                //openByGroups = issues.GroupBy(issue => issue.User.Login)
+                //                    .Select(group => new UserGroup { Name = group.Key, Count = group.Count() })
+                //                    .OrderByDescending(group => group.Count)
+                //                    .Take(7);
+
+                //mostActiveMember = issues.SelectMany(issue => issue.Assignees)
+                //                    .GroupBy(assignee => assignee, new UserComparer())
+                //                    .Select(group => new { User = group.Key, Count = group.Count() })
+                //                    .OrderByDescending(group => group.Count)
+                //                    .Select(group => group.User)
+                //                    .First();
+
+                //users = issues.Select(issue => issue.User)
+                //            .Distinct(new UserComparer());
+
+                error = null;
+                fetchingData = false;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+
+            StateHasChanged();
+        }
+    }
+}

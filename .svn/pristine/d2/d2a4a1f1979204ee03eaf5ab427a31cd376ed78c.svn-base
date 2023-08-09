@@ -1,0 +1,624 @@
+﻿@page "/FactInventoryCheck"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic
+@using System.Security.Claims
+
+@inject IBizUnitData _bizUnitManager
+@inject IInventoryData _invenManaget
+@inject IInventoryCheckData _checkManager
+@inject IRoleData _RoleManager
+@inject IUserData _userManager
+@inject IJSRuntime jsRuntime
+@inject NotificationService NotificationService
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    <RadzenLabel Text=" > 구매/재고관리 > " />
+    <strong>공장별 재고실사</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+        <div>
+            <div class="info_title">
+                <h1 class="sub_title">공장별 재고실사</h1>
+            </div>
+
+            <div style="margin-top:45px">
+                <RadzenTabs RenderMode="TabRenderMode.Client">
+                    <Tabs>
+                        <RadzenTabsItem Text="제품 재고 실사">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                            FilterMode="FilterMode.Simple" PageSize="15" AllowPaging="true" AllowSorting="true" Data="@pditemModels" TItem="InventoryModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" RowSelect="@PDItemRowSelect"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 제품 재고현황이 없습니다.">
+
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="BizUnit" Title="매장" Width="70px" Visible="false" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="FactBizUnit" Title="공장" Width="70px" Visible="false" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="BizUnitNm" Title="매장명" Width="150px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="FactBizUnitNm" Title="공장명" Width="150px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="MadeType" Title="제작형태" Width="100px" CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemCd" Title="품목코드" Width="130px" CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemNm" Title="품목명" Width="200px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="QTY" Title="재고수량" Width="90px" CssClass="data_right" FormatString="{0:n0}" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Unit" Title="단위" Width="100px" />
+                                </Columns>
+                            </RadzenDataGrid>
+
+
+                            <div style="margin-top:20px">
+                                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px; background-color:darkblue; color: white;" Text="실사등록" Click="@PDItemInsertRow" Disabled=@(inventortyCheckToInsert != null) />
+                            </div>
+
+                            <div style="margin-top:20px">
+                                <RadzenDataGrid @ref="pdItemGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                                Data="@selectedPDItemModels" TItem="InventoryCheckModel" EmptyText="조회된 실사 내역이 없습니다.">
+                                    <Columns>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="BizUnitNm" Title="매장명" Width="70px" Visible="false" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="FactBizUnitNm" Title="공장명" Width="70px" Visible="false" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="Whcd" Title="창고" Width="150px" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckSeq" Title="실사순번" Width="70px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkDate" Title="실사일자" Width="150px" CssClass="data_center">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenDatePicker @bind-Value=@PDItemCheckStkDate DateFormat="yyyy-MM-dd" Change="@(arg=> PDItemCheckStkDateChanged(arg))" Class="w-100" />
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkGroupCdNm" Title="실사부서" Width="120px" CssClass="data_center">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenTextBox Name="CheckStkGroupCdNm" @bind-Value="detailModel.CheckStkGroupCdNm" Disabled="true"></RadzenTextBox>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkUserId" Title="실사담당자" Width="130px" Visible="false" CssClass="data_center">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenNumeric TValue="int" Name="CheckStkUserId" @bind-Value="detailModel.CheckStkUserId"></RadzenNumeric>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkUserIdNm" Title="실사담당자" Width="130px" CssClass="data_center">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@detailModel.CheckStkUserIdNm" Name="POInUserId"
+                                                                AllowFiltering="true" Data=@CheckStkUserIdList TextProperty="UserNm" ValueProperty="UserNm"
+                                                                SelectedItemChanged="(args => OnChangeCheckStkUserId(args))" />
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="Price" Title="단가" Width="100px">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenNumeric TValue="decimal" Name="Price" @bind-Value="detailModel.Price" Change="(args)=>OnChangePrice(args)"></RadzenNumeric>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkQty" Title="조정수량" Width="100px" FormatString="{0:n0}">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenNumeric TValue="decimal" Name="CheckStkQty" @bind-Value="detailModel.CheckStkQty" Change="(args)=>OnChangeCheckStkQty(args)"></RadzenNumeric>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkAmt" Title="실사금액" Width="120px" FormatString="{0:n0}">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenNumeric TValue="decimal" Name="CheckStkAmt" @bind-Value="detailModel.CheckStkAmt"></RadzenNumeric>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="SlipNo" Title="수불전표번호" Width="130px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="SlipSeq" Title="수불전표순번" Width="80px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="Remk" Title="비고" Width="200px">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenTextBox Name="Remk" @bind-Value="detailModel.Remk"></RadzenTextBox>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="250px" CssClass="data_center">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenButton Text="실사저장" Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Class="m-1" Click="@((args) => PDItemSaveRow(detailModel))">
+                                                </RadzenButton>
+                                                <RadzenButton Text="취소" Style="margin: 0 0.5rem 0 0; color: gray; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Class="m-1" Click="@((args) => CancelEdit(detailModel))">
+                                                </RadzenButton>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="170px" CssClass="data_center">
+                                            <Template Context="detailModel">
+                                                <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkred; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Text="실사삭제" Class="m-1" Click="@(args => PDItemDeleteRow(detailModel))" @onclick:stopPropagation="true">
+                                                </RadzenButton>
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+                                </RadzenDataGrid>
+                            </div>
+                        </RadzenTabsItem>
+
+                        <RadzenTabsItem Text="품목 재고 실사">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                            FilterMode="FilterMode.Simple" PageSize="20" AllowPaging="true" AllowSorting="true" Data="@itemModels" TItem="InventoryModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" RowSelect="ItemRowSelect"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 품목 재고현황이 없습니다.">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="BizUnitNm" Title="매장명" Width="150px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemCd" Title="품목코드" Width="150px" CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemNm" Title="품목명" Width="200px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemClsNm" Title="품목구분" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Item1ClsNm" Title="대분류" Width="100px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Item2ClsNm" Title="중분류" Width="100px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Item3ClsNm" Title="소분류" Width="100px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="QTY" Title="재고수량" Width="100px" CssClass="data_right" FormatString="{0:n0}" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Unit" Title="단위" Width="100px" />
+                                </Columns>
+                            </RadzenDataGrid>
+
+                            <div style="margin-top:20px">
+                                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px; background-color:darkblue; color: white;" Text="실사등록" Click="@ItemInsertRow" Disabled=@(inventortyCheckToInsert != null) />
+                            </div>
+
+
+                            <div style="margin-top:20px">
+                                <RadzenDataGrid @ref="itemGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                                Data="@selectedItemModels" TItem="InventoryCheckModel" EmptyText="조회된 실사 내역이 없습니다.">
+                                    <Columns>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="BizUnitNm" Title="매장명" Width="15px" Visible="false" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckSeq" Title="실사순번" Width="80px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkDate" Title="실사일자" Width="150px" CssClass="data_center">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenDatePicker @bind-Value=@ItemCheckStkDate DateFormat="yyyy-MM-dd" Change="@(arg=> ItemCheckStkDateChanged(arg))" Class="w-100" />
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkGroupCdNm" Title="실사부서" Width="120px">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenTextBox Name="CheckStkGroupCdNm" @bind-Value="detailModel.CheckStkGroupCdNm" Disabled="true"></RadzenTextBox>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkUserId" Title="실사담당자" Width="130px" Visible="false">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenNumeric TValue="int" Name="CheckStkUserId" @bind-Value="detailModel.CheckStkUserId"></RadzenNumeric>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkUserIdNm" Title="실사담당자" Width="130px" CssClass="data_center">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@detailModel.CheckStkUserIdNm" Name="POInUserId"
+                                                                AllowFiltering="true" Data=@CheckStkUserIdList TextProperty="UserNm" ValueProperty="UserNm"
+                                                                SelectedItemChanged="(args => OnChangeCheckStkUserId(args))" />
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="Price" Title="단가" Width="100px">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenNumeric TValue="decimal" Name="Price" @bind-Value="detailModel.Price" Change="(args)=>OnChangePrice(args)"></RadzenNumeric>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkQty" Title="조정수량" Width="100px" FormatString="{0:n0}">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenNumeric TValue="decimal" Name="CheckStkQty" @bind-Value="detailModel.CheckStkQty" Change="(args)=>OnChangeCheckStkQty(args)"></RadzenNumeric>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="CheckStkAmt" Title="실사금액" Width="100px" FormatString="{0:n0}">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenNumeric TValue="decimal" Name="CheckStkAmt" @bind-Value="detailModel.CheckStkAmt"></RadzenNumeric>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="SlipNo" Title="수불전표번호" Width="130px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="SlipSeq" Title="수불전표순번" Width="70px" />
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Property="Remk" Title="비고" Width="200px">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenTextBox Name="Remk" @bind-Value="detailModel.Remk"></RadzenTextBox>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="250px" CssClass="data_center">
+                                            <EditTemplate Context="detailModel">
+                                                <RadzenButton Text="실사저장" Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Class="m-1" Click="@((args) => ItemSaveRow(detailModel))">
+                                                </RadzenButton>
+                                                <RadzenButton Text="취소" Style="margin: 0 0.5rem 0 0; color: gray; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Class="m-1" Click="@((args) => CancelEdit(detailModel))">
+                                                </RadzenButton>
+                                            </EditTemplate>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="InventoryCheckModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="170px" CssClass="data_center">
+                                            <Template Context="detailModel">
+                                                <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkred; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Text="실사삭제" Class="m-1" Click="@(args => ItemDeleteRow(detailModel))" @onclick:stopPropagation="true">
+                                                </RadzenButton>
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+                                </RadzenDataGrid>
+                            </div>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+            </div>
+                <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+
+            </div>
+            }
+            else
+            {
+            <p>조회 권한이 없는 사용자입니다.</p>
+            }
+</Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    public int MenuId = 33; //매장별 재고실사
+
+    ClaimsPrincipal CurrentUser;
+    private List<InventoryModel> pditemModels;
+    private List<InventoryModel> itemModels;
+
+    private List<InventoryCheckModel> selectedItemModels = new List<InventoryCheckModel>();
+    private List<InventoryCheckModel> selectedPDItemModels = new List<InventoryCheckModel>();
+
+    private List<UserModel> CheckStkUserIdList;
+
+    private InventoryCheckModel inventortyCheckToDelete;
+    private InventoryCheckModel inventortyCheckToInsert;
+
+    private string RoleYN;
+    private string selectedBizUnit;
+    private string selectedFactBizUnit;
+    private string selectedItemCd;
+    private string loginId;
+    private DateTime PDItemCheckStkDate;
+    private DateTime ItemCheckStkDate;
+    private bool isDisable;
+
+    RadzenDataGrid<InventoryCheckModel> pdItemGrid;
+    RadzenDataGrid<InventoryCheckModel> itemGrid;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //로그인을 한 사용자인지
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            //사용자 정보가 있는지
+            if (CurrentUser.Identity.Name is not null)
+            {
+                var RoleList = await _RoleManager.GetRoleYN(CurrentUser.Identity.Name, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                loginId = CurrentUser.Identity.Name;
+
+                //조회권한이 있는지
+                if (RoleYN == "Y")
+                {
+                    //제품 재고 조회
+                    pditemModels = await _invenManaget.GetFactPDItemInventory(loginId);
+
+                    //품목 재고 조회
+                    itemModels = await _invenManaget.GetFactItemInventory(loginId);
+                }
+
+                CheckStkUserIdList = await _userManager.GetUserFromCodehelp(loginId);
+
+            }
+        }
+    }
+
+    //상단 그리드 로우 선택시 하단 출하내역 조회하는 이벤트
+    public async Task ItemRowSelect(InventoryModel InvenCheck)
+    {
+        inventortyCheckToInsert = null;
+        selectedFactBizUnit = null;
+        selectedBizUnit = InvenCheck.BizUnit;
+        selectedItemCd = InvenCheck.ItemCd;
+
+        selectedItemModels = await _checkManager.GetFactItemCheckData(loginId, InvenCheck);
+    }
+
+    public async Task PDItemRowSelect(InventoryModel InvenCheck)
+    {
+        inventortyCheckToInsert = null;
+
+        selectedBizUnit = InvenCheck.BizUnit;
+        selectedFactBizUnit = InvenCheck.FactBizUnit;
+        selectedItemCd = InvenCheck.ItemCd;
+
+        selectedPDItemModels = await _checkManager.GetFactPDItemCheckData(loginId, InvenCheck);
+    }
+
+    //출하내역 삭제 버튼 이벤트
+    void btnDeleteItemClick(InventoryCheckModel InvenCheck)
+    {
+        DeleteConfirmation.Show("정말 실사 내역을 삭제하시겠습니까 ?");
+
+        inventortyCheckToDelete = InvenCheck;
+    }
+
+    async Task PDItemInsertRow()
+    {
+        if (selectedBizUnit is null && selectedFactBizUnit is null)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "실사 재고할 제품을 먼저 선택하여 주십시오.");
+        }
+        else
+        {
+            PDItemCheckStkDate = new DateTime();
+
+            inventortyCheckToInsert = new InventoryCheckModel();
+            inventortyCheckToInsert.BizUnit = selectedBizUnit;
+            inventortyCheckToInsert.FactBizUnit = selectedFactBizUnit;
+            inventortyCheckToInsert.Whcd = selectedBizUnit;
+            inventortyCheckToInsert.ItemCd = selectedItemCd;
+
+            await pdItemGrid.InsertRow(inventortyCheckToInsert);
+        }
+    }
+
+    async Task ItemInsertRow()
+    {
+        if (selectedBizUnit is null)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "실사 재고할 품목을 먼저 선택하여 주십시오.");
+        }
+        else
+        {
+            ItemCheckStkDate = new DateTime();
+
+            inventortyCheckToInsert = new InventoryCheckModel();
+            inventortyCheckToInsert.BizUnit = selectedBizUnit;
+            inventortyCheckToInsert.ItemCd = selectedItemCd;
+
+            await itemGrid.InsertRow(inventortyCheckToInsert);
+        }
+    }
+
+    async Task PDItemSaveRow(InventoryCheckModel InvenCheck)
+    {
+        if (InvenCheck == inventortyCheckToInsert)
+        {
+            inventortyCheckToInsert = null;
+        }
+
+        //필수코드 체크
+        var errMessage = ValidationCheckDetail(InvenCheck);
+
+        if (errMessage == string.Empty)
+        {
+            //순번이 채번되기 전이면 INSERT
+            if (InvenCheck.CheckSeq == 0)
+            {
+                var res = await _checkManager.FactPDItemInsertData(loginId, InvenCheck);
+
+                if (res.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", res.GetErrorMessages());
+                }
+                else
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                }
+            }
+
+            //재조회
+            await pdItemGrid.UpdateRow(InvenCheck);
+            pditemModels = await _invenManaget.GetFactPDItemInventory(loginId);
+            selectedPDItemModels = null;
+
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", errMessage);
+        }
+    }
+
+    async Task ItemSaveRow(InventoryCheckModel InvenCheck)
+    {
+        if (InvenCheck == inventortyCheckToInsert)
+        {
+            inventortyCheckToInsert = null;
+        }
+
+        //필수코드 체크
+        var errMessage = ValidationCheckDetail(InvenCheck);
+
+        if (errMessage == string.Empty)
+        {
+            //순번이 채번되기 전이면 INSERT
+            if (InvenCheck.CheckSeq == 0)
+            {
+                var res = await _checkManager.FactItemInsertData(loginId, InvenCheck);
+
+                if (res.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", res.GetErrorMessages());
+                }
+                else
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                }
+            }
+
+            //재조회
+            await itemGrid.UpdateRow(InvenCheck);
+            itemModels = await _invenManaget.GetFactItemInventory(loginId);
+            selectedItemModels = null;
+
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", errMessage);
+        }
+    }
+
+    string ValidationCheckDetail(InventoryCheckModel InvenCheck)
+    {
+        if (InvenCheck.CheckStkUserId.GetIntNullToZero() == 0)
+        {
+            return "실사 담당자를 선택하여 주세요.";
+        }
+        if (InvenCheck.CheckStkDate.GetNullToEmpty() == string.Empty)
+        {
+            return "실사 일자를 선택하여 주세요.";
+        }
+        return string.Empty;
+    }
+
+    void CancelEdit(InventoryCheckModel InvenCheck)
+    {
+        if (InvenCheck == inventortyCheckToInsert)
+        {
+            inventortyCheckToInsert = null;
+        }
+
+        if (InvenCheck.FactBizUnit is not null)
+        {
+            pdItemGrid.CancelEditRow(InvenCheck);
+        }
+        else
+        {
+            itemGrid.CancelEditRow(InvenCheck);
+        }
+    }
+
+    async Task PDItemDeleteRow(InventoryCheckModel InvenCheck)
+    {
+        if (InvenCheck == inventortyCheckToInsert)
+        {
+            inventortyCheckToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (selectedPDItemModels.Contains(InvenCheck))
+        {
+            inventortyCheckToDelete = InvenCheck;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            pdItemGrid.CancelEditRow(InvenCheck);
+            await pdItemGrid.Reload();
+        }
+    }
+
+    async Task ItemDeleteRow(InventoryCheckModel InvenCheck)
+    {
+        if (InvenCheck == inventortyCheckToInsert)
+        {
+            inventortyCheckToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (selectedItemModels.Contains(InvenCheck))
+        {
+            inventortyCheckToDelete = InvenCheck;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            itemGrid.CancelEditRow(InvenCheck);
+            await itemGrid.Reload();
+        }
+    }
+
+    //삭제 확인 팝업
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            if (selectedFactBizUnit is not null)
+            {
+                var result = await _checkManager.FactPDItemDeleteData(loginId, inventortyCheckToDelete);
+                if (result.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+                }
+                else
+                {
+                    await GetAllDatas();
+                }
+            }
+            else
+            {
+                var result = await _checkManager.FactItemDeleteData(loginId, inventortyCheckToDelete);
+                if (result.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+                }
+                else
+                {
+                    await GetAllDatas();
+                }
+            }
+
+        }
+        else
+        {
+            inventortyCheckToDelete = null;
+        }
+    }
+
+    void PDItemCheckStkDateChanged(object value)
+    {
+        if (value is not null)
+        {
+            inventortyCheckToInsert.CheckStkDate = Convert.ToDateTime(value).ToString("yyyy-MM-dd");
+        }
+    }
+
+    void ItemCheckStkDateChanged(object value)
+    {
+        if (value is not null)
+        {
+            inventortyCheckToInsert.CheckStkDate = Convert.ToDateTime(value).ToString("yyyy-MM-dd");
+        }
+    }
+
+    void OnChangeCheckStkUserId(object value)
+    {
+        if (value is not null && inventortyCheckToInsert is not null)
+        {
+            inventortyCheckToInsert.CheckStkUserId = ((UserModel)value).UserCd;
+            inventortyCheckToInsert.CheckStkUserIdNm = ((UserModel)value).UserNm;
+            inventortyCheckToInsert.CheckStkGroupCd = ((UserModel)value).GroupCd;
+            inventortyCheckToInsert.CheckStkGroupCdNm = ((UserModel)value).GroupNm;
+
+        }
+    }
+
+    void OnChangePrice(object value)
+    {
+        if (value is not null && inventortyCheckToInsert is not null)
+        {
+            var price = Convert.ToDecimal(value);
+
+            inventortyCheckToInsert.CheckStkAmt = price * inventortyCheckToInsert.CheckStkQty;
+        }
+    }
+
+    void OnChangeCheckStkQty(object value)
+    {
+        if (value is not null && inventortyCheckToInsert is not null)
+        {
+            var StkQty = Convert.ToDecimal(value);
+
+            inventortyCheckToInsert.CheckStkAmt = StkQty * inventortyCheckToInsert.Price;
+        }
+    }
+
+    //재조회
+    private async Task GetAllDatas()
+    {
+        pditemModels = await _invenManaget.GetFactPDItemInventory(loginId);
+        itemModels = await _invenManaget.GetFactItemInventory(loginId);
+
+        selectedPDItemModels = null;
+        selectedItemModels = null;
+    }
+}

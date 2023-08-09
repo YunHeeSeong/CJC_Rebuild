@@ -1,0 +1,274 @@
+﻿@page "/WorkPlanEdit"
+@page "/WorkPlanEdit/{loginId}"
+@page "/WorkPlanEdit/{loginId}/{storeBizUnit}/{factBizUnit}/{selectedWorkPlanNo}"
+
+@using GMINWEB_CJC.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject ICustomerData _customerManager
+@inject IWorkOrderData _workOrderManager
+@inject IItemData _itemManager
+@inject ICommonCodeData _codeManager
+@inject IUserData _userManager
+@inject IBizUnitData _bizUnitManager
+@inject IWorkPlanData _db
+@inject IItemData _itemManager
+@inject ICommonCodeData _codeManager
+@inject IJSRuntime jsRuntime
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<style>
+    .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Data="workPlanModel">
+    <div class="row">
+        <div class="col-md">
+            <RadzenFieldset Text="생산계획 내역">
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="생산계획번호" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox ReadOnly="true" Placeholder="자동채번" Style="width:100%;" Name="WorkPlanNo" @bind-Value="@workPlanModel.WorkPlanNo"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="생산계획일자" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDatePicker @bind-Value=@WorkPlanDt DateFormat="yyyy-MM-dd" Change="@(arg=> WorkPlanDtChanged(arg))" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="지시수량" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenNumeric TValue="decimal" Name="Qty" Style="width:100%;" @bind-Value="@workPlanModel.Qty"></RadzenNumeric>
+                    </div>
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="생산사업장"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@workPlanModel.FactBizUnit"
+                                        AllowFiltering="true" Data=@factBizUnitList TextProperty="BizNm" ValueProperty="BizUnit" Disabled="true" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="품목코드"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@workPlanModel.ItemCd"
+                                        AllowFiltering="true" Data=@pdItemCdList TextProperty="ItemNm" ValueProperty="ItemCd" SelectedItemChanged="(args)=>OnChangePDItemCd(args)"/>
+                    </div>
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="품목명"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox Style="width:100%;" Name="ItemNm" @bind-Value="@workPlanModel.ItemNm" Disabled="true"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="지시사항"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextArea @bind-Value="@workPlanModel.EctRequest" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="비고"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextArea @bind-Value="@workPlanModel.Remk" Class="w-100" />
+                    </div>
+                </div>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <div>
+        <RadzenButton style="margin: 0 1rem 1rem 500px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [Parameter] public string selectedWorkPlanNo { get; set; }
+    [Parameter] public string storeBizUnit { get; set; }
+    [Parameter] public string factBizUnit { get; set; }
+
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+    private WorkPlanModel workPlanModel = new WorkPlanModel();
+    private HandMdItemModel handMdItemModel = new HandMdItemModel();
+    private ItemModel itemModel = new ItemModel();
+
+    List<ItemModel> pdItemCdList;
+    List<BizUnitModel> factBizUnitList;
+    List<CommonCodeModel> itemClsList;
+    List<CommonCodeModel> item1ClsList;
+    List<CommonCodeModel> item2ClsList;
+    List<CommonCodeModel> item3ClsList;
+    List<CommonCodeModel> modelTypeList;
+    List<CommonCodeModel> attachTypeList;
+    List<CommonCodeModel> hairDirectioneList;
+    List<CommonCodeModel> hairColorList;
+    List<CommonCodeModel> frontKnottingList;
+    List<CommonCodeModel> baseNetList;
+    List<CommonCodeModel> frontList;
+    List<CommonCodeModel> nanoSkinThinList;
+    List<CommonCodeModel> nanoSkinCoatingList;
+    List<CommonCodeModel> skinColorList;
+    List<CommonCodeModel> partCrownList;
+    List<CommonCodeModel> madeTypeList;
+
+    DateTime WorkPlanDt;    //계획일자
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedWorkPlanNo is not null)
+        {
+            var workPlanList = await _db.GetWorkPlan(loginId,  storeBizUnit, factBizUnit, selectedWorkPlanNo);
+            workPlanModel = workPlanList.FirstOrDefault();
+        }
+
+        //날짜컬럼 형변환 처리
+        SetDateTimeConvert(workPlanModel);
+
+        pdItemCdList = await _itemManager.GePDItemFromCodehelp(loginId);
+        factBizUnitList = await _bizUnitManager.GetFactoryBizUnit(loginId);
+        itemClsList = await _codeManager.FindCommonCodeFromName("품목구분", loginId);
+        item1ClsList = await _codeManager.FindCommonCodeFromName("품목대분류", loginId);
+        item2ClsList = await _codeManager.FindCommonCodeFromName("품목중분류", loginId);
+        item3ClsList = await _codeManager.FindCommonCodeFromName("품목소분류", loginId);
+        modelTypeList = await _codeManager.FindCommonCodeFromName("종류", loginId);
+        attachTypeList = await _codeManager.FindCommonCodeFromName("부착방식", loginId);
+        hairDirectioneList = await _codeManager.FindCommonCodeFromName("모방향", loginId);
+        frontKnottingList = await _codeManager.FindCommonCodeFromName("앞라인넛팅", loginId);
+        baseNetList = await _codeManager.FindCommonCodeFromName("망", loginId);
+        frontList = await _codeManager.FindCommonCodeFromName("앞", loginId);
+        nanoSkinThinList = await _codeManager.FindCommonCodeFromName("나노스킨두께", loginId);
+        nanoSkinCoatingList = await _codeManager.FindCommonCodeFromName("나노스킨코팅", loginId);
+        skinColorList = await _codeManager.FindCommonCodeFromName("스킨색상", loginId);
+        partCrownList = await _codeManager.FindCommonCodeFromName("가르마,크라운", loginId);
+        madeTypeList = await _codeManager.FindCommonCodeFromName("제작형식", loginId);
+        hairColorList = await _codeManager.FindCommonCodeFromName("모발색상", loginId);
+    }
+
+    void btnCancleClick()
+    {
+        navigationManager.NavigateTo("/workPlanManagement");
+    }
+
+    async Task btnSaveClick()
+    {
+        var errMessage = ValidationWorkOrder(workPlanModel);
+
+        //필수값 체크
+        if (errMessage == string.Empty)
+        {
+            //신규일때
+            if (workPlanModel.WorkPlanNo.GetNullToEmpty() == string.Empty)
+            {
+                var result = await _db.InsertData(workPlanModel, loginId);
+
+                if (result.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+                }
+                else
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                    navigationManager.NavigateTo("/WorkPlanManagement");
+                }
+            }
+            //수정일때
+            else
+            {
+                var result = await _db.UpdateData(workPlanModel,loginId);
+
+                if (result.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+                }
+                else
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                    navigationManager.NavigateTo("/WorkPlanManagement");
+                }
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert",errMessage);
+        }
+
+    }
+
+
+    string ValidationWorkOrder(WorkPlanModel workPlanModel)
+    {
+        ////필수값 미입력시 false 반환
+        if (workPlanModel.WorkPlanDt.GetNullToEmpty() == string.Empty)
+        {
+            return "생산계획일자를 입력하여 주십시오.";
+        }
+        if (workPlanModel.ItemCd.GetNullToEmpty() == string.Empty)
+        {
+            return "품목코드를 선택하여 주십시오.";
+
+        }
+        if (workPlanModel.Qty.GetDecimalNullToZero() == 0)
+        {
+            return "계획수량을 입력하여 주십시오.";
+
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
+    void OnChangePDItemCd(object value)
+    {
+        if (value is not null)
+        {
+            workPlanModel.ItemCd = ((ItemModel)value).ItemCd;
+            workPlanModel.ItemNm = ((ItemModel)value).ItemNm;
+            workPlanModel.FactBizUnit = ((ItemModel)value).FactBizUnit;
+            workPlanModel.FactBizUnitNm = ((ItemModel)value).FactBizUnitNm;
+        }
+    }
+
+    void WorkPlanDtChanged(object value)
+    {
+        if (value is not null)
+        {
+            workPlanModel.WorkPlanDt = Convert.ToDateTime(value).ToString("yyyy-MM-dd");
+        }
+    }
+    void SetDateTimeConvert(WorkPlanModel workPlanModel)
+    {
+        if (workPlanModel.WorkPlanDt.GetNullToEmpty() == string.Empty)
+        {
+            WorkPlanDt = DateTime.Today;
+            workPlanModel.WorkPlanDt = Convert.ToDateTime(WorkPlanDt).ToString("yyyy-MM-dd");
+        }
+        else
+        {
+            WorkPlanDt = Convert.ToDateTime(workPlanModel.WorkPlanDt);
+        }
+    }
+}

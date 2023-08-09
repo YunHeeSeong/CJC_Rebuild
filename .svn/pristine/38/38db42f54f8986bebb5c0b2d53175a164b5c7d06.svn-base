@@ -1,0 +1,137 @@
+﻿@page "/StoreInventory"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic
+@using System.Security.Claims
+
+@inject IInventoryData _db
+@inject IRoleData _RoleManager
+@inject IJSRuntime jsRuntime
+@inject NotificationService NotificationService
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    <RadzenLabel Text=" > 구매/재고관리 > " />
+    <strong>매장별 재고현황</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+        <div>
+            <div class="info_title">
+                <h1 class="sub_title">매장별 재고현황</h1>
+            </div>
+
+            <div style="margin-top:45px">
+                <RadzenTabs RenderMode="TabRenderMode.Client">
+                    <Tabs>
+                        <RadzenTabsItem Text="제품 재고 리스트">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                            FilterMode="FilterMode.Simple" PageSize="20" AllowPaging="true" AllowSorting="true" Data="@pditemModels" TItem="InventoryModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 제품 재고현황이 없습니다.">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="BizUnitNm" Title="매장명" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="FactBizUnitNm" Title="공장명" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="MadeType" Title="제작형태" Width="100px"CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemCd" Title="품목코드" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemNm" Title="품목명" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="QTY" Title="재고수량" Width="100px"FormatString="{0:n0}" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Unit" Title="단위" Width="100px" />
+                                </Columns>
+                            </RadzenDataGrid>
+                        </RadzenTabsItem>
+
+                        <RadzenTabsItem Text="품목 재고 리스트">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                            FilterMode="FilterMode.Simple" PageSize="20" AllowPaging="true" AllowSorting="true" Data="@itemModels" TItem="InventoryModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 품목 재고현황이 없습니다.">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="BizUnitNm" Title="매장명" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemCd" Title="품목코드" Width="70px" CssClass="data_center"/>
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemNm" Title="품목명" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="ItemClsNm" Title="품목구분" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Item1ClsNm" Title="대분류" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Item2ClsNm" Title="중분류" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Item3ClsNm" Title="소분류" Width="70px" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="QTY" Title="재고수량" Width="100px"FormatString="{0:n0}" />
+                                    <RadzenDataGridColumn TItem="InventoryModel" Property="Unit" Title="단위" Width="100px" />
+                                </Columns>
+                            </RadzenDataGrid>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+
+            </div>
+           
+        </div>
+        }
+        else
+        {
+            <p>조회 권한이 없는 사용자입니다.</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    public int MenuId = 32;     //매장별 재고현황
+
+    ClaimsPrincipal CurrentUser;
+    private List<InventoryModel> pditemModels;
+    private List<InventoryModel> itemModels;
+
+    private string RoleYN;
+    private string loginId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //로그인을 한 사용자인지
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            //사용자 정보가 있는지
+            if (CurrentUser.Identity.Name is not null)
+            {
+                var RoleList = await _RoleManager.GetRoleYN(CurrentUser.Identity.Name, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                loginId = CurrentUser.Identity.Name;
+
+                //조회권한이 있는지
+                if (RoleYN == "Y")
+                {
+                    //제품 재고 현황 조회
+                    pditemModels = await _db.GetStorePDItemInventory(loginId);
+
+                    //품목 재고 현황 조회
+                    itemModels = await _db.GetStoreItemInventory(loginId);
+                }
+
+            }
+        }
+    }
+
+}

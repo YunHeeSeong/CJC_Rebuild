@@ -1,0 +1,471 @@
+﻿@page "/StoreOutItemManagement"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic
+@using System.Security.Claims
+
+@inject IBizUnitData _bizUnitManager
+@inject IOutPDItemData _outPDItemManager
+@inject IOutItemData _outItemManager
+@inject IRoleData _RoleManager
+@inject IUserData _userManager
+@inject IJSRuntime jsRuntime
+@inject NotificationService NotificationService
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    <RadzenLabel Text=" > 구매/재고관리 > " />
+    <strong>출하등록(매장)</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+            <div>
+                <div class="info_title">
+                    <h1 class="sub_title">출하등록(매장)</h1>
+                </div>
+
+                <div style="margin-top:45px">
+                    <RadzenTabs @ref="radzenTabs" RenderMode="TabRenderMode.Client">
+                        <Tabs>
+                            <RadzenTabsItem Text="제품 주문 리스트">
+                                <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                                FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@outPDItemModels" TItem="OutPDItemModel" ColumnWidth="300px"
+                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" RowSelect="PDItemRowSelect"
+                                                LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 이용이력이 없습니다.">
+                                    <Columns>
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="FactBizUnitNm" Title="공장명" Width="150px" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="BizUnitNm" Title="매장명" Width="150px" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="OrderDt" Title="주문일자" Width="130px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="OrderNo" Title="주문번호" Width="130px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="ItemCd" Title="품목코드" Width="130px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="ItemNm" Title="품목명" Width="200px" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="StkQty" Title="재고수량" Width="80px" CssClass="data_right" FormatString="{0:n0}" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="OrderQty" Title="주문수량" Width="80px" CssClass="data_right" FormatString="{0:n0}" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="TotQty" Title="기출하수량" Width="80px" CssClass="data_right" FormatString="{0:n0}" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="EctRequest" Title="기타요청사항" Width="200px" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="Remk" Title="비고" Width="200px" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Filterable="false" Title="출하등록" Width="170px" CssClass="data_center">
+                                            <Template Context="outPDItem">
+                                                <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" ButtonStyle="ButtonStyle.Light" Click="()=>btnUpdateClick(outPDItem)">출하등록</RadzenButton>
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+                                </RadzenDataGrid>
+
+
+                                <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" Style="margin-top:20px"
+                                                FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@selectedOutPDItemModels" TItem="OutPDItemModel" ColumnWidth="300px"
+                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 출하내역이 없습니다.">
+                                    <Columns>
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="FactBizUnitNm" Title="공장명" Width="70px" Visible="false" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="BizUnitNm" Title="매장명" Width="70px" Visible="false" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="OrderNo" Title="주문번호" Width="130px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="OutSeq" Title="출하순번" Width="80px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="OutDate" Title="출하일자" Width="150px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="OutQty" Title="출하수량" Width="80px" CssClass="data_right" FormatString="{0:n0}"/>
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="Tax" Title="통관비" Width="100px" CssClass="data_right"FormatString="{0:n0}" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Property="Remk" Title="비고" Width="200px" />
+                                        <RadzenDataGridColumn TItem="OutPDItemModel" Filterable="false" Title="삭제" Width="120px" CssClass="data_center">
+                                            <Template Context="outPDItem">
+                                                <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkred; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" ButtonStyle="ButtonStyle.Warning" Click="()=>btnDeletePDItemClick(outPDItem)">삭제</RadzenButton>
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+                                </RadzenDataGrid>
+                            </RadzenTabsItem>
+
+                            <RadzenTabsItem Text="품목 주문 리스트">
+                                <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                                FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@outItemModels" TItem="OutItemModel" ColumnWidth="300px"
+                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" RowSelect="@ItemRowSelect"
+                                                LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 이용이력이 없습니다.">
+                                    <Columns>
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="BizUnitNm" Title="매장명" Width="150px" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="OrderNo" Title="주문번호" Width="150px" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="OrderDt" Title="주문일자" Width="150px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="CustomerNm" Title="고객명" Width="100px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="PICCdNm" Title="담당자명" Width="100px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="PayYNNm" Title="결제여부" Width="80px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="PayDt" Title="결제일자" Width="150px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="EctRequest" Title="요청사항" Width="80px" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="TotPrice" Title="총금액" Width="100px" CssClass="data_right" FormatString="{0:n0}" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="TotVAT" Title="총부가세" Width="100px" CssClass="data_right" FormatString="{0:n0}" />
+                                        <RadzenDataGridColumn TItem="OutItemModel" Property="Remk" Title="비고" Width="300px" />
+                                    </Columns>
+                                </RadzenDataGrid>
+
+
+                                <div style="margin-top:20px">
+                                    <RadzenDataGrid @ref="detailGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                                    Data="@selectedOutItemModels" TItem="OutItemModel" EmptyText="조회된 출하내역이 없습니다.">
+                                        <Columns>
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="BizUnit" Title="매장" Width="70px" Visible="false" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="OrderNo" Title="주문번호" Width="100px" CssClass="data_center" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="OrderSeq" Title="출하순번" Width="80px" CssClass="data_center" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="ItemCd" Title="품목코드" Width="130px" CssClass="data_center" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="ItemNm" Title="품목명" Width="200px" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="Qty" Title="주문수량" Width="80px" CssClass="data_right" FormatString="{0:n0}" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="UPR" Title="단가" Width="100px" CssClass="data_right" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="Price" Title="금액" Width="100px" CssClass="data_right" FormatString="{0:n0}" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="VAT" Title="부가세" Width="100px" CssClass="data_right" FormatString="{0:n0}" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="OutSeq" Title="출하순번" Width="70px" CssClass="data_center" />
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="OutDate" Title="출하일자" Width="150px" CssClass="data_center">
+                                                <EditTemplate Context="detailModel">
+                                                    <RadzenDatePicker @bind-Value=@OutDate DateFormat="yyyy-MM-dd" Change="@(arg=> OutDateChanged(arg))" Class="w-100" />
+                                                </EditTemplate>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="OutQty" Title="출하수량" Width="80px" FormatString="{0:n0}"  >
+                                                <EditTemplate Context="detailModel">
+                                                    <RadzenNumeric TValue="decimal" style="width: 100%;" Name="OutQty" @bind-Value="detailModel.OutQty" />
+                                                </EditTemplate>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="OutItemModel" Property="OutUserIdNm" Title="출하담당자" Width="110px"  CssClass="data_center"/>
+                                            <RadzenDataGridColumn TItem="OutItemModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="220px">
+                                                <Template Context="detailModel">
+                                                    <RadzenButton Text="출하" Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Class="m-1" Click="@(args => EditRow(detailModel))" @onclick:stopPropagation="true">
+                                                    </RadzenButton>
+                                                </Template>
+                                                <EditTemplate Context="detailModel">
+                                                    <RadzenButton Text="저장" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(detailModel))">
+                                                    </RadzenButton>
+                                                    <RadzenButton Text="취소" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(detailModel))">
+                                                    </RadzenButton>
+                                                </EditTemplate>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="OutItemModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="150px"  CssClass="data_center">
+                                                <Template Context="detailModel">
+                                                    <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkred; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Text="출하삭제" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(detailModel))" @onclick:stopPropagation="true">
+                                                    </RadzenButton>
+                                                </Template>
+                                                @*<EditTemplate Context="detailModel">
+                                                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Text="출하삭제" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(detailModel))">
+                                                        </RadzenButton>
+                                                    </EditTemplate>*@
+                                            </RadzenDataGridColumn>
+                                        </Columns>
+                                    </RadzenDataGrid>
+                                </div>
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+                </div>
+
+            </div>
+
+            <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+        }
+        else
+        {
+            <p>조회 권한이 없는 사용자입니다.</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    public int MenuId = 23;     //출하등록(매장)
+
+    ClaimsPrincipal CurrentUser;
+    private List<OutItemModel> outItemModels;
+    private List<OutItemModel> selectedOutItemModels;
+    private List<OutPDItemModel> outPDItemModels;
+    private List<OutPDItemModel> selectedOutPDItemModels;
+    private List<UserModel> OutUserIdList;
+
+    private OutItemModel detailModel = new OutItemModel();
+    private OutItemModel outItemModelToDelete;
+    private OutItemModel outItemModelToInsert;
+    private OutPDItemModel outPDItemModel = new OutPDItemModel();
+    private OutPDItemModel outPDItemModelToDelete;
+
+    private string RoleYN;
+    private string selectedBizUnit;
+    private string selectedFactBizUnit;
+    private string loginId;
+    private DateTime OutDate;
+    private bool isDisable;
+    private bool isPDItemSelected = true;
+    private RadzenTabs radzenTabs;
+
+    RadzenDataGrid<OutItemModel> detailGrid;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //로그인을 한 사용자인지
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            //사용자 정보가 있는지
+            if (CurrentUser.Identity.Name is not null)
+            {
+                var RoleList = await _RoleManager.GetRoleYN(CurrentUser.Identity.Name, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                loginId = CurrentUser.Identity.Name;
+
+                //조회권한이 있는지
+                if (RoleYN == "Y")
+                {
+                    //품목 출하 내역 조회
+                    outItemModels = await _outItemManager.GetItemOrder(loginId);
+
+                    //제품 출하 내역 조회
+                    outPDItemModels = await _outPDItemManager.GetAllOrdersFromStore(loginId);
+                }
+
+                OutUserIdList = await _userManager.GetUserFromCodehelp(loginId);
+
+            }
+        }
+    }
+
+
+    //상세조회 버튼 이벤트
+    void btnShowEdit(OutItemModel outPDItem)
+    {
+        navigationManager.NavigateTo("/outItemEdit" + "/" + CurrentUser.Identity.Name + "/" + selectedBizUnit + "/" + outPDItem.OutItemNo);
+    }
+
+    //상단 그리드 로우 선택시 하단 출하내역 조회하는 이벤트
+    public async Task ItemRowSelect(OutItemModel outPDItem)
+    {
+        selectedOutItemModels = await _outItemManager.GetOutItemDetail(loginId, outPDItem);
+    }
+
+
+    //상단 그리드에서 주문 선택시 하단 출하내역 조회하는 이벤트
+    public async Task PDItemRowSelect(OutPDItemModel outPDItem)
+    {
+        outPDItemModel = outPDItem;
+
+        selectedBizUnit = outPDItemModel.BizUnit;
+        selectedFactBizUnit = outPDItemModel.FactBizUnit;
+
+        selectedOutPDItemModels = await _outPDItemManager.GetOutPDItemDetail(loginId, outPDItemModel);
+    }
+
+
+    //출하등록 버튼 이벤트
+    async Task btnUpdateClick(OutPDItemModel outPDItem)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(FactOutItemEdit.selectedOutPDItem), outPDItem);
+        parameters.Add("loginId", CurrentUser.Identity.Name);
+
+        var outPDItemEdit = Modal.Show<FactOutItemEdit>("출하등록", parameters);
+        var result = await outPDItemEdit.Result;
+
+        if (!result.Cancelled)
+        {
+            await GetAllDatas();
+        }
+    }
+
+    //출하내역 삭제 버튼 이벤트
+    void btnDeleteItemClick(OutItemModel outPDItem)
+    {
+        DeleteConfirmation.Show("정말 출하 내역을 삭제하시겠습니까 ?");
+
+        outItemModelToDelete = outPDItem;
+    }
+
+    //출하내역 삭제 버튼 이벤트
+    void btnDeletePDItemClick(OutPDItemModel outPDItem)
+    {
+        DeleteConfirmation.Show("정말 출하 내역을 삭제하시겠습니까 ?");
+
+        outPDItemModelToDelete = outPDItem;
+
+        outPDItemModelToDelete.BizUnit = selectedBizUnit;
+        outPDItemModelToDelete.FactBizUnit = selectedFactBizUnit;
+    }
+
+    async Task EditRow(OutItemModel detailModel)
+    {
+        if (detailModel.OutSeq.GetIntNullToZero() != 0)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "이미 출고가 완료된 주문입니다.");
+        }
+        else
+        {
+            outItemModelToInsert = detailModel;
+            OutDate = DateTime.Today;
+            outItemModelToInsert.OutDate = DateTime.Today.ToString("yyyy-MM-dd");
+            await detailGrid.EditRow(detailModel);
+        }
+    }
+
+    async Task SaveRow(OutItemModel detailModel)
+    {
+        if (detailModel == outItemModelToInsert)
+        {
+            outItemModelToInsert = null;
+        }
+
+        //필수코드 체크
+        var errMessage = ValidationCheckDetail(detailModel);
+
+        if (errMessage == string.Empty)
+        {
+            //순번이 채번되기 전이면 INSERT
+            if (detailModel.OutSeq == 0)
+            {
+                var res = await _outItemManager.InsertData(loginId, detailModel);
+
+                if (res.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", res.GetErrorMessages());
+                }
+                else
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                }
+            }
+
+            //재조회
+            await detailGrid.UpdateRow(detailModel);
+            selectedOutItemModels = await _outItemManager.GetOutItemDetail(loginId, detailModel);
+
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", errMessage);
+        }
+
+
+    }
+
+    string ValidationCheckDetail(OutItemModel detailModel)
+    {
+        if (detailModel.OutQty.GetDecimalNullToZero() == 0)
+        {
+            return "출하 수량을 입력하여 주세요.";
+        }
+        return string.Empty;
+    }
+
+    void CancelEdit(OutItemModel detailModel)
+    {
+        if (detailModel == outItemModelToInsert)
+        {
+            outItemModelToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(detailModel);
+    }
+
+    async Task DeleteRow(OutItemModel detailModel)
+    {
+        if (detailModel == outItemModelToInsert)
+        {
+            outItemModelToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (selectedOutItemModels.Contains(detailModel))
+        {
+            outItemModelToDelete = detailModel;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            detailGrid.CancelEditRow(detailModel);
+            await detailGrid.Reload();
+        }
+    }
+
+    //삭제 확인 팝업
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            //품목출하 삭제
+            if (outItemModelToDelete is not null)
+            {
+                var result = await _outItemManager.DeleteData(loginId, outItemModelToDelete);
+                if (result.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+                }
+                else
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                }
+
+            }
+            //제품출하 삭제
+            else
+            {
+                var result = await _outPDItemManager.DeleteData(outPDItemModelToDelete, loginId);
+
+                if (result.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+                }
+                else
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                }
+            }
+
+            await GetAllDatas();
+        }
+        else
+        {
+            outItemModelToDelete = null;
+            outPDItemModelToDelete = null;
+        }
+    }
+
+    //검색조건 이벤트
+    void OutDateChanged(object value)
+    {
+        if (value is not null)
+        {
+            outItemModelToInsert.OutDate = Convert.ToDateTime(value).ToString("yyyy-MM-dd");
+        }
+    }
+
+    void OnChangeOutUserId(object value)
+    {
+        if (value is not null)
+        {
+            detailModel.OutUserId = (int)value;
+        }
+    }
+
+
+    //재조회
+    private async Task GetAllDatas()
+    {
+        //outItemModels = await _db.GetOutItemMaster(CurrentUser.Identity.Name);
+        outPDItemModels = await _outPDItemManager.GetAllOrdersFromStore(loginId);
+        selectedOutPDItemModels = null;
+        selectedOutItemModels = null;
+    }
+}

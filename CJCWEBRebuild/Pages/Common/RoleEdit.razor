@@ -1,0 +1,229 @@
+﻿@using GMINWEB_CJC.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject IRoleData _db
+@inject IJSRuntime jsRuntime
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Style="width:1200px; overflow-x:auto; height:550px; overflow-y:auto;" Data="roleModel">
+    <div class="row">
+        <div class="col-sm">
+            <RadzenFieldset Text="권한 정보">
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="권한코드(자동채번)"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenNumeric TValue="int" ReadOnly="true" style="width: 100%;" Name="RoleId" @bind-Value="@roleModel.RoleId" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="권한명"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="RoleNm" @bind-Value="@roleModel.RoleNm"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="권한설명"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-9">
+                        <RadzenTextBox Style="width:100%;" Name="RoleDesc" @bind-Value="@roleModel.RoleDesc"></RadzenTextBox>
+                    </div>
+                </div>
+            </RadzenFieldset>
+
+            <RadzenFieldset Text="권한 상세">
+                @*<RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="신규" Click="@InsertRow" Disabled=@(roleModelToInsert != null) />*@
+                <RadzenDataGrid @ref="detailGrid" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                Data="@roleDetailModels" TItem="RoleModel" EmptyText="">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="RoleModel" Property="RoleSeq" Title="순번" Width="120px" />
+                        <RadzenDataGridColumn TItem="RoleModel" Property="MenuId" Title="메뉴" Width="120px" Visible="false" />
+                        <RadzenDataGridColumn TItem="RoleModel" Property="MenuNm" Title="메뉴명" Width="120px" />
+                        <RadzenDataGridColumn TItem="RoleModel" Property="ReadWrtYN" Title="권한여부" Width="120px" Visible="false" />
+                        <RadzenDataGridColumn TItem="RoleModel" Property="ReadWrtYNNm" Title="권한여부" Width="80px" >
+                            <EditTemplate Context="role">
+                                <RadzenCheckBox @bind-Value=checkBox1Value Name="CheckBox1" TValue="bool" Change=@(args => OnCheck(args, "CheckBox1 CheckBox")) />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="RoleModel" Context="role" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                            <Template Context="role">
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(role))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="role">
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(role))">
+                                </RadzenButton>
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(role))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <div style="width:300px;margin:0 auto;">
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+    <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public RoleModel selectedRole { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+
+    private List<RoleModel> roleDetailModels;
+    public RoleModel selectedDetailRole { get; set; }
+    private RoleModel roleModel = new RoleModel();
+
+    RadzenDataGrid<RoleModel> detailGrid;
+
+    private RoleModel roleModelToInsert;
+    private RoleModel roleModelToDelete;
+
+    bool checkBox1Value = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedRole is not null)
+        {
+            roleModel.RoleId = selectedRole.RoleId;
+            roleModel.RoleNm = selectedRole.RoleNm;
+            roleModel.RoleDesc = selectedRole.RoleDesc;
+            roleModel.UseYN = selectedRole.UseYN;
+
+            roleDetailModels = await _db.GetRoleDetailList(loginId, roleModel.RoleId);
+        }
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+
+    async Task EditRow(RoleModel role)
+    {
+        if (role.ReadWrtYN == "Y")
+        {
+            checkBox1Value = true;
+        }
+        else
+        {
+            checkBox1Value = false;
+        }
+
+        roleModelToInsert = role;
+
+        await detailGrid.EditRow(role);
+    }
+
+    async Task SaveRow(RoleModel role)
+    {
+
+        if (role == roleModelToInsert)
+        {
+            roleModelToInsert = null;
+        }
+
+        await _db.UpdateDetailData(loginId,role);
+
+        await detailGrid.UpdateRow(role);
+        roleDetailModels = await _db.GetRoleDetailList(loginId,roleModel.RoleId);
+    }
+
+    void CancelEdit(RoleModel role)
+    {
+        if (role == roleModelToInsert)
+        {
+            roleModelToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(role);
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckRoleMaster(roleModel) == true)
+        {
+            if (roleModel.RoleId == 0)
+            {
+                var Result = await _db.InsertMasterData(loginId, roleModel);
+                var newRoleId = Result.FirstOrDefault().RTN_SQ;
+                await _db.InsertDetailData(loginId, newRoleId);
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+            else
+            {
+                await _db.UpdateMasterData(loginId, roleModel);
+
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "권한명을 입력하여 주십시오.");
+        }
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteDetailData(loginId,selectedDetailRole);
+            roleDetailModels = await _db.GetRoleDetailList(loginId, roleModel.RoleId);
+            await detailGrid.Reload();
+        }
+        else
+        {
+            selectedDetailRole = null;
+        }
+    }
+
+    bool ValidationCheckRoleMaster(RoleModel role)
+    {
+        //필수값 미입력시 false 반환
+        if (role.RoleNm is null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void OnCheck(bool? value, string name)
+    {
+        if (value == true)
+        {
+            checkBox1Value = true;
+            roleModelToInsert.ReadWrtYN = "Y";
+        }
+        else
+        {
+            checkBox1Value = false;
+            roleModelToInsert.ReadWrtYN = "N";
+        }
+    }
+}

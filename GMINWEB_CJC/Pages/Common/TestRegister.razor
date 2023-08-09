@@ -1,0 +1,95 @@
+﻿@using GMINWEB_Rebuild.Model;
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject IUserData _db
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Data="@newUser">
+    <div class="row">
+        <div class="col-md">
+            <RadzenFieldset Text="User Info">
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="ID" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox Style="width:100%;" Name="LoginId" @bind-Value="@newUser.LoginId"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Passwarod" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox Style="width:100%;" Name="LoginPw" @bind-Value="@newUser.LoginPw"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Name" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox Style="width:100%;" Name="UserNm" @bind-Value="@newUser.UserNm"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="Email" />
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox Style="width:100%;" Name="Email" @bind-Value="@newUser.Email"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="HireDate" />
+                    </div>
+                    <div class="col-md-8">
+                        @*<RadzenDatePicker style="width: 100%;" Name="HireDate" @bind-Value="@newUser.HireDate.ToString("yyyy-MM-dd")" />*@
+                        <RadzenTextBox Style="width:100%;" Name="HireDate" @bind-Value="@newUser.HireDate"></RadzenTextBox>
+                    </div>
+                </div>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <div>
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0; background-color:#375E99"  Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+</RadzenTemplateForm>
+
+@code
+{
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
+    private UserModel newUser = new UserModel();
+
+    async Task btnSaveClick()
+    {
+        UserModel model = new UserModel
+        {
+            LoginId = newUser.LoginId,
+            LoginPw = newUser.LoginPw,
+            UserNm = newUser.UserNm,
+            Email = newUser.Email,
+            HireDate = newUser.HireDate
+        };
+    
+
+    await _db.InsertData(model);
+    await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+}

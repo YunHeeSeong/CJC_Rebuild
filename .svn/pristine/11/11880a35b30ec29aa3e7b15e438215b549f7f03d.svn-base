@@ -1,0 +1,281 @@
+﻿@using GMINWEB_CJC.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject ICommonCodeData _db
+@inject IJSRuntime jsRuntime
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Style="width:1200px; overflow-x:auto; height:550px; overflow-y:auto;" Data="commonCodeModel">
+    <div class="row">
+        <div class="col-sm">
+            <RadzenFieldset Text="공통코드 정보">
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="코드(자동채번)"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenNumeric TValue="int" ReadOnly="true" style="width: 100%;" Name="CodeId" @bind-Value="@commonCodeModel.CodeId" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="코드명" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="CodeNm" @bind-Value="@commonCodeModel.CodeNm"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="코드설명"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-9">
+                        <RadzenTextBox Style="width:100%;" Name="Remk" @bind-Value="@commonCodeModel.Remk"></RadzenTextBox>
+                    </div>
+                </div>
+            </RadzenFieldset>
+
+            <RadzenFieldset Text="공통코드 상세 정보">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="신규" Click="@InsertRow" Disabled=@(codeToInsert != null) />
+                <RadzenDataGrid @ref="detailGrid" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                Data="@commonCodeModels" TItem="CommonCodeModel" EmptyText="등록된 공통코드 상세 내역이 없습니다.">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="CommonCodeModel" Property="CodeId" Title="코드" Width="70px" />
+                        <RadzenDataGridColumn TItem="CommonCodeModel" Property="CodeSeq" Title="순번" Width="70px" />
+                        <RadzenDataGridColumn TItem="CommonCodeModel" Property="CodeSubNm" Title="코드명" Width="120px">
+                            <EditTemplate Context="code">
+                                <RadzenTextBox @bind-Value="code.CodeSubNm" Style="width:100%; display: block" Name="CodeSubNm" />
+                                <RadzenRequiredValidator Text="코드명을 입력하여 주십시오." Component="CodeSubNm" Popup="true" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="CommonCodeModel" Property="SubRemk" Title="코드설명" Width="150px">
+                            <EditTemplate Context="code">
+                                <RadzenTextBox @bind-Value="code.SubRemk" Style="width:100%; display: block" Name="CodeSubNm" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="CommonCodeModel" Context="code" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                            <Template Context="code">
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(code))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="code">
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(code))">
+                                </RadzenButton>
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(code))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="CommonCodeModel" Context="code" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                            <Template Context="code">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(code))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="code">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(code))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <div style="width:300px;margin:0 auto;">
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton  style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+    <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public CommonCodeModel selectedCommonCode { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+
+    private List<CommonCodeModel> commonCodeModels;
+    public CommonCodeModel codeToDelete { get; set; }
+    private CommonCodeModel commonCodeModel = new CommonCodeModel();
+
+    RadzenDataGrid<CommonCodeModel> detailGrid;
+
+    private CommonCodeModel codeToInsert;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedCommonCode is not null)
+        {
+            commonCodeModel.CodeId = selectedCommonCode.CodeId;
+            commonCodeModel.CodeNm = selectedCommonCode.CodeNm;
+            commonCodeModel.Remk = selectedCommonCode.Remk;
+
+            commonCodeModels = await _db.GetCommonCodeDetail(commonCodeModel.CodeId, loginId);
+        }
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+    async Task InsertRow()
+    {
+        if (commonCodeModel.CodeId != 0)
+        {
+            codeToInsert = new CommonCodeModel();
+            codeToInsert.CodeId = commonCodeModel.CodeId;
+
+            await detailGrid.InsertRow(codeToInsert);
+        }
+
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "상세 정보는 공통 코드 정보 저장 후 등록할 수 있습니다.");
+        }
+    }
+
+    async Task EditRow(CommonCodeModel code)
+    {
+        codeToInsert = code;
+
+        await detailGrid.EditRow(code);
+    }
+
+    async Task SaveRow(CommonCodeModel code)
+    {
+        if (code == codeToInsert)
+        {
+            codeToInsert = null;
+        }
+
+        if (ValidationCheckCodeDetail(code) == true)
+        {
+            if (code.CodeSeq == 0)
+            {
+                //코드가 채번되기 전이면 INSERT
+                await _db.InsertDetailData(code, commonCodeModel.CodeId, loginId);
+            }
+            else
+            {
+                //파일넘버가 기존에 존재하면 UPDATE
+                await _db.UpdateDetailData(code, loginId);
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "코드명을 입력하여 주십시오");
+        }
+
+        await detailGrid.UpdateRow(code);
+        commonCodeModels = await _db.GetCommonCodeDetail(commonCodeModel.CodeId, loginId);
+
+
+    }
+
+    void CancelEdit(CommonCodeModel code)
+    {
+        if (code == codeToInsert)
+        {
+            codeToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(code);
+    }
+
+    async Task DeleteRow(CommonCodeModel code)
+    {
+        if (code == codeToInsert)
+        {
+            codeToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (commonCodeModels.Contains(code))
+        {
+            codeToDelete = code;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            detailGrid.CancelEditRow(code);
+            await detailGrid.Reload();
+        }
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckCodeMaster(commonCodeModel) == true)
+        {
+            if (commonCodeModel.CodeId == 0)
+            {
+                var result = await _db.InsertMasterData(commonCodeModel, loginId);
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+            else
+            {
+                await _db.UpdateMasterData(commonCodeModel, loginId);
+
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "코드명을 입력하여 주십시오.");
+        }
+
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteDetailData(codeToDelete, loginId);
+            commonCodeModels = await _db.GetCommonCodeDetail(commonCodeModel.CodeId, loginId);
+            await detailGrid.Reload();
+        }
+        else
+        {
+            codeToDelete = null;
+        }
+    }
+
+    bool ValidationCheckCodeDetail(CommonCodeModel code)
+    {
+        //필수값 미입력시 false 반환
+        if (code.CodeSubNm.GetNullToEmpty() == string.Empty)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    bool ValidationCheckCodeMaster(CommonCodeModel code)
+    {
+        //필수값 미입력시 false 반환
+        if (code.CodeNm.GetNullToEmpty() == string.Empty)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}

@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="GMINWEB_CJC" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^D:\\작업장\\Desktop\\개발\ 솔루션\\cjc관련\ 파일\\CJC\\GMINWEB_CJC\\obj\\Release\\net5\.0\\PubTmp\\Out\\$" />
+  </parameter>
+</parameters>

@@ -1,0 +1,227 @@
+﻿@using GMINWEB_Rebuild.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject IWorkData _db
+@inject ICommonCodeData _codeManager
+@inject IJSRuntime jsRuntime
+@inject DialogService DialogService
+
+<style>
+    .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<div class="row" style="width:1100px;">
+    <div class="col-sm">
+        <RadzenFieldset Text="생산실적 등록">
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="작업지시번호"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox TValue="string" ReadOnly="true" style="width: 100%;" Name="WorkOrderNo" @bind-Value="@workOrderModel.WorkOrderNo" />
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="지시수량"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenNumeric TValue="decimal" ReadOnly="true" Style="width:100%;" Name="Qty" @bind-Value="@workOrderModel.Qty"></RadzenNumeric>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="품목코드"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox Style="width:100%;" ReadOnly="true" Name="ItemCd" @bind-Value="@workModel.ItemCd"></RadzenTextBox>
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="품목명"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox Style="width:100%;" ReadOnly="true" Name="ItemNm" @bind-Value="@workModel.ItemNm"></RadzenTextBox>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="생산일자" Style="color:red"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenDatePicker @bind-Value=@workModel.WorkPerformDt DateFormat="yyyy-MM-dd" Change="@(arg=> WorkPerformDtChanged(arg))" Class="w-100" />
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="총생산수량"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenNumeric TValue="decimal" Style="width:100%;" Name="Qty" @bind-Value="@workModel.Qty" ReadOnly="true"></RadzenNumeric>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="양품수량"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenNumeric TValue="decimal" Style="width:100%;" Name="OkQty" @bind-Value="@workModel.OkQty" Change="@(arg=>OnChangeOKQty(arg))"></RadzenNumeric>
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="불량수량"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenNumeric TValue="decimal" Style="width:100%;" Name="BadQty" @bind-Value="@workModel.BadQty" Change="@(arg=>OnChangeBadQty(arg))"></RadzenNumeric>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="불량유형"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100"
+                                    AllowFiltering="true" Data=@BadTypeList TextProperty="CodeSubNm" ValueProperty="CodeSeq" @bind-Value="workModel.BadType"
+                                    Change=@(args => OnChangeBadType(args, "불량유형")) />
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="불량원인"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox Style="width:100%;" Name="BadReason" @bind-Value="@workModel.BadReason"></RadzenTextBox>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="비고"></RadzenLabel>
+                </div>
+                <div class="col-sm-9">
+                    <RadzenTextBox Style="width:100%;" Name="Remk" @bind-Value="@workModel.Remk"></RadzenTextBox>
+                </div>
+            </div>
+        </RadzenFieldset>
+    </div>
+</div>
+
+<div style="width:300px;margin:0 auto;">
+    <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+    <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+</div>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public WorkOrderModel selectedWorkOrder { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_Rebuild.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+
+    private List<WorkModel> workModels;
+    private WorkModel workModel = new WorkModel();
+    private WorkOrderModel workOrderModel = new WorkOrderModel();
+
+    private List<CommonCodeModel> BadTypeList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedWorkOrder is not null)
+        {
+            workModel.BizUnit = selectedWorkOrder.BizUnit;
+            workModel.FactBizUnit = selectedWorkOrder.FactBizUnit;
+            workModel.ItemCd = selectedWorkOrder.ItemCd;
+            workModel.ItemNm = selectedWorkOrder.ItemNm;
+            workModel.WorkOrderNo = selectedWorkOrder.WorkOrderNo;
+
+            workOrderModel.WorkOrderNo = selectedWorkOrder.WorkOrderNo;
+            workOrderModel.Qty = selectedWorkOrder.Qty;
+
+
+            workModel.WorkPerformDt = DateTime.Today;
+
+            BadTypeList = await _codeManager.FindCommonCodeFromName("불량유형", loginId);
+        }
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        var errMessage = ValidationCheckWork(workModel);
+
+        if (errMessage == string.Empty)
+        {
+            var result = await _db.InsertData(workModel, loginId);
+
+            if (!result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+            else
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", errMessage);
+        }
+
+    }
+
+
+    private string ValidationCheckWork(WorkModel work)
+    {
+        if (work.OkQty.GetDecimalNullToZero() == 0 && work.BadQty.GetDecimalNullToZero() == 0)
+        {
+            return "양품수량 또는 불량수량을 입력하여 주십시오";
+        }
+        if (work.BadQty.GetDecimalNullToZero() > 0 && work.BadType.GetIntNullToZero() == 0)
+        {
+            return "불량유형을 선택하여 주십시오";
+        }
+        if (work.BadQty.GetDecimalNullToZero() == 0 && work.BadType.GetIntNullToZero() != 0)
+        {
+            return "불량수량을 입력하여 주십시오";
+        }
+
+        return string.Empty;
+    }
+
+    void OnChangeBadType(object value, string name)
+    {
+        if (value is not null)
+        {
+            workModel.BadType = (int)value;
+        }
+    }
+
+    void WorkPerformDtChanged(object value)
+    {
+        if (value is not null)
+        {
+            workModel.WorkPerformDt = Convert.ToDateTime(value);
+        }
+    }
+
+    void OnChangeOKQty(object value)
+    {
+        if (value is not null)
+        {
+            workModel.Qty = Convert.ToDecimal(value) + workModel.BadQty.GetDecimalNullToZero();
+        }
+    }
+
+    void OnChangeBadQty(object value)
+    {
+        if (value is not null)
+        {
+            workModel.Qty = Convert.ToDecimal(value) + workModel.OkQty.GetDecimalNullToZero();
+        }
+    }
+}

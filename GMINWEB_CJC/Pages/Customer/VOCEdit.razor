@@ -1,0 +1,236 @@
+﻿@page "/vocEdit"
+@page "/vocEdit/{loginId}"
+@page "/vocEdit/{loginId}/{selectedVocNo}"
+
+@using GMINWEB_Rebuild.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject IVOCData _db
+@inject ICustomerData _customerManager
+@inject ICommonCodeData _codeManager
+@inject IJSRuntime jsRuntime
+@inject IUserData _userManager
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Data="vocModel">
+    <div class="row">
+        <div class="col-md">
+            <RadzenFieldset Text="VOC 내역">
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="VOC번호" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox ReadOnly="true" Placeholder="자동채번" Style="width:100%;" Name="AsNo" @bind-Value="@vocModel.VocNo"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="VOC일자" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDatePicker @bind-Value=@vocModel.VocDt DateFormat="yyyy-MM-dd" Change="@(arg=> VocDtChanged(arg))" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="VOC구분" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100"
+                                        AllowFiltering="true" Data=@VocClsList TextProperty="CodeSubNm" ValueProperty="CodeSeq" @bind-Value="vocModel.VocCls"
+                                        Change=@(args => OnChangeVocCls(args, "VOC구분")) />
+                    </div>
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="VOC상세구분" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100"
+                                        AllowFiltering="true" Data=@VocDetailClsList TextProperty="CodeSubNm" ValueProperty="CodeSeq" @bind-Value="vocModel.VocDetailCls"
+                                        Change=@(args => OnChangeVocDetailCls(args, "VOC상세구분")) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="고객명"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@vocModel.CustomerCd" Name="CustomerCd"
+                                        AllowFiltering="true" Data=@customerList TextProperty="CustomerNm" ValueProperty="CustomerCd"
+                                        Change=@(args => OnChangeCustomerCd(args)) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="VOC접수자"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@vocModel.VocUserId"
+                                        AllowFiltering="true" Data=@VocUserIdList TextProperty="UserNm" ValueProperty="UserCd"
+                                        Change=@(args => OnChangeVocUserId(args, "DropDown with virtualization")) />
+                    </div>
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="VOC처리자"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@vocModel.VocManagerId"
+                                        AllowFiltering="true" Data=@VocManagerIdList TextProperty="UserNm" ValueProperty="UserCd"
+                                        Change=@(args => OnChangeVocManagerId(args, "DropDown with virtualization")) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="제목"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextArea @bind-Value="@vocModel.Title" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="내용"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextArea @bind-Value="@vocModel.Contents" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="처리내용"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextArea @bind-Value="@vocModel.ProcContents" Class="w-100" />
+                    </div>
+                </div>
+
+            </RadzenFieldset>
+
+        </div>
+    </div>
+
+    <div>
+        <RadzenButton style="margin: 0 1rem 1rem 500px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [Parameter] public string selectedVocNo { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_Rebuild.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+    private VOCModel vocModel = new VOCModel();
+
+    private List<CommonCodeModel> VocClsList;
+    private List<CommonCodeModel> VocDetailClsList;
+    private List<CustomerModel> customerList;
+    private List<UserModel> VocUserIdList;
+    private List<UserModel> VocManagerIdList;
+
+    private OrderModel selectedOrderModel = new OrderModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedVocNo is not null)
+        {
+            var vocList = await _db.GetVoc(loginId, selectedVocNo);
+            vocModel = vocList.FirstOrDefault();
+
+        }
+        else
+        {
+            vocModel.VocDt = DateTime.Today;
+        }
+
+        VocClsList = await _codeManager.FindCommonCodeFromName("VOC구분", loginId);
+        VocDetailClsList = await _codeManager.FindCommonCodeFromName("VOC상세구분", loginId);
+        VocUserIdList = await _userManager.GetUserFromCodehelp(loginId);
+        VocManagerIdList = await _userManager.GetUserFromCodehelp(loginId);
+        customerList = await _customerManager.GetCustomerFromCodeHelp(loginId);
+    }
+
+    void btnCancleClick()
+    {
+        navigationManager.NavigateTo("/VOCManagement");
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckVOC(vocModel) == true)
+        {
+            if (vocModel.VocNo.GetNullToEmpty() == string.Empty)
+            {
+                await _db.InsertData(vocModel, loginId);
+            }
+            else
+            {
+                await _db.UpdateData(vocModel, loginId);
+            }
+
+            navigationManager.NavigateTo("/VOCManagement");
+
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "VOC구분과 상세구분을 입력하여 주세요.");
+        }
+
+    }
+
+
+    bool ValidationCheckVOC(VOCModel vocModel)
+    {
+        ////필수값 미입력시 false 반환
+        if (vocModel.VocCls.GetIntNullToZero() == 0|| vocModel.VocDetailCls.GetIntNullToZero() == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void OnChangeVocCls(object value, string name)
+    {
+        vocModel.VocCls = (int)value;
+    }
+    void OnChangeVocDetailCls(object value, string name)
+    {
+        vocModel.VocDetailCls = (int)value;
+    }
+    void OnChangeVocUserId(object value, string name)
+    {
+        vocModel.VocUserId = (int)value;
+    }
+    void OnChangeVocManagerId(object value, string name)
+    {
+        vocModel.VocManagerId = (int)value;
+    }
+    void OnChangeCustomerCd(object value)
+    {
+        if (value is not null)
+        {
+            vocModel.CustomerCd = value.ToString();
+        }
+    }
+    void VocDtChanged(object value)
+    {
+        if (value is not null)
+        {
+            vocModel.VocDt = Convert.ToDateTime(value);
+        }
+    }
+
+}

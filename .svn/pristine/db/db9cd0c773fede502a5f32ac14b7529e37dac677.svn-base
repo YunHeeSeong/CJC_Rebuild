@@ -1,0 +1,200 @@
+﻿@using GMINWEB_CJC.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject IOutPDItemData _db
+@inject ICommonCodeData _codeManager
+@inject IJSRuntime jsRuntime
+@inject DialogService DialogService
+
+<style>
+    .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<div class="row" style="width:1100px;">
+    <div class="col-sm">
+        <RadzenFieldset Text="출하등록">
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="주문번호"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox TValue="string" Style="width:100%;" Name="OrderNo" @bind-Value="@outPDItemModel.OrderNo"></RadzenTextBox>
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="매장명"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox TValue="string" Style="width:100%;" Name="BizUnitNm" @bind-Value="@outPDItemModel.BizUnitNm"></RadzenTextBox>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="주문수량"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenNumeric TValue="int" ReadOnly="true" Style="width:100%;" Name="OrderQty" @bind-Value="@outPDItemModel.OrderQty"></RadzenNumeric>
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="기출하수량"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenNumeric TValue="decimal" ReadOnly="true" style="width: 100%;" Name="TotQty" @bind-Value="@outPDItemModel.TotQty" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="품목코드"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox Style="width:100%;" ReadOnly="true" Name="ItemCd" @bind-Value="@outPDItemModel.ItemCd"></RadzenTextBox>
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="품목명"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox Style="width:100%;" ReadOnly="true" Name="ItemNm" @bind-Value="@outPDItemModel.ItemNm"></RadzenTextBox>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="출하일자" Style="color:red"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenDatePicker @bind-Value=@OutDate DateFormat="yyyy-MM-dd" Change="@(arg=> OutDateChanged(arg))" Class="w-100" />
+                </div>
+                @*<div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="잔여출하수량"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenNumeric TValue="decimal" Style="width:100%;" Name="TotQty" @bind-Value="@outPDItemModel.RQty" ReadOnly="true"></RadzenNumeric>
+                </div>*@
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="출하수량" Style="color:red"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenNumeric TValue="decimal" Style="width:100%;" Name="OutQty" @bind-Value="@outPDItemModel.OutQty"></RadzenNumeric>
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="통관비"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenNumeric TValue="decimal" Style="width:100%;" Name="Tax" @bind-Value="@outPDItemModel.Tax"></RadzenNumeric>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="비고"></RadzenLabel>
+                </div>
+                <div class="col-sm-9">
+                    <RadzenTextBox Style="width:100%;" Name="Remk" @bind-Value="@outPDItemModel.Remk"></RadzenTextBox>
+                </div>
+            </div>
+        </RadzenFieldset>
+    </div>
+</div>
+
+<div style="width:300px;margin:0 auto;">
+    <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+    <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+</div>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public OutPDItemModel selectedOutPDItem { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+
+    private List<OutPDItemModel> outPDItemModels;
+    private OutPDItemModel outPDItemModel = new OutPDItemModel();
+
+    private List<CommonCodeModel> BadTypeList;
+
+    DateTime OutDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedOutPDItem is not null)
+        {
+            //선택한 주문서 바인딩
+            outPDItemModel = selectedOutPDItem;
+
+            //출하일자 기본값 세팅
+            OutDate = DateTime.Today;
+            outPDItemModel.OutDate = OutDate.ToString("yyyy-MM-dd");
+
+            //출하수량 기본값 
+            outPDItemModel.OutQty = 0;
+        }
+    }
+
+    #region // ** 이벤트 ** //
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+    async Task btnSaveClick()
+    {
+        var errMessage = ValidationFactOutPDItem(outPDItemModel);
+        //필수값 체크
+        if (errMessage == string.Empty)
+        {
+            var result = await _db.InsertData(outPDItemModel, loginId);
+
+            if (!result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+            else
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", errMessage);
+
+        }
+
+    }
+
+    void OutDateChanged(object value)
+    {
+        if (value is not null)
+        {
+            OutDate = Convert.ToDateTime(value);
+            outPDItemModel.OutDate = Convert.ToDateTime(value).ToString("yyyy-MM-dd");
+        }
+    }
+    #endregion
+
+
+    //필수코드 체크
+    string ValidationFactOutPDItem(OutPDItemModel outPDItemModel)
+    {
+        if (outPDItemModel.OutDate.GetNullToEmpty() == string.Empty)
+        {
+            return "출하일자를 선택하여 주십시오.";
+        }
+        if (outPDItemModel.OutQty.GetDecimalNullToZero() == 0)
+        {
+            return "출하 수량을 입력하여 주십시오.";
+        }
+
+        return string.Empty;
+    }
+
+
+
+}

@@ -1,0 +1,613 @@
+﻿@page "/itemOrderEdit"
+@page "/itemOrderEdit/{loginId}"
+@page "/itemOrderEdit/{loginId}/{storeBizUnit}/{selectedOrderNo}"
+
+@using GMINWEB_Rebuild.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject ICustomerData _customerManager
+@inject IItemOrderData _orderManager
+@inject IWorkOrderData _workOrderManager
+@inject IItemData _itemManager
+@inject ICommonCodeData _codeManager
+@inject IUserData _userManager
+@inject IBizUnitData _bizUnitManager
+@inject IJSRuntime jsRuntime
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+
+<style>
+    form .row {
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="col-md-12">
+    <RadzenTemplateForm Data="masterModel">
+        <div class="row">
+            <div class="col-sm">
+                <RadzenFieldset Text="주문 정보">
+                    <div class="row">
+                        <div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="주문코드"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-3">
+                            <RadzenTextBox TValue="string" ReadOnly="true" Placeholder="자동채번" style="width: 100%;" Name="OrderNo" @bind-Value="@masterModel.OrderNo"></RadzenTextBox>
+                        </div>
+                        <div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="주문일자" Style="color:red"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-3">
+                            <RadzenDatePicker @bind-Value=@orderDt DateFormat="yyyy-MM-dd" Change="@(arg=> OrderDtChanged(arg))" Class="w-100" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="고객명" Style="color:red"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-3">
+                            <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@masterModel.CustomerCd"
+                                            AllowFiltering="true" Data=@customerList TextProperty="CustomerNm" ValueProperty="CustomerCd"
+                                            Change=@(args => OnChangeCustomerCd(args, "DropDown with virtualization")) />
+                        </div>
+                    </div>
+                    <div class="row">
+                        @*<div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="주문구분" Style="color:red"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-3">
+
+                            <RadzenRadioButtonList @bind-Value=@masterModel.OrderCls TValue="int" Disabled="@isDisabled" Change=@((args) => OnChangeOrderCls(args, "일반수주, 재고수주 구분"))>
+                                <Items>
+                                    <RadzenRadioButtonListItem Text="재고수주(기성품,상품,부자재)" Value="2" />
+                                </Items>
+                            </RadzenRadioButtonList>
+                        </div>*@
+                        <div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="담당자"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-3">
+                            <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@masterModel.PICCd"
+                                            AllowFiltering="true" Data=@userlist TextProperty="UserNm" ValueProperty="UserCd"
+                                            Change=@(args => OnChangePICCd(args, "DropDown with virtualization")) />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="결제여부" Style="color:red"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-3">
+                            <RadzenRadioButtonList @bind-Value=@payYN TValue="int" Change=@((args) => OnChangePayYN(args, "결제,미결제 구분"))>
+                                <Items>
+                                    <RadzenRadioButtonListItem Text="결제" Value="1" />
+                                    <RadzenRadioButtonListItem Text="미결제" Value="2" />
+                                </Items>
+                            </RadzenRadioButtonList>
+                        </div>
+                        @if (payYN == 1)
+                        {
+                            <div class="col-sm-3 align-items-center d-flex">
+                                <RadzenLabel Text="결제일"></RadzenLabel>
+                            </div>
+                            <div class="col-sm-3">
+                                <RadzenDatePicker @bind-Value=@payDt DateFormat="yyyy-MM-dd" Change="@(arg=> PayDtChanged(arg))" Class="w-100" />
+                            </div>
+                        }
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="금액"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-3">
+                            <RadzenNumeric TValue="decimal" Name="Price" @bind-Value="@masterModel.TotPrice" Disabled="true"></RadzenNumeric>
+
+                        </div>
+                        <div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="부가세"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-3">
+                            <RadzenNumeric TValue="decimal" Name="Vat" @bind-Value="@masterModel.TotVAT" Disabled="true"></RadzenNumeric>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="기타요청사항"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-9">
+                            <RadzenTextArea @bind-Value="@masterModel.EctRequest" Class="w-100" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 align-items-center d-flex">
+                            <RadzenLabel Text="비고"></RadzenLabel>
+                        </div>
+                        <div class="col-sm-9">
+                            <RadzenTextArea @bind-Value="@masterModel.Remk" Class="w-100" />
+                        </div>
+                    </div>
+                </RadzenFieldset>
+                <RadzenFieldset Text="주문 상세 정보">
+                    <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="신규" Click="@InsertRow" Disabled=@(itemOrderToInsert != null) />
+                    <RadzenDataGrid @ref="detailGrid" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                    Data="@detailModels" TItem="ItemOrderModel" EmptyText="">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Property="BizUnit" Title="사업장코드" Width="70px" Visible="false" />
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Property="OrderNo" Title="주문번호" Width="70px" Visible="false" />
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Property="OrderSeq" Title="주문순번" Width="70px" CssClass="data_center"/>
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Property="ItemCd" Title="품목코드" Width="130px" CssClass="data_center">
+                                <EditTemplate Context="detailModel">
+                                    <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@detailModel.ItemCd"
+                                                    AllowFiltering="true" Data=@ItemCdList TextProperty="ItemNm" ValueProperty="ItemCd" SelectedItemChanged="(args)=>OnChangeItemCd(args)" />
+                                </EditTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Property="ItemNm" Title="품목명" Width="200px">
+                                <EditTemplate Context="detailModel">
+                                    <RadzenTextBox style="width: 100%;" @bind-Value="@detailModel.ItemNm"></RadzenTextBox>
+                                </EditTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Property="Qty" Title="수량" Width="70px" FormatString="{0:n0}">
+                                <EditTemplate Context="detailModel">
+                                    <RadzenNumeric TValue="decimal" style="width: 100%;" Name="Qty" @bind-Value="detailModel.Qty" Change="(args)=>OnChangeQty(args)" />
+                                </EditTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Property="UPR" Title="단가" Width="100px" FormatString="{0:n0}">
+                                <EditTemplate Context="detailModel">
+                                    <RadzenNumeric TValue="decimal" @bind-Value="detailModel.UPR" Change="(args)=>OnChangeUPR(args)"></RadzenNumeric>
+                                </EditTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Property="Price" Title="금액" Width="100px" FormatString="{0:n0}">
+                                <EditTemplate Context="detailModel">
+                                    <RadzenNumeric TValue="decimal" style="width: 100%;" @bind-Value="@detailModel.Price"></RadzenNumeric>
+                                </EditTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Property="Vat" Title="부가세" Width="100px" FormatString="{0:n0}">
+                                <EditTemplate Context="detailModel">
+                                    <RadzenNumeric TValue="decimal" style="width: 100%;" @bind-Value="@detailModel.Vat"></RadzenNumeric>
+                                </EditTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Context="detailModel" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                                <Template Context="detailModel">
+                                    <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(detailModel))" @onclick:stopPropagation="true">
+                                    </RadzenButton>
+                                </Template>
+                                <EditTemplate Context="detailModel">
+                                    <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(detailModel))">
+                                    </RadzenButton>
+                                    <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(detailModel))">
+                                    </RadzenButton>
+                                </EditTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="ItemOrderModel" Context="detailModel" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                                <Template Context="detailModel">
+                                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(detailModel))" @onclick:stopPropagation="true">
+                                    </RadzenButton>
+                                </Template>
+                                <EditTemplate Context="detailModel">
+                                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(detailModel))">
+                                    </RadzenButton>
+                                </EditTemplate>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenFieldset>
+            </div>
+        </div>
+
+        <div style="width:300px;margin:0 auto;">
+            <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+            <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+        </div>
+
+        <GMINWEB_Rebuild.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+    </RadzenTemplateForm>
+</div>
+
+
+@code {
+    [Parameter] public string selectedOrderNo { get; set; }
+    [Parameter] public string storeBizUnit { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    private GMINWEB_Rebuild.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    private ItemOrderModel itemOrderToDelete { get; set; }
+
+    private ItemOrderModel masterModel = new ItemOrderModel();
+    private ItemOrderModel detailModel = new ItemOrderModel();
+    private List<ItemOrderModel> detailModels;
+
+    RadzenDataGrid<ItemOrderModel> detailGrid;
+
+    private ItemOrderModel itemOrderToInsert;
+
+    //공통코드
+    List<UserModel> userlist;
+    List<CustomerModel> customerList;
+    List<ItemModel> ItemCdList;
+
+    int payYN = 1;
+
+    DateTime orderDt;           //주문일자
+    DateTime payDt;             //결제일자
+    bool isDisabled;
+
+    #region // ** 페이지 로드시 진입점 Init ** //
+    protected override async Task OnInitializedAsync()
+    {
+        //수정일때
+        if (selectedOrderNo is not null)
+        {
+            isDisabled = true;
+
+            var orderlist = await _orderManager.GetOrderMaster(loginId, storeBizUnit, selectedOrderNo);
+            masterModel = orderlist.FirstOrDefault();
+
+            detailModels = await _orderManager.GetOrderDetail(loginId, masterModel.BizUnit, masterModel.OrderNo);
+
+            //날짜 컬럼 형변환
+            orderDt = Convert.ToDateTime(masterModel.OrderDt);
+            payDt = Convert.ToDateTime(masterModel.PayDt);
+
+            //결제여부
+            if (masterModel.PayYN == "Y")
+            {
+                payYN = 1;
+            }
+            else
+            {
+                payYN = 2;
+            }
+
+        }
+        //신규일때
+        else
+        {
+            isDisabled = false;
+            masterModel.OrderCls = 2;
+
+            orderDt = DateTime.Today;
+            payDt = DateTime.Today;
+
+            masterModel.OrderDt = DateTime.Today.ToString("yyyy-MM-dd");
+            masterModel.PayDt = DateTime.Today.ToString("yyyy-MM-dd");
+
+            masterModel.PayYN = "Y";
+        }
+
+        //공통코드세팅
+        ItemCdList = await _itemManager.GetAllItemCodeHelp(loginId);
+        customerList = await _customerManager.GetCustomerFromCodeHelp(loginId);
+        userlist = await _userManager.GetUserFromCodehelp(loginId);
+
+    }
+
+    #endregion
+
+    #region // ** 그리드 컨트롤 ** //
+    async Task InsertRow()
+    {
+        //마스터 저장 전
+        if (masterModel.OrderNo.GetNullToEmpty() == string.Empty)
+        {
+            //필수코드 점검
+            if (ValidationCheckOrder(masterModel) == false)
+            {
+                await jsRuntime.InvokeVoidAsync("alert", "빨간색으로 표시된 필수코드들을 모두 입력하여 주십시오.");
+                return;
+            }
+
+            //주문저장
+            var result = await _orderManager.InsertMasterData(loginId, masterModel);
+
+            if (result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+            }
+            else
+            {
+                var orderNo = result.FirstOrDefault().RTN_KEY;
+                var bizUnit = result.FirstOrDefault().RTN_KEY2;
+
+                //주문조회
+                var orderlist = await _orderManager.GetOrderMaster(loginId, bizUnit, orderNo);
+                masterModel = orderlist.FirstOrDefault();
+
+                //주문상세조회
+                detailModels =  await _orderManager.GetOrderDetail(loginId, masterModel.BizUnit, masterModel.OrderNo);
+            }
+        }
+        else
+        {
+            itemOrderToInsert = new ItemOrderModel();
+            itemOrderToInsert.BizUnit = masterModel.BizUnit;
+            itemOrderToInsert.OrderNo = masterModel.OrderNo;
+
+            await detailGrid.InsertRow(itemOrderToInsert);
+        }
+
+    }
+
+    async Task EditRow(ItemOrderModel detailModel)
+    {
+        itemOrderToInsert = detailModel;
+
+        await detailGrid.EditRow(detailModel);
+    }
+
+    async Task SaveRow(ItemOrderModel detailModel)
+    {
+        if (detailModel == itemOrderToInsert)
+        {
+            itemOrderToInsert = null;
+        }
+
+        if (ValidationCheckDetail(detailModel) == true)
+        {
+            if (detailModel.OrderSeq == 0)
+            {
+                //코드가 채번되기 전이면 INSERT
+                var res = await _orderManager.InsertDetailData(loginId, detailModel);
+
+                if (res.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", res.GetErrorMessages());
+                }
+            }
+            else
+            {
+                //파일넘버가 기존에 존재하면 UPDATE
+                var res = await _orderManager.UpdateOrderDetail(loginId, detailModel);
+                if (res.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", res.GetErrorMessages());
+                    return;
+                }
+            }
+
+            await detailGrid.UpdateRow(detailModel);
+            detailModels = await _orderManager.GetOrderDetail(loginId, masterModel.BizUnit, masterModel.OrderNo);
+
+            //총금액, 총부가세 재계산
+            CalculatePriceVAT(detailModels);
+            var result = await _orderManager.UpdateOrderMaster(loginId, masterModel);
+
+            if (result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+            }
+            else
+            {
+                var itemOrderModels = await _orderManager.GetOrderMaster(loginId, detailModel.BizUnit, detailModel.OrderNo);
+                masterModel = itemOrderModels.FirstOrDefault();
+            }
+
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "코드명을 입력하여 주십시오");
+        }
+
+
+    }
+
+    void CancelEdit(ItemOrderModel detailModel)
+    {
+        if (detailModel == itemOrderToInsert)
+        {
+            itemOrderToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(detailModel);
+    }
+
+    async Task DeleteRow(ItemOrderModel detailModel)
+    {
+        if (detailModel == itemOrderToInsert)
+        {
+            itemOrderToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (detailModels.Contains(detailModel))
+        {
+            itemOrderToDelete = detailModel;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            detailGrid.CancelEditRow(detailModel);
+            await detailGrid.Reload();
+        }
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            //삭제
+            var result = await _orderManager.DeleteDetailData(itemOrderToDelete, loginId);
+
+            //그리드 재조회
+            detailModels = await _orderManager.GetOrderDetail(loginId, masterModel.BizUnit, masterModel.OrderNo);
+            await detailGrid.Reload();
+        }
+        else
+        {
+            itemOrderToDelete = null;
+        }
+    }
+    #endregion
+
+
+
+
+    #region // * 필수값 체크 * //
+    bool ValidationCheckOrder(ItemOrderModel order)
+    {
+        if (order.OrderDt.GetNullToEmpty() == string.Empty) return false;
+        //if (order.OrderCls.GetIntNullToZero() == 0) return false;
+        if (order.CustomerCd.GetNullToEmpty() == string.Empty) return false;
+
+        return true;
+    }
+
+
+    bool ValidationCheckDetail(ItemOrderModel order)
+    {
+        if (order.Qty.GetIntNullToZero() == 0) return false;
+        if (order.ItemCd.GetNullToEmpty() == string.Empty) return false;
+
+        return true;
+    }
+    #endregion
+
+    #region // * 이벤트 처리기 * //
+    void btnCancleClick()
+    {
+        //ModalInstance.CancelAsync();
+        navigationManager.NavigateTo("/ItemOrderManagement");
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수코드 점검
+        if (ValidationCheckOrder(masterModel) == false)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "빨간색으로 표시된 필수코드들을 모두 입력하여 주십시오.");
+            return;
+        }
+
+        //신규 등록일 경우
+        if (masterModel.OrderNo.GetNullToEmpty() == string.Empty)
+        {
+            var result = await _orderManager.InsertMasterData(loginId, masterModel);
+
+            if (result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+            }
+            else
+            {
+                await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다");
+                navigationManager.NavigateTo("/ItemOrderManagement");
+            }
+        }
+        //수정인 경우
+        else
+        {
+            //총금액 , 총부가세 재계산
+            CalculatePriceVAT(detailModels);
+            var result = await _orderManager.UpdateOrderMaster(loginId, masterModel);
+
+            //출하가 진행되어 수정이 불가능할 경우
+            if (result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+            }
+            else
+            {
+                await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+                navigationManager.NavigateTo("/ItemOrderManagement");
+            }
+        }
+
+    }
+
+    void CalculatePriceVAT(List<ItemOrderModel> itemOrders)
+    {
+        decimal totPrice = 0;
+        decimal totVAT = 0;
+
+        if (itemOrders.Count > 0)
+        {
+            foreach (var item in itemOrders)
+            {
+                totPrice += item.Price;
+                totVAT += item.Vat;
+            }
+
+            masterModel.TotPrice= totPrice;
+            masterModel.TotVAT = totVAT;
+        }
+    }
+
+
+    void OnChangeItemCd(object value)
+    {
+        if (value is not null && itemOrderToInsert is not null)
+        {
+            //itemOrderToInsert.ItemCd = ((ItemModel)value).ItemCd;
+            itemOrderToInsert.ItemNm = ((ItemModel)value).ItemNm;
+        }
+    }
+    void OnChangeQty(decimal value)
+    {
+
+        decimal qty = Convert.ToDecimal(value);
+
+        itemOrderToInsert.Price = itemOrderToInsert.UPR * qty;
+        itemOrderToInsert.Vat = itemOrderToInsert.Price * Convert.ToDecimal(0.1);
+
+    }
+    void OrderDtChanged(DateTime? value)
+    {
+        if (value is not null)
+        {
+            masterModel.OrderDt = ((DateTime)value).ToString("yyyy-MM-dd");
+        }
+    }
+
+    void PayDtChanged(DateTime? value)
+    {
+        if (value is not null)
+        {
+            masterModel.PayDt = ((DateTime)value).ToString("yyyy-MM-dd");
+        }
+    }
+    void OnChangeOrderCls(int? value, string name)
+    {
+        if (value is not null)
+        {
+            masterModel.OrderCls = value.Value;
+        }
+    }
+
+    void OnChangePICCd(object value, string name)
+    {
+        masterModel.PICCd = (int)value;
+    }
+    void OnChangePayYN(int? value, string name)
+    {
+        if (value.Value == 1)
+        {
+            masterModel.PayYN = "Y";
+        }
+        else
+        {
+            masterModel.PayYN = "N";
+        }
+    }
+
+    void OnChangeCustomerCd(object value, string name)
+    {
+        if (value is not null)
+        {
+            masterModel.CustomerCd = value.ToString();
+        }
+    }
+    void OnChangeUPR(decimal value)
+    {
+
+        decimal upr = Convert.ToDecimal(value);
+
+        itemOrderToInsert.Price = itemOrderToInsert.Qty * upr;
+        itemOrderToInsert.Vat = itemOrderToInsert.Price * Convert.ToDecimal(0.1);
+
+    }
+    #endregion
+
+}

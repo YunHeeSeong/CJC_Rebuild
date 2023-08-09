@@ -1,0 +1,181 @@
+﻿@page "/datagrid-simple-filter"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic;
+@using GMINWEB_Rebuild.Pages.Common;
+
+@inject IWarehouseData _db
+@inject IJSRuntime jsRuntime
+@inject NotificationService NotificationService
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    > 기준정보관리 >
+    <strong>창고관리</strong>
+</div>
+
+<br />
+
+<div>
+    <div class="info_title">
+        <h1 class="sub_title">창고 조회</h1>
+        <div class="post_btn">
+            <RadzenButton Click="btnNewClick" Style="background-color:black; color:white">신규</RadzenButton>
+        </div>
+
+    </div>
+
+    @if (warehouses is null)
+    {
+        <p><em>Loading ...</em></p>
+    }
+    else
+    {
+        <RadzenTabs   RenderMode="TabRenderMode.Client">
+            <Tabs>
+                <RadzenTabsItem Text="창고리스트">
+                    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                    FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@warehouses" TItem="WarehouseModel" ColumnWidth="300px"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    LogicalFilterOperator="LogicalFilterOperator.Or">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="WarehouseModel" Property="WhCd" Title="창고코드" Width="100px"/>
+                            <RadzenDataGridColumn TItem="WarehouseModel" Property="WhNm" Title="창고명" Width="200px" />
+                            <RadzenDataGridColumn TItem="WarehouseModel" Property="WhType" Title="창고타입"Width="120px" />
+                            <RadzenDataGridColumn TItem="WarehouseModel" Property="WhLoc" Title="창고위치" />
+                            <RadzenDataGridColumn TItem="WarehouseModel" Filterable="false" Title="수정 및 삭제" Width="230px">
+                                <Template Context="warehouse">
+                                    <RadzenButton Style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Light" Click="()=>btnUpdateClick(warehouse.WhCd)">수정</RadzenButton>
+                                    <RadzenButton Style="margin: 0 1rem 1rem 0; background-color: #375E99;" Click="()=>btnDeleteClick(warehouse.WhCd)">삭제</RadzenButton>
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="WarehouseModel" Filterable="false" Title="레포트출력" Width="150px">
+                                <Template Context="warehouse">
+                                    <RadzenButton Style="margin: 0 1rem 1rem 0; background-color:#5C7C8A" Click="()=>btnReportClick(warehouse.WhCd)">출력</RadzenButton>
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+
+        <GMINWEB_Rebuild.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+    }
+</div>
+
+
+
+
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+
+    public string selectedWhCd { get; set; }
+    public GMINWEB_Rebuild.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    public IList<WarehouseModel> selectedWarehouse { get; set; }
+
+    private List<WarehouseModel> warehouses;
+
+    protected override async Task OnInitializedAsync()
+    {
+        warehouses = await _db.GetData();
+
+        selectedWarehouse = new List<WarehouseModel>() { warehouses.FirstOrDefault() };
+    }
+
+    private async Task GetAllDatas()
+    {
+        warehouses = await _db.GetData();
+    }
+
+    async Task btnNewClick()
+    {
+        var warehouseEdit = Modal.Show<TestTemplateEdit>("창고등록 및 수정");
+        var result = await warehouseEdit.Result;
+
+        if (!result.Cancelled)
+        {
+            await GetAllDatas();
+        }
+    }
+
+    async Task btnUpdateClick()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(TestTemplateEdit.selectedWarehouse), selectedWarehouse[0]);
+
+        var warehouseEdit = Modal.Show<TestTemplateEdit>("창고등록 및 수정", parameters);
+        var result = await warehouseEdit.Result;
+
+        if (!result.Cancelled)
+        {
+            await GetAllDatas();
+        }
+    }
+
+    async Task btnUpdateClick(string WhCd)
+    {
+        var selectedWarehouse = warehouses.FirstOrDefault(x => x.WhCd == WhCd);
+
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(TestTemplateEdit.selectedWarehouse), selectedWarehouse);
+
+        var warehouseEdit = Modal.Show<TestTemplateEdit>("창고등록 및 수정", parameters);
+        var result = await warehouseEdit.Result;
+
+        if (!result.Cancelled)
+        {
+            //show
+            await GetAllDatas();
+        }
+    }
+
+    async Task btnReportClick(string WhCd)
+    {
+        string url = "HelloWorld?WhCd=";
+
+        var parameter = new ModalParameters();
+
+        DocumentViewer dv = new DocumentViewer();
+
+        parameter.Add(nameof(dv.ReportUrl), url + WhCd);
+
+        var options = new ModalOptions()
+        {
+            Animation = ModalAnimation.FadeIn(1)
+            ,
+            Position = ModalPosition.Center
+        };
+
+        var documentviewer = Modal.Show<DocumentViewer>("View Report", parameter, options);
+        var result = await documentviewer.Result;
+    }
+
+    void btnDeleteClick(string whCd)
+    {
+        DeleteConfirmation.Show("삭제하시겠습니까?");
+
+        selectedWhCd = whCd;
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteData(selectedWhCd);
+            await GetAllDatas();
+        }
+        else
+        {
+            selectedWhCd = "";
+        }
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        //NotificationService.Notify
+    }
+}

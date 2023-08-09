@@ -1,0 +1,188 @@
+﻿@page "/ItemOrderManagement"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic
+@using System.Security.Claims
+
+@inject IItemOrderData _db
+@inject IRoleData _RoleManager
+@inject IJSRuntime jsRuntime
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    > 영업관리 >
+    <strong>주문등록(품목)</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+        <div>
+            <div class="info_title">
+                <h1 class="sub_title">주문등록(품목)</h1>
+                <div class="post_btn">
+                    <RadzenButton Click="btnNewClick" Style="background-color:black; color:white">신규</RadzenButton>
+                </div>
+
+            </div>
+            <RadzenTabs RenderMode="TabRenderMode.Client">
+                <Tabs>
+                    <RadzenTabsItem Text="품목주문조회">
+                        <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                        FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@orders" TItem="ItemOrderModel" ColumnWidth="300px"
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" RowSelect="@RowSelect"
+                                        LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 주문이 없습니다.">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="BizUnitNm" Title="사업장명" Width="150px" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="OrderNo" Title="주문번호" Width="150px" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="OrderDt" Title="주문일자" Width="150px" CssClass="data_center" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="CustomerNm" Title="고객명" Width="120px" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="PICCdNm" Title="담당자명" Width="100px" CssClass="data_center" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="PayYNNm" Title="결제여부" Width="100px" CssClass="data_center" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="PayDt" Title="결제일자" Width="150px" CssClass="data_center" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="TotPrice" Title="금액" Width="100px" FormatString="{0:n0}" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="TotVAT" Title="부가세" Width="100px" FormatString="{0:n0}" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Property="EctRequest" Title="요청사항" Width="200px" />
+                                <RadzenDataGridColumn TItem="ItemOrderModel" Filterable="false" Title="수정 및 삭제" Width="230px" CssClass="data_center">
+                                    <Template Context="order">
+                                        @*<RadzenButton Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" ButtonStyle="ButtonStyle.Info" Click="()=>btnImageUpload(order)">이미지등록</RadzenButton>*@
+                                        <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" ButtonStyle="ButtonStyle.Light" Click="()=>btnUpdateClick(order)">수정</RadzenButton>
+                                        <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkred; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Click="()=>btnDeleteClick(order)">삭제</RadzenButton>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+
+            <div style="margin-top:20px">
+                <RadzenTabs RenderMode="TabRenderMode.Client">
+                    <Tabs>
+                        <RadzenTabsItem Text="품목 주문 상세조회">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                            FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@selectedOrders" TItem="ItemOrderModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 주문이 없습니다.">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="ItemOrderModel" Property="OrderNo" Title="주문번호" Width="130px" CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="ItemOrderModel" Property="OrderSeq" Title="순번" Width="70px" CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="ItemOrderModel" Property="ItemCd" Title="품목코드" Width="130px" CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="ItemOrderModel" Property="ItemNm" Title="품목명" Width="200px" />
+                                    <RadzenDataGridColumn TItem="ItemOrderModel" Property="Qty" Title="수량" Width="80px" FormatString="{0:n0}" />
+                                    <RadzenDataGridColumn TItem="ItemOrderModel" Property="UPR" Title="단가" Width="100px" FormatString="{0:n0}" />
+                                    <RadzenDataGridColumn TItem="ItemOrderModel" Property="Price" Title="금액" Width="100px" FormatString="{0:n0}" />
+                                    <RadzenDataGridColumn TItem="ItemOrderModel" Property="Vat" Title="부가세" Width="100px" FormatString="{0:n0}" />
+                                </Columns>
+                            </RadzenDataGrid>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+            </div>
+            <GMINWEB_Rebuild.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+        </div>
+            }
+            else
+            {
+            <p>조회 권한이 없는 사용자입니다.</p>
+            }
+</Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public ItemOrderModel selectedOrder { get; set; }
+    public GMINWEB_Rebuild.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    public int MenuId = 47;     //주문등록 (품목)
+
+    ClaimsPrincipal CurrentUser;
+
+    private List<ItemOrderModel> orders;      
+    private List<ItemOrderModel> selectedOrders;     
+    private string RoleYN;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            if (CurrentUser.Identity.Name is not null)
+            {
+                var RoleList = await _RoleManager.GetRoleYN(CurrentUser.Identity.Name, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                if (RoleYN == "Y")
+                {
+                    orders = await _db.GetAllOrders(CurrentUser.Identity.Name);
+                }
+            }
+
+        }
+    }
+
+    private async Task GetAllDatas()
+    {
+        orders = await _db.GetAllOrders(CurrentUser.Identity.Name);
+    }
+
+    void btnNewClick()
+    {
+        navigationManager.NavigateTo("/itemOrderEdit" + "/" + CurrentUser.Identity.Name);
+    }
+
+    void btnUpdateClick(ItemOrderModel order)
+    {
+        navigationManager.NavigateTo("/itemOrderEdit" + "/" + CurrentUser.Identity.Name + "/" + order.BizUnit + "/" + order.OrderNo);
+    }
+
+    void btnImageUpload(ItemOrderModel order)
+    {
+
+    }
+
+    void btnDeleteClick(ItemOrderModel order)
+    {
+        DeleteConfirmation.Show("정말 삭제하시겠습니까 ?");
+
+        selectedOrder = order;
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            var result = await _db.DeleteMasterData(selectedOrder, CurrentUser.Identity.Name);
+
+            if (result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+            }
+            else
+            {
+                await GetAllDatas();
+            }
+        }
+        else
+        {
+            selectedOrder = null;
+        }
+    }
+
+    public async Task RowSelect(ItemOrderModel order)
+    {
+        selectedOrders = await _db.GetOrderDetail(CurrentUser.Identity.Name,order.BizUnit,order.OrderNo);
+    }
+}

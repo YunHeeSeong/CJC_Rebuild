@@ -1,0 +1,9 @@
+﻿@page "/documentviewer"
+
+<DxDocumentViewer Height="900px" Width="100%" ReportUrl="@ReportUrl" CssClass="blazored-modal">
+    <DxDocumentViewerTabPanelSettings Width="180" />
+</DxDocumentViewer>
+@code {
+    [Parameter]
+    public string ReportUrl { get; set; }
+}

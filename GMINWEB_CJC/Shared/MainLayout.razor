@@ -1,0 +1,121 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Http
+@using Radzen.Blazor
+@using GMINWEB_Rebuild.Model;
+
+@inject NavigationManager UriHelper
+@inject IJSRuntime JSRuntime
+@inject IHttpContextAccessor httpContextAccessor
+@inject IMenuService MenuService
+@inject IStringLocalizer<App> Localizer
+
+<RadzenHeader>
+    <ChildContent>
+        <div class="row justify-content-start align-items-center">
+            <div class="col-6 d-flex ">
+                <RadzenSidebarToggle Click="@(args => { sidebarExpanded = !sidebarExpanded; bodyExpanded = !bodyExpanded; })">
+                </RadzenSidebarToggle>
+            </div>
+            <div class="col-6 d-flex align-items-center justify-content-end">
+                <LoginDisplay />
+                @*<span class="pr-2">@Localizer["언어"]</span> <GMINWEB_Rebuild.Pages.Shared.ChooseLanguage />*@
+            </div>
+        </div>
+    </ChildContent>
+</RadzenHeader>
+<div style="width:100%">
+    <RadzenBody @ref="@body0" @bind-Expanded="@bodyExpanded">
+        <ChildContent>
+            <RadzenContentContainer Name="main">
+                @Body
+            </RadzenContentContainer>
+        </ChildContent>
+    </RadzenBody>
+</div>
+<RadzenSidebar @ref="@sidebar0" @bind-Expanded="@sidebarExpanded">
+    <ChildContent>
+        <div style="padding: 1rem">
+            <RadzenTextBox Placeholder="검색" type="search" @oninput="@FilterPanelMenu" style="width: 100%" />
+        </div>
+        <RadzenPanelMenu>
+            @foreach (var category in menus)
+            {
+                <RadzenPanelMenuItem @bind-Expanded="@category.Expanded" Text="@category.Name" Path="@category.Path" Icon="@category.Icon">
+                    @if (category.Children != null)
+                    {
+                        @foreach (var menu in category.Children)
+                        {
+                            if (menu.Children != null)
+                            {
+                                <RadzenPanelMenuItem Text="@menu.Name" @bind-Expanded="@menu.Expanded" Icon="@menu.Icon">
+                                    @foreach (var child in menu.Children)
+                                    {
+                                        <RadzenPanelMenuItem Text="@child.Name" Path="@child.Path" />
+                                    }
+                                </RadzenPanelMenuItem>
+
+                            }
+                            else
+                            {
+                                <RadzenPanelMenuItem Text="@menu.Name" Path="@menu.Path" Icon="@menu.Icon" />
+                            }
+                        }
+                    }
+                </RadzenPanelMenuItem>
+            }
+        </RadzenPanelMenu>
+    </ChildContent>
+</RadzenSidebar>
+<RadzenFooter>
+    <ChildContent>
+        <RadzenLabel Text="ⓒ (주)글로벌제조혁신네트웍 All rights reserved.">
+        </RadzenLabel>
+        <RadzenLink Text="About" Path="http://gmin.co.kr" Target="_blank" Style="margin-left:5px;vertical-align:bottom;" />
+    </ChildContent>
+</RadzenFooter>
+
+@code {
+
+    RadzenSidebar sidebar0;
+    RadzenBody body0;
+    bool sidebarExpanded = true;
+    bool bodyExpanded = false;
+    protected override void OnInitialized()
+    {
+        if (httpContextAccessor != null && httpContextAccessor.HttpContext != null &&
+             httpContextAccessor.HttpContext.Request != null && httpContextAccessor.HttpContext.Request.Headers.ContainsKey("User-Agent"))
+        {
+            var userAgent = httpContextAccessor.HttpContext.Request.Headers["User-Agent"].FirstOrDefault();
+            if (!string.IsNullOrEmpty(userAgent))
+            {
+                if (userAgent.Contains("iPhone") || userAgent.Contains("Android") || userAgent.Contains("Googlebot"))
+                {
+                    sidebarExpanded = false;
+                    bodyExpanded = true;
+                }
+            }
+        }
+
+        menus = MenuService.Menus;
+
+        System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+    }
+    IEnumerable<Menu> menus;
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (!firstRender)
+    //    {
+    //        var menus = MenuService.FindCurrent(UriHelper.ToAbsoluteUri(UriHelper.Uri));
+
+    //        await JSRuntime.InvokeVoidAsync("setTitle", MenuService.TitleFor(menus));
+    //    }
+    //}
+
+    void FilterPanelMenu(ChangeEventArgs args)
+    {
+        var term = args.Value.ToString();
+
+        menus = MenuService.Filter(term);
+    }
+}

@@ -1,0 +1,32 @@
+{
+  //"ConnectionStrings": {
+  //  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=aspnet-GMINWEB_CJC-D1FA40B5-13B8-4CE1-8D2F-90A968CF7900;Trusted_Connection=True;MultipleActiveResultSets=true",
+  //  "Default": "Data Source=175.196.75.58,2433;Initial Catalog=18_CJC;User ID=sa;Password=rmffhqjf687881!;",
+  //  "GMINWEB_CJCContextConnection": "Data Source=175.196.75.58,2433;Initial Catalog=18_CJC;User ID=sa;Password=rmffhqjf687881!;"
+  //},
+
+  "connectionstrings": {
+    "defaultconnection": "server=(localdb)\\mssqllocaldb;database=aspnet-gminweb_cjc-d1fa40b5-13b8-4ce1-8d2f-90a968cf7900;trusted_connection=true;multipleactiveresultsets=true",
+    "default": "data source=121.133.122.8,2433;initial catalog=18_cjc;user id=sa;password=rmffhqjf687881!;",
+    "gminweb_cjccontextconnection": "data source=121.133.122.8,2433;initial catalog=18_cjc;user id=sa;password=rmffhqjf687881!;"
+  },
+
+  //"connectionstrings": {
+  //  "defaultconnection": "server=(localdb)\\mssqllocaldb;database=aspnet-gminweb_cjc-d1fa40b5-13b8-4ce1-8d2f-90a968cf7900;trusted_connection=true;multipleactiveresultsets=true",
+  //  "default": "data source=mes.gmin.co.kr,6816;initial catalog=18_cjc;user id=sa;password=rmffhqjf687881!;",
+  //  "gminweb_cjccontextconnection": "data source=mes.gmin.co.kr,6816;initial catalog=18_cjc;user id=sa;password=rmffhqjf687881!;"
+  //},
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "Cultures": {
+    "en-US": "USA",
+    "es-KR": "Korea"
+  }
+
+}

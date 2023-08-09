@@ -1,0 +1,316 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">GMINWEB_Rebuild</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/Home" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link item-link" @onclick="()=>expandSubMenu1=!expandSubMenu1">
+                <span class="oi oi-plus" aria-hidden="true"></span> 기준정보관리
+            </NavLink>
+            @if (expandSubMenu1)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/사용자관리">
+                            <span class="oi oi-file" aria-hidden="true"></span> 사용자관리
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/common/zipcode">
+                            <span class="oi oi-file" aria-hidden="true"></span> 거래처관리
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/code/warehouse">
+                            <span class="oi oi-file" aria-hidden="true"></span> 창고관리
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/datagrid-simple-filter">
+                            <span class="oi oi-file" aria-hidden="true"></span> 로케이션관리
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/취급품목등록">
+                            <span class="oi oi-file" aria-hidden="true"></span> 취급품목관리
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/공통코드등록">
+                            <span class="oi oi-file" aria-hidden="true"></span> 공통코드관리
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </li>   @*기준정보관리끝*@
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="()=>expandSubMenu2=!expandSubMenu2">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> 입고차량관리
+            </NavLink>
+            @if (expandSubMenu2)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" @onclick="()=>expandSubMenu2_1=!expandSubMenu2_1">
+                            <span class="oi oi-file" aria-hidden="true"></span> 입고차량관리
+                        </NavLink>
+                        @if (expandSubMenu2_1)
+                        {
+                            <ul class="nav flex-column">
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/입고차량대기조회">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span> 입고차량대기조회
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/입고검사 및 확정">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>입고검사 및 확정
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/입고차량조회">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>입고차량조회
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        }
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" @onclick="()=>expandSubMenu2_2=!expandSubMenu2_2">
+                            <span class="oi oi-file" aria-hidden="true"></span> 해체지시
+                        </NavLink>
+                        @if (expandSubMenu2_2)
+                        {
+                            <ul class="nav flex-column">
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/작업지시등록">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span> 작업지시관리
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/실적등록">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>실적관리
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        }
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" @onclick="()=>expandSubMenu2_3=!expandSubMenu2_3">
+                            <span class="oi oi-file" aria-hidden="true"></span> 부품관리
+                        </NavLink>
+                        @if (expandSubMenu2_3)
+                        {
+                            <ul class="nav flex-column">
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/검사대기">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>검사대기
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/검사등록">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>검사관리
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        }
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" @onclick="()=>expandSubMenu2_4=!expandSubMenu2_4">
+                            <span class="oi oi-file" aria-hidden="true"></span> 부품위치관리
+                        </NavLink>
+                        @if (expandSubMenu2_4)
+                        {
+                            <ul class="nav flex-column">
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/적재대기">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>적재대기
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/창고적재">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>창고적재관리
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        }
+                    </li>
+                </ul>
+            }
+        </li>    @*입고차량관리끝*@
+        <li class="nav-item px-3">
+            <NavLink class="nav-link">
+                <span class="oi oi-plus" aria-hidden="true"></span> 예약관리
+            </NavLink>
+        </li>   @*예약관리끝*@
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="()=>expandSubMenu4=!expandSubMenu4">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> 판매관리
+            </NavLink>
+            @if (expandSubMenu4)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" @onclick="()=>expandSubMenu4_1=!expandSubMenu4_1">
+                            <span class="oi oi-file" aria-hidden="true"></span> 부품출하
+                        </NavLink>
+                        @if (expandSubMenu4_1)
+                        {
+                            <ul class="nav flex-column">
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/출하등록">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span> 출하관리
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        }
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" @onclick="()=>expandSubMenu4_2=!expandSubMenu4_2">
+                            <span class="oi oi-file" aria-hidden="true"></span> 반품관리
+                        </NavLink>
+                        @if (expandSubMenu4_2)
+                        {
+                            <ul class="nav flex-column">
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/반품접수">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>반품접수
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/반품검사">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>반품검사
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/반품조회">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>반품조회
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        }
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" @onclick="()=>expandSubMenu4_3=!expandSubMenu4_3">
+                            <span class="oi oi-file" aria-hidden="true"></span> 재고관리
+                        </NavLink>
+                        @if (expandSubMenu4_3)
+                        {
+                            <ul class="nav flex-column">
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/부품등록">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>부품등록
+                                    </NavLink>
+                                </li>
+                                <li class="nav-item px-3">
+                                    <NavLink class="nav-link" href="/재고조회">
+                                        <span class="oi oi-bar-chart" aria-hidden="true"></span>재고조회
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        }
+                    </li>
+                </ul>
+            }
+        </li>   @*판매관리끝*@
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="()=>expandSubMenu5=!expandSubMenu5">
+                <span class="oi oi-plus" aria-hidden="true"></span> 현황관리
+            </NavLink>
+            @if (expandSubMenu5)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/일일현황(현장)">
+                            <span class="oi oi-file" aria-hidden="true"></span>일일현황(현장)
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/일일현황(보관소)">
+                            <span class="oi oi-bar-chart" aria-hidden="true"></span>일일현황(보관소)
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </li>   @*현황관리끝*@
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="()=>expandSubMenu6=!expandSubMenu6">
+                <span class="oi oi-plus" aria-hidden="true"></span>경영정보
+            </NavLink>
+            @if (expandSubMenu6)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/매출현황">
+                            <span class="oi oi-file" aria-hidden="true"></span>매출현황
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/일일매출현황">
+                            <span class="oi oi-bar-chart" aria-hidden="true"></span>일일매출현황
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/거래처별매출현황">
+                            <span class="oi oi-bar-chart" aria-hidden="true"></span>거래처별매출현황
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </li>   @*경영정보끝*@
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="()=>expandSubMenu7=!expandSubMenu7">
+                <span class="oi oi-plus" aria-hidden="true"></span>POP
+            </NavLink>
+            @if (expandSubMenu7)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/작업지시등록">
+                            <span class="oi oi-file" aria-hidden="true"></span>작업지시관리
+                        </NavLink>
+                    </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="/실적등록">
+                            <span class="oi oi-bar-chart" aria-hidden="true"></span>실적관리
+                        </NavLink>
+                    </li>
+                </ul>
+            }
+        </li>   @*POP끝*@
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+    private bool expandSubMenu1;
+    private bool expandSubMenu2;
+    private bool expandSubMenu2_1;
+    private bool expandSubMenu2_2;
+    private bool expandSubMenu2_3;
+    private bool expandSubMenu2_4;
+    //private bool expandSubMenu3;
+    private bool expandSubMenu4;
+    private bool expandSubMenu4_1;
+    private bool expandSubMenu4_2;
+    private bool expandSubMenu4_3;
+    private bool expandSubMenu5;
+    private bool expandSubMenu6;
+    private bool expandSubMenu7;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

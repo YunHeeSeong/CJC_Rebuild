@@ -1,0 +1,545 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="20.1.12.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v20.1, Version=20.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="Transaction_Item" Margins="98, 100, 101, 78" PaperKind="A4" PageWidth="827" PageHeight="1169" Version="20.1" DataMember="RP_Transaction_Item" DataSource="#Ref-0" Font="Arial, 9.75pt">
+  <Parameters>
+    <Item1 Ref="3" Description="BizUnit" Name="BizUnit" />
+    <Item2 Ref="4" Description="OrderNo" Name="OrderNo" />
+    <Item3 Ref="5" Description="OutDate" Name="OutDate" />
+  </Parameters>
+  <Bands>
+    <Item1 Ref="6" ControlType="TopMarginBand" Name="TopMargin" HeightF="100.833336" />
+    <Item2 Ref="7" ControlType="BottomMarginBand" Name="BottomMargin" HeightF="78" />
+    <Item3 Ref="8" ControlType="DetailBand" Name="Detail" HeightF="270">
+      <Controls>
+        <Item1 Ref="9" ControlType="XRLabel" Name="label2" Multiline="true" Text="거래명세서" TextAlignment="MiddleCenter" SizeF="627.000061,34.45835" LocationFloat="0,0" Font="맑은 고딕, 13pt, style=Bold" ForeColor="Black">
+          <StylePriority Ref="10" UseFont="false" UseForeColor="false" UseTextAlignment="false" />
+        </Item1>
+        <Item2 Ref="11" ControlType="XRTable" Name="table5" TextAlignment="MiddleCenter" SizeF="626.999939,27.1538849" LocationFloat="0,242.846115" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Borders="All">
+          <Rows>
+            <Item1 Ref="12" ControlType="XRTableRow" Name="tableRow18" Weight="1">
+              <Cells>
+                <Item1 Ref="13" ControlType="XRTableCell" Name="tableCell50" Weight="1.436876125877276" Multiline="true" Text="품목코드" />
+                <Item2 Ref="14" ControlType="XRTableCell" Name="tableCell129" Weight="2.03138315047238" Multiline="true" Text="품목명" />
+                <Item3 Ref="15" ControlType="XRTableCell" Name="tableCell51" Weight="0.87501983294910834" Multiline="true" Text="수량" />
+                <Item4 Ref="16" ControlType="XRTableCell" Name="tableCell52" Weight="0.9864017040694727" Multiline="true" Text="금액" />
+                <Item5 Ref="17" ControlType="XRTableCell" Name="tableCell53" Weight="0.86409603939666457" Multiline="true" Text="부가세" />
+                <Item6 Ref="18" ControlType="XRTableCell" Name="tableCell54" Weight="0.81339882628953586" Multiline="true" Text="비고" />
+              </Cells>
+            </Item1>
+          </Rows>
+          <StylePriority Ref="19" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+        </Item2>
+        <Item3 Ref="20" ControlType="XRTable" Name="table4" TextAlignment="MiddleLeft" SizeF="310.7037,179.131958" LocationFloat="316.296234,63.71414" Font="맑은 고딕, 9pt" ForeColor="Black" Borders="All">
+          <Rows>
+            <Item1 Ref="21" ControlType="XRTableRow" Name="tableRow13" Weight="1">
+              <Cells>
+                <Item1 Ref="22" ControlType="XRTableCell" Name="tableCell35" Weight="0.46206233534371621" RowSpan="5" Multiline="true" Text="공&#xD;&#xA;&#xD;&#xA;급&#xD;&#xA;&#xD;&#xA;자" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="23" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="24" ControlType="XRTableCell" Name="tableCell36" Weight="1.2349373533388255" Text="사업자번호" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="25" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="26" ControlType="XRTableCell" Name="tableCell37" Weight="3.3212046551927283" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                  <ExpressionBindings>
+                    <Item1 Ref="27" EventName="BeforePrint" PropertyName="Text" Expression="[BusiNo]" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="28" UsePadding="false" UseTextAlignment="false" />
+                </Item3>
+              </Cells>
+            </Item1>
+            <Item2 Ref="29" ControlType="XRTableRow" Name="tableRow14" Weight="1">
+              <Cells>
+                <Item1 Ref="30" ControlType="XRTableCell" Name="tableCell38" Weight="0.46206233534371621" Multiline="true" Text="tableCell14" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="31" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="32" ControlType="XRTableCell" Name="tableCell39" Weight="1.2349373533388255" Multiline="true" Text="상         호" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="33" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="34" ControlType="XRTableCell" Name="tableCell40" Weight="3.3212046551927283" Multiline="true" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                  <ExpressionBindings>
+                    <Item1 Ref="35" EventName="BeforePrint" PropertyName="Text" Expression="[BizNm]" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="36" UsePadding="false" UseTextAlignment="false" />
+                </Item3>
+              </Cells>
+            </Item2>
+            <Item3 Ref="37" ControlType="XRTableRow" Name="tableRow15" Weight="1">
+              <Cells>
+                <Item1 Ref="38" ControlType="XRTableCell" Name="tableCell41" Weight="0.46206230453795161" Text="xrTableCell55" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="39" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="40" ControlType="XRTableCell" Name="tableCell42" Weight="1.23493738414459" Text="담   당   자" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="41" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="42" ControlType="XRTableCell" Name="tableCell43" Weight="3.3212046551927283" TextAlignment="MiddleLeft" ForeColor="Black" Padding="7,0,0,0,100">
+                  <ExpressionBindings>
+                    <Item1 Ref="43" EventName="BeforePrint" PropertyName="Text" Expression="[UserNm]" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="44" UseForeColor="false" UsePadding="false" UseTextAlignment="false" />
+                </Item3>
+              </Cells>
+            </Item3>
+            <Item4 Ref="45" ControlType="XRTableRow" Name="tableRow16" Weight="1">
+              <Cells>
+                <Item1 Ref="46" ControlType="XRTableCell" Name="tableCell44" Weight="0.46206230453795161" Text="xrTableCell100" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="47" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="48" ControlType="XRTableCell" Name="tableCell45" Weight="1.23493738414459" Text="전 화 번 호" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="49" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="50" ControlType="XRTableCell" Name="tableCell46" Weight="3.3212046551927288" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                  <ExpressionBindings>
+                    <Item1 Ref="51" EventName="BeforePrint" PropertyName="Text" Expression="[PhoneNo2]" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="52" UsePadding="false" UseTextAlignment="false" />
+                </Item3>
+              </Cells>
+            </Item4>
+            <Item5 Ref="53" ControlType="XRTableRow" Name="tableRow17" Weight="2.0472440944881889">
+              <Cells>
+                <Item1 Ref="54" ControlType="XRTableCell" Name="tableCell47" Weight="0.46206230453795161" Text="xrTableCell107" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="55" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="56" ControlType="XRTableCell" Name="tableCell48" Weight="1.23493738414459" Text="주          소" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="57" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="58" ControlType="XRTableCell" Name="tableCell49" Weight="3.3212046551927288" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                  <ExpressionBindings>
+                    <Item1 Ref="59" EventName="BeforePrint" PropertyName="Text" Expression="[Address2]" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="60" UsePadding="false" UseTextAlignment="false" />
+                </Item3>
+              </Cells>
+            </Item5>
+          </Rows>
+          <StylePriority Ref="61" UseFont="false" UseForeColor="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+        </Item3>
+        <Item4 Ref="62" ControlType="XRTable" Name="table3" TextAlignment="MiddleLeft" SizeF="311.3287,179.131958" LocationFloat="0,63.71414" Font="맑은 고딕, 9pt" ForeColor="Black" Borders="All">
+          <Rows>
+            <Item1 Ref="63" ControlType="XRTableRow" Name="tableRow8" Weight="1">
+              <Cells>
+                <Item1 Ref="64" ControlType="XRTableCell" Name="tableCell22" Weight="0.46314356440044635" RowSpan="5" Multiline="true" Text="공&#xD;&#xA;급&#xD;&#xA;받&#xD;&#xA;는&#xD;&#xA;자" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="65" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="66" ControlType="XRTableCell" Name="tableCell23" Weight="4.4036444943991846" Multiline="true" Text="                                                      귀하&#xD;&#xA;" TextAlignment="MiddleLeft" ForeColor="Black" Padding="7,0,0,0,100">
+                  <ExpressionBindings>
+                    <Item1 Ref="67" EventName="BeforePrint" PropertyName="Text" Expression="[CustomerNm]" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="68" UseForeColor="false" UsePadding="false" UseTextAlignment="false" />
+                </Item2>
+              </Cells>
+            </Item1>
+            <Item2 Ref="69" ControlType="XRTableRow" Name="tableRow9" Weight="1">
+              <Cells>
+                <Item1 Ref="70" ControlType="XRTableCell" Name="tableCell24" Weight="0.46314356440044635" Multiline="true" Text="tableCell3" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="71" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="72" ControlType="XRTableCell" Name="tableCell25" Weight="4.4036444943991846" Multiline="true" Text="아래와 같이 공급합니다." TextAlignment="MiddleCenter" Font="맑은 고딕, 9pt, style=Bold">
+                  <StylePriority Ref="73" UseFont="false" UseTextAlignment="false" />
+                </Item2>
+              </Cells>
+            </Item2>
+            <Item3 Ref="74" ControlType="XRTableRow" Name="tableRow10" Weight="1">
+              <Cells>
+                <Item1 Ref="75" ControlType="XRTableCell" Name="tableCell26" Weight="0.46314356440044646" Text="xrTableCell55" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="76" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="77" ControlType="XRTableCell" Name="tableCell27" Weight="1.1891187617489927" Text="공   급   일" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="78" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="79" ControlType="XRTableCell" Name="tableCell28" Weight="3.2145257326501917" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                  <ExpressionBindings>
+                    <Item1 Ref="80" EventName="BeforePrint" PropertyName="Text" Expression="[OutDate]" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="81" UsePadding="false" UseTextAlignment="false" />
+                </Item3>
+              </Cells>
+            </Item3>
+            <Item4 Ref="82" ControlType="XRTableRow" Name="tableRow11" Weight="1">
+              <Cells>
+                <Item1 Ref="83" ControlType="XRTableCell" Name="tableCell29" Weight="0.46314356440044646" Text="xrTableCell100" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="84" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="85" ControlType="XRTableCell" Name="tableCell30" Weight="1.1891187617489927" Text="전 화 번 호" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="86" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="87" ControlType="XRTableCell" Name="tableCell31" Weight="3.2145257326501921" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                  <ExpressionBindings>
+                    <Item1 Ref="88" EventName="BeforePrint" PropertyName="Text" Expression="[PhoneNo]" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="89" UsePadding="false" UseTextAlignment="false" />
+                </Item3>
+              </Cells>
+            </Item4>
+            <Item5 Ref="90" ControlType="XRTableRow" Name="tableRow12" Weight="2.0472440944881889">
+              <Cells>
+                <Item1 Ref="91" ControlType="XRTableCell" Name="tableCell32" Weight="0.46314356440044646" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="92" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="93" ControlType="XRTableCell" Name="tableCell33" Weight="1.1891187617489927" Text="주          소" TextAlignment="MiddleCenter">
+                  <StylePriority Ref="94" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="95" ControlType="XRTableCell" Name="tableCell34" Weight="3.2145257326501921" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                  <ExpressionBindings>
+                    <Item1 Ref="96" EventName="BeforePrint" PropertyName="Text" Expression="[Address]" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="97" UsePadding="false" UseTextAlignment="false" />
+                </Item3>
+              </Cells>
+            </Item5>
+          </Rows>
+          <StylePriority Ref="98" UseFont="false" UseForeColor="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+        </Item4>
+      </Controls>
+    </Item3>
+    <Item4 Ref="100" ControlType="DetailReportBand" Name="DetailReport" Level="0" DataMember="RP_Transaction_Item" DataSource="#Ref-99">
+      <Bands>
+        <Item1 Ref="101" ControlType="DetailBand" Name="Detail1" HeightF="27.1538868">
+          <Controls>
+            <Item1 Ref="102" ControlType="XRTable" Name="table1" TextAlignment="MiddleCenter" SizeF="626.999939,27.1538868" LocationFloat="0,0" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="103" ControlType="XRTableRow" Name="tableRow33" Weight="1">
+                  <Cells>
+                    <Item1 Ref="104" ControlType="XRTableCell" Name="tableCell119" Weight="1.4368764658487088" Multiline="true" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="105" EventName="BeforePrint" PropertyName="Text" Expression="[ItemCd]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="106" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="107" ControlType="XRTableCell" Name="tableCell130" Weight="2.031382810500947" Multiline="true" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="108" EventName="BeforePrint" PropertyName="Text" Expression="[ItemNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="109" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="110" ControlType="XRTableCell" Name="tableCell120" Weight="0.87501983294910834" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="0,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="111" EventName="BeforePrint" PropertyName="Text" Expression="[OutQty]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="112" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="113" ControlType="XRTableCell" Name="tableCell121" Weight="0.9864017040694727" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="0,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="114" EventName="BeforePrint" PropertyName="Text" Expression="[Price]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="115" UsePadding="false" UseTextAlignment="false" />
+                    </Item4>
+                    <Item5 Ref="116" ControlType="XRTableCell" Name="tableCell122" Weight="0.86409603939666457" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="0,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="117" EventName="BeforePrint" PropertyName="Text" Expression="[VAT]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="118" UsePadding="false" UseTextAlignment="false" />
+                    </Item5>
+                    <Item6 Ref="119" ControlType="XRTableCell" Name="tableCell123" Weight="0.81339882628953586" Multiline="true" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="120" EventName="BeforePrint" PropertyName="Text" Expression="[Remk]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="121" UsePadding="false" UseTextAlignment="false" />
+                    </Item6>
+                  </Cells>
+                </Item1>
+              </Rows>
+              <StylePriority Ref="122" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+            </Item1>
+          </Controls>
+        </Item1>
+      </Bands>
+    </Item4>
+    <Item5 Ref="123" ControlType="DetailReportBand" Name="DetailReport1" Level="1" DataSource="#Ref-0">
+      <Bands>
+        <Item1 Ref="124" ControlType="DetailBand" Name="Detail2" HeightF="112.217812">
+          <Controls>
+            <Item1 Ref="125" ControlType="XRTable" Name="table2" TextAlignment="MiddleCenter" SizeF="627.000061,42.01242" LocationFloat="0.000203450516,10" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="126" ControlType="XRTableRow" Name="tableRow5" Weight="1">
+                  <Cells>
+                    <Item1 Ref="127" ControlType="XRTableCell" Name="tableCell21" Weight="0.51156303378378321" Multiline="true" Text="인수자" />
+                    <Item2 Ref="128" ControlType="XRTableCell" Name="tableCell57" Weight="1.3189792231286426" Multiline="true" Text="                    (인)" />
+                    <Item3 Ref="129" ControlType="XRTableCell" Name="tableCell58" Weight="0.555776027865515" Multiline="true" Text="납품자" />
+                    <Item4 Ref="130" ControlType="XRTableCell" Name="tableCell59" Weight="1.3445428394233336" Multiline="true" Text="                    (인)" />
+                    <Item5 Ref="131" ControlType="XRTableCell" Name="tableCell55" Weight="0.87041522105675706" Multiline="true" Text="합계금액&#xD;&#xA;(VAT포함)" />
+                    <Item6 Ref="132" ControlType="XRTableCell" Name="tableCell56" Weight="1.3987236547419688" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight">
+                      <StylePriority Ref="133" UsePadding="false" UseTextAlignment="false" />
+                    </Item6>
+                  </Cells>
+                </Item1>
+              </Rows>
+              <StylePriority Ref="134" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+            </Item1>
+            <Item2 Ref="135" ControlType="XRLine" Name="xrLine1" LineStyle="DashDot" SizeF="626.9999,23" LocationFloat="0,82.5" ForeColor="Black" Borders="None" BorderWidth="1" BorderDashStyle="Solid">
+              <StylePriority Ref="136" UseForeColor="false" UseBorders="false" UseBorderWidth="false" UseBorderDashStyle="false" />
+            </Item2>
+          </Controls>
+        </Item1>
+      </Bands>
+    </Item5>
+    <Item6 Ref="137" ControlType="DetailReportBand" Name="DetailReport2" Level="2" DataMember="RP_Transaction_Item" DataSource="#Ref-0">
+      <Bands>
+        <Item1 Ref="138" ControlType="DetailBand" Name="Detail3" HeightF="266.8213">
+          <Controls>
+            <Item1 Ref="139" ControlType="XRTable" Name="table6" TextAlignment="MiddleLeft" SizeF="311.3287,179.131958" LocationFloat="0,60.5354576" Font="맑은 고딕, 9pt" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="140" ControlType="XRTableRow" Name="tableRow1" Weight="1">
+                  <Cells>
+                    <Item1 Ref="141" ControlType="XRTableCell" Name="tableCell1" Weight="0.46314356440044635" RowSpan="5" Multiline="true" Text="공&#xD;&#xA;급&#xD;&#xA;받&#xD;&#xA;는&#xD;&#xA;자" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="142" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="143" ControlType="XRTableCell" Name="tableCell2" Weight="4.4036444943991846" Multiline="true" Text="                                                      귀하&#xD;&#xA;" TextAlignment="MiddleLeft" ForeColor="Black" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="144" EventName="BeforePrint" PropertyName="Text" Expression="[CustomerNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="145" UseForeColor="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                  </Cells>
+                </Item1>
+                <Item2 Ref="146" ControlType="XRTableRow" Name="tableRow2" Weight="1">
+                  <Cells>
+                    <Item1 Ref="147" ControlType="XRTableCell" Name="tableCell3" Weight="0.46314356440044635" Multiline="true" Text="tableCell3" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="148" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="149" ControlType="XRTableCell" Name="tableCell4" Weight="4.4036444943991846" Multiline="true" Text="아래와 같이 공급합니다." TextAlignment="MiddleCenter" Font="맑은 고딕, 9pt, style=Bold">
+                      <StylePriority Ref="150" UseFont="false" UseTextAlignment="false" />
+                    </Item2>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="151" ControlType="XRTableRow" Name="tableRow3" Weight="1">
+                  <Cells>
+                    <Item1 Ref="152" ControlType="XRTableCell" Name="tableCell5" Weight="0.46314356440044646" Text="xrTableCell55" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="153" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="154" ControlType="XRTableCell" Name="tableCell6" Weight="1.1891187617489927" Text="공   급   일" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="155" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="156" ControlType="XRTableCell" Name="tableCell7" Weight="3.2145257326501917" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="157" EventName="BeforePrint" PropertyName="Text" Expression="[OutDate]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="158" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item3>
+                <Item4 Ref="159" ControlType="XRTableRow" Name="tableRow4" Weight="1">
+                  <Cells>
+                    <Item1 Ref="160" ControlType="XRTableCell" Name="tableCell8" Weight="0.46314356440044646" Text="xrTableCell100" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="161" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="162" ControlType="XRTableCell" Name="tableCell9" Weight="1.1891187617489927" Text="전 화 번 호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="163" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="164" ControlType="XRTableCell" Name="tableCell10" Weight="3.2145257326501921" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="165" EventName="BeforePrint" PropertyName="Text" Expression="[PhoneNo]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="166" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item4>
+                <Item5 Ref="167" ControlType="XRTableRow" Name="tableRow6" Weight="2.0472440944881889">
+                  <Cells>
+                    <Item1 Ref="168" ControlType="XRTableCell" Name="tableCell11" Weight="0.46314356440044646" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="169" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="170" ControlType="XRTableCell" Name="tableCell12" Weight="1.1891187617489927" Text="주          소" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="171" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="172" ControlType="XRTableCell" Name="tableCell13" Weight="3.2145257326501921" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="173" EventName="BeforePrint" PropertyName="Text" Expression="[Address]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="174" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item5>
+              </Rows>
+              <StylePriority Ref="175" UseFont="false" UseForeColor="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+            </Item1>
+            <Item2 Ref="176" ControlType="XRTable" Name="table8" TextAlignment="MiddleCenter" SizeF="626.999939,27.1538849" LocationFloat="0.000406901032,239.6674" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="177" ControlType="XRTableRow" Name="tableRow23" Weight="1">
+                  <Cells>
+                    <Item1 Ref="178" ControlType="XRTableCell" Name="tableCell68" Weight="1.436876125877276" Multiline="true" Text="품목코드" />
+                    <Item2 Ref="179" ControlType="XRTableCell" Name="tableCell69" Weight="2.03138315047238" Multiline="true" Text="품목명" />
+                    <Item3 Ref="180" ControlType="XRTableCell" Name="tableCell70" Weight="0.87501983294910834" Multiline="true" Text="수량" />
+                    <Item4 Ref="181" ControlType="XRTableCell" Name="tableCell71" Weight="0.9864017040694727" Multiline="true" Text="금액" />
+                    <Item5 Ref="182" ControlType="XRTableCell" Name="tableCell72" Weight="0.86409603939666457" Multiline="true" Text="부가세" />
+                    <Item6 Ref="183" ControlType="XRTableCell" Name="tableCell73" Weight="0.81339882628953586" Multiline="true" Text="비고" />
+                  </Cells>
+                </Item1>
+              </Rows>
+              <StylePriority Ref="184" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+            </Item2>
+            <Item3 Ref="185" ControlType="XRTable" Name="table7" TextAlignment="MiddleLeft" SizeF="310.7037,179.131958" LocationFloat="316.2966,60.53543" Font="맑은 고딕, 9pt" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="186" ControlType="XRTableRow" Name="tableRow7" Weight="1">
+                  <Cells>
+                    <Item1 Ref="187" ControlType="XRTableCell" Name="tableCell14" Weight="0.46206233534371621" RowSpan="5" Multiline="true" Text="공&#xD;&#xA;&#xD;&#xA;급&#xD;&#xA;&#xD;&#xA;자" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="188" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="189" ControlType="XRTableCell" Name="tableCell15" Weight="1.2349373533388255" Text="사업자번호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="190" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="191" ControlType="XRTableCell" Name="tableCell16" Weight="3.3212046551927283" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="192" EventName="BeforePrint" PropertyName="Text" Expression="[BusiNo]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="193" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item1>
+                <Item2 Ref="194" ControlType="XRTableRow" Name="tableRow19" Weight="1">
+                  <Cells>
+                    <Item1 Ref="195" ControlType="XRTableCell" Name="tableCell17" Weight="0.46206233534371621" Multiline="true" Text="tableCell14" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="196" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="197" ControlType="XRTableCell" Name="tableCell18" Weight="1.2349373533388255" Multiline="true" Text="상         호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="198" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="199" ControlType="XRTableCell" Name="tableCell19" Weight="3.3212046551927283" Multiline="true" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="200" EventName="BeforePrint" PropertyName="Text" Expression="[BizNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="201" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="202" ControlType="XRTableRow" Name="tableRow20" Weight="1">
+                  <Cells>
+                    <Item1 Ref="203" ControlType="XRTableCell" Name="tableCell20" Weight="0.46206230453795161" Text="xrTableCell55" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="204" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="205" ControlType="XRTableCell" Name="tableCell60" Weight="1.23493738414459" Text="담   당   자" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="206" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="207" ControlType="XRTableCell" Name="tableCell61" Weight="3.3212046551927283" TextAlignment="MiddleLeft" ForeColor="Black" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="208" EventName="BeforePrint" PropertyName="Text" Expression="[UserNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="209" UseForeColor="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item3>
+                <Item4 Ref="210" ControlType="XRTableRow" Name="tableRow21" Weight="1">
+                  <Cells>
+                    <Item1 Ref="211" ControlType="XRTableCell" Name="tableCell62" Weight="0.46206230453795161" Text="xrTableCell100" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="212" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="213" ControlType="XRTableCell" Name="tableCell63" Weight="1.23493738414459" Text="전 화 번 호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="214" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="215" ControlType="XRTableCell" Name="tableCell64" Weight="3.3212046551927288" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="216" EventName="BeforePrint" PropertyName="Text" Expression="[PhoneNo2]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="217" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item4>
+                <Item5 Ref="218" ControlType="XRTableRow" Name="tableRow22" Weight="2.0472440944881889">
+                  <Cells>
+                    <Item1 Ref="219" ControlType="XRTableCell" Name="tableCell65" Weight="0.46206230453795161" Text="xrTableCell107" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="220" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="221" ControlType="XRTableCell" Name="tableCell66" Weight="1.23493738414459" Text="주          소" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="222" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="223" ControlType="XRTableCell" Name="tableCell67" Weight="3.3212046551927288" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="224" EventName="BeforePrint" PropertyName="Text" Expression="[Address2]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="225" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item5>
+              </Rows>
+              <StylePriority Ref="226" UseFont="false" UseForeColor="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+            </Item3>
+            <Item4 Ref="227" ControlType="XRLabel" Name="label1" Multiline="true" Text="거래명세서" TextAlignment="MiddleCenter" SizeF="627.000061,34.45835" LocationFloat="0.000203450516,0" Font="맑은 고딕, 13pt, style=Bold" ForeColor="Black">
+              <StylePriority Ref="228" UseFont="false" UseForeColor="false" UseTextAlignment="false" />
+            </Item4>
+          </Controls>
+        </Item1>
+      </Bands>
+    </Item6>
+    <Item7 Ref="229" ControlType="DetailReportBand" Name="DetailReport3" Level="3" DataMember="RP_Transaction_Item" DataSource="#Ref-99">
+      <Bands>
+        <Item1 Ref="230" ControlType="DetailBand" Name="Detail4" HeightF="27.1538868">
+          <Controls>
+            <Item1 Ref="231" ControlType="XRTable" Name="table9" TextAlignment="MiddleCenter" SizeF="626.999939,27.1538868" LocationFloat="0,0" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="232" ControlType="XRTableRow" Name="tableRow24" Weight="1">
+                  <Cells>
+                    <Item1 Ref="233" ControlType="XRTableCell" Name="tableCell74" Weight="1.4368764658487088" Multiline="true" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="234" EventName="BeforePrint" PropertyName="Text" Expression="[ItemCd]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="235" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="236" ControlType="XRTableCell" Name="tableCell75" Weight="2.031382810500947" Multiline="true" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="237" EventName="BeforePrint" PropertyName="Text" Expression="[ItemNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="238" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="239" ControlType="XRTableCell" Name="tableCell76" Weight="0.87501983294910834" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="0,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="240" EventName="BeforePrint" PropertyName="Text" Expression="[OutQty]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="241" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="242" ControlType="XRTableCell" Name="tableCell77" Weight="0.9864017040694727" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="0,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="243" EventName="BeforePrint" PropertyName="Text" Expression="[Price]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="244" UsePadding="false" UseTextAlignment="false" />
+                    </Item4>
+                    <Item5 Ref="245" ControlType="XRTableCell" Name="tableCell78" Weight="0.86409603939666457" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="0,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="246" EventName="BeforePrint" PropertyName="Text" Expression="[VAT]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="247" UsePadding="false" UseTextAlignment="false" />
+                    </Item5>
+                    <Item6 Ref="248" ControlType="XRTableCell" Name="tableCell79" Weight="0.81339882628953586" Multiline="true" TextAlignment="MiddleLeft" Padding="7,0,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="249" EventName="BeforePrint" PropertyName="Text" Expression="[Remk]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="250" UsePadding="false" UseTextAlignment="false" />
+                    </Item6>
+                  </Cells>
+                </Item1>
+              </Rows>
+              <StylePriority Ref="251" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+            </Item1>
+          </Controls>
+        </Item1>
+      </Bands>
+    </Item7>
+    <Item8 Ref="252" ControlType="DetailReportBand" Name="DetailReport4" Level="4" DataSource="#Ref-0">
+      <Bands>
+        <Item1 Ref="253" ControlType="DetailBand" Name="Detail5" HeightF="54.98637">
+          <Controls>
+            <Item1 Ref="254" ControlType="XRTable" Name="table10" TextAlignment="MiddleCenter" SizeF="627.000061,42.01242" LocationFloat="0.000406901032,10" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="255" ControlType="XRTableRow" Name="tableRow25" Weight="1">
+                  <Cells>
+                    <Item1 Ref="256" ControlType="XRTableCell" Name="tableCell80" Weight="0.51156303378378321" Multiline="true" Text="인수자" />
+                    <Item2 Ref="257" ControlType="XRTableCell" Name="tableCell81" Weight="1.3189792231286426" Multiline="true" Text="                    (인)" />
+                    <Item3 Ref="258" ControlType="XRTableCell" Name="tableCell82" Weight="0.555776027865515" Multiline="true" Text="납품자" />
+                    <Item4 Ref="259" ControlType="XRTableCell" Name="tableCell83" Weight="1.3445428394233336" Multiline="true" Text="                    (인)" />
+                    <Item5 Ref="260" ControlType="XRTableCell" Name="tableCell84" Weight="0.87041522105675706" Multiline="true" Text="합계금액&#xD;&#xA;(VAT포함)" />
+                    <Item6 Ref="261" ControlType="XRTableCell" Name="tableCell85" Weight="1.3987236547419688" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight">
+                      <StylePriority Ref="262" UsePadding="false" UseTextAlignment="false" />
+                    </Item6>
+                  </Cells>
+                </Item1>
+              </Rows>
+              <StylePriority Ref="263" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+            </Item1>
+          </Controls>
+        </Item1>
+      </Bands>
+    </Item8>
+  </Bands>
+  <ComponentStorage>
+    <Item1 Ref="0" ObjectType="DevExpress.DataAccess.Sql.SqlDataSource,DevExpress.DataAccess.v20.1" Name="sqlDataSource1" Base64="PFNxbERhdGFTb3VyY2UgTmFtZT0ic3FsRGF0YVNvdXJjZTEiPjxDb25uZWN0aW9uIE5hbWU9IkdNSU5XRUJfQ0pDQ29udGV4dENvbm5lY3Rpb24iIEZyb21BcHBDb25maWc9InRydWUiIC8+PFF1ZXJ5IFR5cGU9IlN0b3JlZFByb2NRdWVyeSIgTmFtZT0iUlBfVHJhbnNhY3Rpb25fSXRlbSI+PFBhcmFtZXRlciBOYW1lPSJAUl9DUlVEIiBUeXBlPSJTeXN0ZW0uU3RyaW5nIj5QMTA8L1BhcmFtZXRlcj48UGFyYW1ldGVyIE5hbWU9IkBCaXpVbml0IiBUeXBlPSJEZXZFeHByZXNzLkRhdGFBY2Nlc3MuRXhwcmVzc2lvbiI+KFN5c3RlbS5TdHJpbmcpKD9CaXpVbml0KTwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQE9yZGVyTm8iIFR5cGU9IkRldkV4cHJlc3MuRGF0YUFjY2Vzcy5FeHByZXNzaW9uIj4oU3lzdGVtLlN0cmluZykoP09yZGVyTm8pPC9QYXJhbWV0ZXI+PFBhcmFtZXRlciBOYW1lPSJAT3V0RGF0ZSIgVHlwZT0iRGV2RXhwcmVzcy5EYXRhQWNjZXNzLkV4cHJlc3Npb24iPihTeXN0ZW0uU3RyaW5nKSg/T3V0RGF0ZSk8L1BhcmFtZXRlcj48UHJvY05hbWU+UlBfVHJhbnNhY3Rpb25fSXRlbTwvUHJvY05hbWU+PC9RdWVyeT48UmVzdWx0U2NoZW1hPjxEYXRhU2V0IE5hbWU9InNxbERhdGFTb3VyY2UxIj48VmlldyBOYW1lPSJSUF9UcmFuc2FjdGlvbl9JdGVtIj48RmllbGQgTmFtZT0iQml6VW5pdCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJDdXN0b21lck5tIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9Ik91dERhdGUiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iUGhvbmVObyIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJBZGRyZXNzIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkJ1c2lObyIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJCaXpObSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJVc2VyTm0iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iUGhvbmVObzIiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQWRkcmVzczIiIFR5cGU9IlN0cmluZyIgLz48L1ZpZXc+PC9EYXRhU2V0PjwvUmVzdWx0U2NoZW1hPjxDb25uZWN0aW9uT3B0aW9ucyBDbG9zZUNvbm5lY3Rpb249InRydWUiIC8+PC9TcWxEYXRhU291cmNlPg==" />
+    <Item2 Ref="99" ObjectType="DevExpress.DataAccess.Sql.SqlDataSource,DevExpress.DataAccess.v20.1" Name="sqlDataSource2" Base64="PFNxbERhdGFTb3VyY2UgTmFtZT0ic3FsRGF0YVNvdXJjZTIiPjxDb25uZWN0aW9uIE5hbWU9IkdNSU5XRUJfQ0pDQ29udGV4dENvbm5lY3Rpb24iIEZyb21BcHBDb25maWc9InRydWUiIC8+PFF1ZXJ5IFR5cGU9IlN0b3JlZFByb2NRdWVyeSIgTmFtZT0iUlBfVHJhbnNhY3Rpb25fSXRlbSI+PFBhcmFtZXRlciBOYW1lPSJAUl9DUlVEIiBUeXBlPSJTeXN0ZW0uU3RyaW5nIj5QMTE8L1BhcmFtZXRlcj48UGFyYW1ldGVyIE5hbWU9IkBCaXpVbml0IiBUeXBlPSJEZXZFeHByZXNzLkRhdGFBY2Nlc3MuRXhwcmVzc2lvbiI+KFN5c3RlbS5TdHJpbmcpKD9CaXpVbml0KTwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQE9yZGVyTm8iIFR5cGU9IkRldkV4cHJlc3MuRGF0YUFjY2Vzcy5FeHByZXNzaW9uIj4oU3lzdGVtLlN0cmluZykoP09yZGVyTm8pPC9QYXJhbWV0ZXI+PFBhcmFtZXRlciBOYW1lPSJAT3V0RGF0ZSIgVHlwZT0iRGV2RXhwcmVzcy5EYXRhQWNjZXNzLkV4cHJlc3Npb24iPihTeXN0ZW0uU3RyaW5nKSg/T3V0RGF0ZSk8L1BhcmFtZXRlcj48UHJvY05hbWU+UlBfVHJhbnNhY3Rpb25fSXRlbTwvUHJvY05hbWU+PC9RdWVyeT48UmVzdWx0U2NoZW1hPjxEYXRhU2V0IE5hbWU9InNxbERhdGFTb3VyY2UyIj48VmlldyBOYW1lPSJSUF9UcmFuc2FjdGlvbl9JdGVtIj48RmllbGQgTmFtZT0iQml6VW5pdCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJDdXN0b21lck5tIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9Ik91dERhdGUiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iUGhvbmVObyIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJBZGRyZXNzIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkJ1c2lObyIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJCaXpObSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJVc2VyTm0iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iUGhvbmVObzIiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQWRkcmVzczIiIFR5cGU9IlN0cmluZyIgLz48L1ZpZXc+PC9EYXRhU2V0PjwvUmVzdWx0U2NoZW1hPjxDb25uZWN0aW9uT3B0aW9ucyBDbG9zZUNvbm5lY3Rpb249InRydWUiIC8+PC9TcWxEYXRhU291cmNlPg==" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>

@@ -1,0 +1,355 @@
+﻿@using GMINWEB_CJC.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject ICommonCodeData _codeManager
+@inject IGroupData _db
+@inject IFileData _fileManager
+@inject NotificationService NotificationService
+@inject IJSRuntime jsRuntime
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Style="width:1200px; overflow-x:auto; height:550px; overflow-y:auto;" Data="groupModel">
+    <div class="row">
+        <div class="col-sm">
+            <RadzenFieldset Text="조직 정보">
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="조직코드"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenNumeric TValue="int" ReadOnly="true" Placeholder="자동채번" style="width: 100%;" Name="GroupCd" @bind-Value="@groupModel.GroupCd" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="부서명"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="GroupNm" @bind-Value="@groupModel.GroupNm"></RadzenTextBox>
+                    </div>
+                </div>
+                @*<div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="부서유형"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="GroupType" @bind-Value="@groupModel.GroupType"></RadzenTextBox>
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="표시순서"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenNumeric TValue="int" style="width: 100%;" Name="DispSeq" @bind-Value="@groupModel.DispSeq" />
+                    </div>
+                </div>*@
+            </RadzenFieldset>
+
+            <RadzenFieldset Text="조직 관련 문서">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="신규" Click="@InsertRow" Disabled=@(fileModelToInsert != null) />
+                <RadzenDataGrid @ref="detailGrid" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                Data="@fileModels" TItem="FileModel" EmptyText="">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="FileModel" Property="FileNo" Title="파일코드" Width="70px" CssClass="data_center"/>
+                        <RadzenDataGridColumn TItem="FileModel" Property="GroupCd" Title="조직코드" Width="70px" CssClass="data_center"/>
+                        <RadzenDataGridColumn TItem="FileModel" Property="DetailCls" Title="파일구분" Width="120px" Visible="false">
+                            <EditTemplate Context="file">
+                                <RadzenNumeric Name="DetailCls" ReadOnly="true" @bind-Value="file.DetailCls"></RadzenNumeric>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Property="DetailClsNm" Title="파일구분명" Width="120px">
+
+                            <EditTemplate Context="file">
+                                <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100"
+                                                AllowFiltering="true" Data=@DetailClsList TextProperty="CodeSubNm" ValueProperty="CodeSubNm" @bind-Value="file.DetailClsNm"
+                                                SelectedItemChanged="@(args => OnChangeDetailCls(args, "파일구분"))" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Filterable="false" Title="업로드" Width="220px" CssClass="data_center">
+                            <EditTemplate Context="file">
+                                <BlazorFileUploader.InputFile OnChange="HandleFileSelected"></BlazorFileUploader.InputFile>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Property="FileNm" Title="파일명" Width="200px" />
+                        <RadzenDataGridColumn TItem="FileModel" Property="FileData" Title="데이터" Width="100px" />
+                        <RadzenDataGridColumn TItem="FileModel" Property="FileType" Title="파일형식" Width="120px" />
+                        <RadzenDataGridColumn TItem="FileModel" Title="다운로드" Width="150px" CssClass="data_center">
+                            <Template Context="file">
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Click="()=>btnDownloadFile(file)">다운로드</RadzenButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                            <Template Context="file">
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(file))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="file">
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(file))">
+                                </RadzenButton>
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(file))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                            <Template Context="file">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(file))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="file">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(file))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <div style="width:300px;margin:0 auto;">
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+    <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public GroupModel selectedGroup { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+
+    private List<FileModel> fileModels;
+    public FileModel selectedFile { get; set; }
+    private GroupModel groupModel = new GroupModel();
+
+    RadzenDataGrid<FileModel> detailGrid;
+    private List<CommonCodeModel> DetailClsList;
+
+    private FileModel fileModelToInsert;
+    private FileModel fileModelToDelete;
+
+    string imgSrc = "";
+    IFileListEntry file = null;
+    byte[] _fileBytes = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedGroup is not null)
+        {
+            groupModel.BizUnit = selectedGroup.BizUnit;
+            groupModel.GroupCd = selectedGroup.GroupCd;
+            groupModel.GroupNm = selectedGroup.GroupNm;
+            groupModel.GroupType = selectedGroup.GroupType;
+            groupModel.ParentGCd = selectedGroup.ParentGCd;
+            groupModel.DispSeq = selectedGroup.DispSeq;
+
+            fileModels = await _db.GetFile(groupModel.GroupCd, loginId);
+        }
+
+        DetailClsList = await _codeManager.FindCommonCodeFromName("조직관련파일", loginId);
+
+    }
+
+    void OnChangeDetailCls(object value, string name)
+    {
+        if (value is not null && fileModelToInsert is not null)
+        {
+            fileModelToInsert.DetailCls = ((CommonCodeModel)value).CodeSeq;
+            fileModelToInsert.DetailClsNm = ((CommonCodeModel)value).CodeSubNm;
+
+        }
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+    async Task InsertRow()
+    {
+        if (groupModel.GroupCd != 0)
+        {
+            fileModelToInsert = new FileModel();
+            fileModelToInsert.GroupCd = groupModel.GroupCd;
+            fileModelToInsert.FileCls = 1; // 부서 정보 파일
+
+            await detailGrid.InsertRow(fileModelToInsert);
+        }
+
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "파일 업로드는 조직 정보 저장 후 등록할 수 있습니다.");
+            //ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = "!경고!", Detail = "파일 업로드는 조직 정보 저장 후 등록할 수 있습니다." });
+        }
+    }
+
+    async Task EditRow(FileModel file)
+    {
+        fileModelToInsert = file;
+
+        await detailGrid.EditRow(file);
+    }
+
+    async Task SaveRow(FileModel file)
+    {
+        if (file == fileModelToInsert)
+        {
+            fileModelToInsert = null;
+        }
+
+        if (ValidationCheckFile(file) == true)
+        {
+            if (file.FileNo == 0)
+            {
+                //파일넘버가 채번되기 전이면 INSERT 
+                await _fileManager.InsertData(file, loginId);
+            }
+            else
+            {
+                //파일넘버가 기존에 존재하면 UPDATE
+                await _fileManager.UpdateData(file, loginId);
+            }
+            await detailGrid.UpdateRow(file);
+            fileModels = await _db.GetFile(groupModel.GroupCd, loginId);
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "파일 종류와 파일을 선택하여 주십시오.");
+        }
+    }
+
+    void CancelEdit(FileModel file)
+    {
+        if (file == fileModelToInsert)
+        {
+            fileModelToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(file);
+    }
+
+    async Task DeleteRow(FileModel file)
+    {
+        if (file == fileModelToInsert)
+        {
+            fileModelToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE 
+        if (fileModels.Contains(file))
+        {
+            selectedFile = file;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            detailGrid.CancelEditRow(file);
+            await detailGrid.Reload();
+        }
+    }
+
+    public async Task HandleFileSelected(IFileListEntry[] files)
+    {
+        if (files.Count() > 0)
+        {
+            file = files.FirstOrDefault();
+            using (var ms = new MemoryStream())
+            {
+                await file.Data.CopyToAsync(ms);
+                _fileBytes = ms.ToArray();
+
+                fileModelToInsert.FileNm = file.Name;
+                fileModelToInsert.FileType = file.Type;
+                fileModelToInsert.FileData = Convert.ToBase64String(_fileBytes);
+            }
+        }
+    }
+
+
+    void btnDownloadFile(FileModel file)
+    {
+        var fileArr = Convert.FromBase64String(file.FileData);
+        jsRuntime.InvokeVoidAsync("DownloadAsFile", file.FileNm, file.FileType, fileArr);
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckGroup(groupModel) == true)
+        {
+            if (groupModel.GroupCd == 0)
+            {
+                await _db.InsertData(groupModel, loginId);
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+            else
+            {
+                await _db.UpdateData(groupModel,loginId);
+
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "조직명을 입력하여 주십시오.");
+        }
+
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _fileManager.DeleteData(selectedFile, loginId);
+            fileModels = await _db.GetFile(groupModel.GroupCd, loginId);
+            await detailGrid.Reload();
+        }
+        else
+        {
+            selectedFile = null;
+        }
+    }
+
+    bool ValidationCheckFile(FileModel file)
+    {
+        //필수값 미입력시 false 반환
+        if (file.FileNm is null || file.FileData is null || file.FileType is null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    bool ValidationCheckGroup(GroupModel group)
+    {
+        //필수값 미입력시 false 반환
+        if (group.GroupNm is null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+이 파일은 웹 프로젝트의 게시/패키지 프로세스에서 사용됩니다. 이 MSBuild 파일을 편집하여 이 프로세스의 동작을
+사용자 지정할 수 있습니다. 이에 대한 자세한 내용은 https://go.microsoft.com/fwlink/?LinkID=208121을 참조하세요. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAATC0mi879skmBNkyUs5EMnAAAAAACAAAAAAAQZgAAAAEAACAAAAA/9IZLn0IhbPL7UBFe+Ei9hztCSj0p9SLRFpYX74o+6wAAAAAOgAAAAAIAACAAAADXoxPvmXOeUkiuCzBZYntDYS2T7c8LcmSHk1qFCloGjyAAAACy6dADFtOt+DmbYJsxMySVGiMyyHEJqOgZIYoffJLOD0AAAACt2Sa67xb1UVG0rBQ+7bB0nMA+rXcUfZRAirY76CmUTWWqmcLkP8akpdWdfQMToOifqA70lrhTgVX/dqLiFt0q</EncryptedPassword>
+    <History>True|2023-07-17T01:36:14.7884849Z;True|2023-07-17T10:35:23.7701329+09:00;True|2023-07-17T10:30:25.4942631+09:00;False|2023-07-17T10:28:33.1852399+09:00;True|2023-07-17T10:19:31.5913688+09:00;True|2023-07-13T14:37:46.0354601+09:00;True|2023-07-13T14:22:19.4991685+09:00;True|2023-07-13T14:20:44.2560658+09:00;</History>
+  </PropertyGroup>
+</Project>

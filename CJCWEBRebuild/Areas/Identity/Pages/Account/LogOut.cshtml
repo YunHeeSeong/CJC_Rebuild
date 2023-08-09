@@ -1,0 +1,111 @@
+﻿@page
+@using Microsoft.AspNetCore.Identity;
+@using System.Net;
+@using System.IO;
+@using DataAccessLibrary;
+@using DataAccessLibrary.Model;
+@using System.Net.Sockets;
+@using System.Threading;
+
+@attribute [IgnoreAntiforgeryToken]
+@inject SignInManager<IdentityUser> SignInManager
+
+@functions {
+
+    //public string loginId { get; set; }
+
+    public async Task<IActionResult> OnPost()
+    {
+
+        if (SignInManager.IsSignedIn(User))
+        {
+            await SignInManager.SignOutAsync();
+
+            Info(User.Identity.Name); //Principal => string 형태로 제공
+        }
+
+        return Redirect("~/");
+    }
+
+    public static string GetIp() //IpAddr 정보 받아오는 코드
+    {
+
+        IPHostEntry ipHost = Dns.GetHostEntry(Dns.GetHostName());
+        string ip = String.Empty;
+        for (int i = 0; i < ipHost.AddressList.Length; i++)
+        {
+            if (ipHost.AddressList[i].AddressFamily == AddressFamily.InterNetwork)
+                ip = ipHost.AddressList[i].ToString();
+        }
+        return ip;
+    }
+
+    public static void Info(string ID)
+    {
+
+        try
+        {
+            //로그아웃 정보 로그기록 남기기
+            //추후 로그 데이터를 모아 정해진 시점에 전송 고려
+            string url = "https://log.smart-factory.kr/apisvc/sendLogDataXML.do";
+            string prefix = "logData=";
+            GlobalVar.IpAddr = GetIp(); //IP접속 주소 값
+                                        //. = ID;// Login 시 입력한 Email(ID)값
+            var data = "<logData>"; //로그기록전송 코드 (XML 형태)
+            data += "<crtfcKey>" + System.Web.HttpUtility.UrlEncode("$5$API$s1rQDi4MOpTc2GIE5ZWQYRKIszkadhdUPfkgMUund9.") + "</crtfcKey>";
+            data += "<logDt>" + System.Web.HttpUtility.UrlEncode(DateTime.Now.ToString("yyyy-MM-dd HH:MM:dd.fff")) + "</logDt>";
+            data += "<useSe>" + System.Web.HttpUtility.UrlEncode("종료") + "</useSe>";
+            data += "<sysUser>" + System.Web.HttpUtility.UrlEncode(ID) + "</sysUser>";
+            data += "<conectIp>" + System.Web.HttpUtility.UrlEncode(GlobalVar.IpAddr) + "</conectIp>";
+            data += "<dataUsgqty>" + System.Web.HttpUtility.UrlEncode("22222") + "</dataUsgqty>";
+            data += "</logData>";
+
+            //호출
+            HttpWebRequest reque = (HttpWebRequest)WebRequest.Create(url);
+
+
+            //urlencode
+            string encodedt = System.Web.HttpUtility.UrlEncode(data);
+
+            //byte로 변경
+            byte[] reqInFormOfBytes = System.Text.Encoding.ASCII.GetBytes(prefix + encodedt);
+
+            //속성설정
+            reque.Method = "POST";
+            reque.ContentType = "application/x-www-form-urlencoded";
+            reque.ContentLength = reqInFormOfBytes.Length;
+            reque.Timeout = 180000;
+
+            Thread.Sleep(180000);
+
+            //stream 호출 및 전송
+            System.IO.Stream reqStream = reque.GetRequestStream();
+            reqStream.Write(reqInFormOfBytes, 0, reqInFormOfBytes.Length);
+            reqStream.Close();
+
+            /*응답 (응답 성공여부 확인 부분)
+            result: OK
+            Code: 200*/
+            HttpWebResponse resp = (HttpWebResponse)reque.GetResponse();
+
+            //streamReader 호출 및 문자열 처리
+            StreamReader respStream = new StreamReader(resp.GetResponseStream(), System.Text.Encoding.Default);
+
+            //확인용(전송결과) Code: AP1002 성공
+            string receresp = respStream.ReadToEnd();
+            //xmlReader 호출
+            System.Xml.XmlReader reader = System.Xml.XmlReader.Create(new StringReader(receresp));
+            respStream.Close();
+            resp.Close();
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        finally
+        {
+            Console.WriteLine("성공");
+        }
+    }
+}

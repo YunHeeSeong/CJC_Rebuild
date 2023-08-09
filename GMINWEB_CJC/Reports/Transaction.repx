@@ -1,0 +1,596 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="20.1.12.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v20.1, Version=20.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="Transaction" Margins="98, 100, 101, 100" PaperKind="A4" PageWidth="827" PageHeight="1169" Version="20.1" FilterString="[BizUnit] = ?BizUnit And [FactBizUnit] = ?FactBizUnit And [OrderNo] = ?OrderNo And [OutSeq] = ?OutSeq" DataMember="RP_Transaction_PDItem" DataSource="#Ref-0" Font="Arial, 9.75pt" ForeColor="0,0,0,0">
+  <Parameters>
+    <Item1 Ref="3" Description="BizUnit" Name="BizUnit" />
+    <Item2 Ref="4" Description="FactBizUnit" Name="FactBizUnit" />
+    <Item3 Ref="5" Description="OrderNo" Name="OrderNo" />
+    <Item4 Ref="7" Description="OutSeq" ValueInfo="0" Name="OutSeq" Type="#Ref-6" />
+  </Parameters>
+  <Bands>
+    <Item1 Ref="8" ControlType="TopMarginBand" Name="TopMargin" HeightF="100.666656" />
+    <Item2 Ref="9" ControlType="BottomMarginBand" Name="BottomMargin" />
+    <Item3 Ref="10" ControlType="DetailBand" Name="Detail" Expanded="false" />
+    <Item4 Ref="11" ControlType="DetailReportBand" Name="DetailReport" Level="0" DataSource="#Ref-0">
+      <Bands>
+        <Item1 Ref="12" ControlType="DetailBand" Name="Detail1" HeightF="476.095825">
+          <Controls>
+            <Item1 Ref="13" ControlType="XRLabel" Name="label2" Multiline="true" Text="거래명세서" TextAlignment="MiddleCenter" SizeF="627.000061,34.45835" LocationFloat="0,0" Font="맑은 고딕, 13pt, style=Bold" ForeColor="Black">
+              <StylePriority Ref="14" UseFont="false" UseForeColor="false" UseTextAlignment="false" />
+            </Item1>
+            <Item2 Ref="15" ControlType="XRLine" Name="xrLine1" LineStyle="DashDot" SizeF="626.9999,23" LocationFloat="0.000222524,453.095825" ForeColor="Black" Borders="None" BorderWidth="1" BorderDashStyle="Solid">
+              <StylePriority Ref="16" UseForeColor="false" UseBorders="false" UseBorderWidth="false" UseBorderDashStyle="false" />
+            </Item2>
+            <Item3 Ref="17" ControlType="XRTable" Name="table1" TextAlignment="MiddleCenter" SizeF="627.000061,42.01242" LocationFloat="0,411.0834" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Padding="2,2,0,0,96" Borders="All">
+              <Rows>
+                <Item1 Ref="18" ControlType="XRTableRow" Name="tableRow5" Weight="1">
+                  <Cells>
+                    <Item1 Ref="19" ControlType="XRTableCell" Name="tableCell21" Weight="0.51156303378378321" Multiline="true" Text="인수자" />
+                    <Item2 Ref="20" ControlType="XRTableCell" Name="tableCell57" Weight="1.3189792231286426" Multiline="true" Text="                    (인)" />
+                    <Item3 Ref="21" ControlType="XRTableCell" Name="tableCell58" Weight="0.555776027865515" Multiline="true" Text="납품자" />
+                    <Item4 Ref="22" ControlType="XRTableCell" Name="tableCell59" Weight="1.3445428394233336" Multiline="true" Text="                    (인)" />
+                    <Item5 Ref="23" ControlType="XRTableCell" Name="tableCell55" Weight="0.87041522105675706" Multiline="true" Text="합계금액&#xD;&#xA;(VAT포함)" />
+                    <Item6 Ref="24" ControlType="XRTableCell" Name="tableCell56" Weight="1.3987236547419688" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="7,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="25" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[TotPrice]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="26" UsePadding="false" UseTextAlignment="false" />
+                    </Item6>
+                  </Cells>
+                </Item1>
+              </Rows>
+              <StylePriority Ref="27" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+            </Item3>
+            <Item4 Ref="28" ControlType="XRTable" Name="table5" TextAlignment="MiddleCenter" SizeF="629,162.923309" LocationFloat="0,235.022232" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="29" ControlType="XRTableRow" Name="tableRow18" Weight="1">
+                  <Cells>
+                    <Item1 Ref="30" ControlType="XRTableCell" Name="tableCell50" Weight="1.436876125877276" Multiline="true" Text="품목코드" />
+                    <Item2 Ref="31" ControlType="XRTableCell" Name="tableCell129" Weight="2.03138315047238" Multiline="true" Text="품목명" />
+                    <Item3 Ref="32" ControlType="XRTableCell" Name="tableCell51" Weight="0.87501983294910834" Multiline="true" Text="수량" />
+                    <Item4 Ref="33" ControlType="XRTableCell" Name="tableCell52" Weight="0.9864017040694727" Multiline="true" Text="금액" />
+                    <Item5 Ref="34" ControlType="XRTableCell" Name="tableCell53" Weight="0.86409603939666457" Multiline="true" Text="부가세" />
+                    <Item6 Ref="35" ControlType="XRTableCell" Name="tableCell54" Weight="0.81339882628953586" Multiline="true" Text="통관비" />
+                  </Cells>
+                </Item1>
+                <Item2 Ref="36" ControlType="XRTableRow" Name="tableRow33" Weight="1">
+                  <Cells>
+                    <Item1 Ref="37" ControlType="XRTableCell" Name="tableCell119" Weight="1.4368764658487088" Multiline="true" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="38" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[ItemCd]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="39" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="40" ControlType="XRTableCell" Name="tableCell130" Weight="2.031382810500947" Multiline="true" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="41" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[ItemNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="42" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="43" ControlType="XRTableCell" Name="tableCell120" Weight="0.87501983294910834" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="7,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="44" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[OutQty]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="45" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="46" ControlType="XRTableCell" Name="tableCell121" Weight="0.9864017040694727" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="7,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="47" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[Price]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="48" UsePadding="false" UseTextAlignment="false" />
+                    </Item4>
+                    <Item5 Ref="49" ControlType="XRTableCell" Name="tableCell122" Weight="0.86409603939666457" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="7,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="50" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[VAT]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="51" UsePadding="false" UseTextAlignment="false" />
+                    </Item5>
+                    <Item6 Ref="52" ControlType="XRTableCell" Name="tableCell123" Weight="0.81339882628953586" TextFormatString="{0:#,#}" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="53" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[Tax]" />
+                      </ExpressionBindings>
+                    </Item6>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="54" ControlType="XRTableRow" Name="tableRow2" Weight="1">
+                  <Cells>
+                    <Item1 Ref="55" ControlType="XRTableCell" Name="tableCell6" Weight="1.4368764658487088" Multiline="true" />
+                    <Item2 Ref="56" ControlType="XRTableCell" Name="tableCell131" Weight="2.031382810500947" Multiline="true" />
+                    <Item3 Ref="57" ControlType="XRTableCell" Name="tableCell7" Weight="0.87501983294910834" Multiline="true" />
+                    <Item4 Ref="58" ControlType="XRTableCell" Name="tableCell8" Weight="0.9864017040694727" Multiline="true" />
+                    <Item5 Ref="59" ControlType="XRTableCell" Name="tableCell9" Weight="0.86409603939666457" Multiline="true" />
+                    <Item6 Ref="60" ControlType="XRTableCell" Name="tableCell10" Weight="0.81339882628953586" Multiline="true" />
+                  </Cells>
+                </Item3>
+                <Item4 Ref="61" ControlType="XRTableRow" Name="tableRow1" Weight="1">
+                  <Cells>
+                    <Item1 Ref="62" ControlType="XRTableCell" Name="tableCell1" Weight="1.4368764658487088" Multiline="true" />
+                    <Item2 Ref="63" ControlType="XRTableCell" Name="tableCell132" Weight="2.031382810500947" Multiline="true" />
+                    <Item3 Ref="64" ControlType="XRTableCell" Name="tableCell2" Weight="0.87501983294910834" Multiline="true" />
+                    <Item4 Ref="65" ControlType="XRTableCell" Name="tableCell3" Weight="0.9864017040694727" Multiline="true" />
+                    <Item5 Ref="66" ControlType="XRTableCell" Name="tableCell4" Weight="0.86409603939666457" Multiline="true" />
+                    <Item6 Ref="67" ControlType="XRTableCell" Name="tableCell5" Weight="0.81339882628953586" Multiline="true" />
+                  </Cells>
+                </Item4>
+                <Item5 Ref="68" ControlType="XRTableRow" Name="tableRow3" Weight="1">
+                  <Cells>
+                    <Item1 Ref="69" ControlType="XRTableCell" Name="tableCell11" Weight="1.4368764658487088" Multiline="true" />
+                    <Item2 Ref="70" ControlType="XRTableCell" Name="tableCell133" Weight="2.031382810500947" Multiline="true" />
+                    <Item3 Ref="71" ControlType="XRTableCell" Name="tableCell12" Weight="0.87501983294910834" Multiline="true" />
+                    <Item4 Ref="72" ControlType="XRTableCell" Name="tableCell13" Weight="0.9864017040694727" Multiline="true" />
+                    <Item5 Ref="73" ControlType="XRTableCell" Name="tableCell14" Weight="0.86409603939666457" Multiline="true" />
+                    <Item6 Ref="74" ControlType="XRTableCell" Name="tableCell15" Weight="0.81339882628953586" Multiline="true" />
+                  </Cells>
+                </Item5>
+                <Item6 Ref="75" ControlType="XRTableRow" Name="tableRow4" Weight="1">
+                  <Cells>
+                    <Item1 Ref="76" ControlType="XRTableCell" Name="tableCell16" Weight="1.4368764658487088" Multiline="true" />
+                    <Item2 Ref="77" ControlType="XRTableCell" Name="tableCell134" Weight="2.031382810500947" Multiline="true" />
+                    <Item3 Ref="78" ControlType="XRTableCell" Name="tableCell17" Weight="0.87501983294910834" Multiline="true" />
+                    <Item4 Ref="79" ControlType="XRTableCell" Name="tableCell18" Weight="0.9864017040694727" Multiline="true" />
+                    <Item5 Ref="80" ControlType="XRTableCell" Name="tableCell19" Weight="0.86409603939666457" Multiline="true" />
+                    <Item6 Ref="81" ControlType="XRTableCell" Name="tableCell20" Weight="0.81339882628953586" Multiline="true" />
+                  </Cells>
+                </Item6>
+              </Rows>
+              <StylePriority Ref="82" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+            </Item4>
+            <Item5 Ref="83" ControlType="XRTable" Name="table4" TextAlignment="MiddleLeft" SizeF="310.7037,179.131958" LocationFloat="316.296356,55.890274" Font="맑은 고딕, 9pt" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="84" ControlType="XRTableRow" Name="tableRow13" Weight="1">
+                  <Cells>
+                    <Item1 Ref="85" ControlType="XRTableCell" Name="tableCell35" Weight="0.46206233534371621" RowSpan="5" Multiline="true" Text="공&#xD;&#xA;&#xD;&#xA;급&#xD;&#xA;&#xD;&#xA;자" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="86" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="87" ControlType="XRTableCell" Name="tableCell36" Weight="1.2349373533388255" Text="사업자번호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="88" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="89" ControlType="XRTableCell" Name="tableCell37" Weight="3.3212046551927283" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="90" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[BusiNo]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="91" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item1>
+                <Item2 Ref="92" ControlType="XRTableRow" Name="tableRow14" Weight="1">
+                  <Cells>
+                    <Item1 Ref="93" ControlType="XRTableCell" Name="tableCell38" Weight="0.46206233534371621" Multiline="true" Text="tableCell14" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="94" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="95" ControlType="XRTableCell" Name="tableCell39" Weight="1.2349373533388255" Multiline="true" Text="상         호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="96" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="97" ControlType="XRTableCell" Name="tableCell40" Weight="3.3212046551927283" Multiline="true" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="98" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[BizNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="99" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="100" ControlType="XRTableRow" Name="tableRow15" Weight="1">
+                  <Cells>
+                    <Item1 Ref="101" ControlType="XRTableCell" Name="tableCell41" Weight="0.46206230453795161" Text="xrTableCell55" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="102" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="103" ControlType="XRTableCell" Name="tableCell42" Weight="1.23493738414459" Text="담   당   자" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="104" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="105" ControlType="XRTableCell" Name="tableCell43" Weight="3.3212046551927283" TextAlignment="MiddleLeft" ForeColor="Black" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="106" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[UserNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="107" UseForeColor="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item3>
+                <Item4 Ref="108" ControlType="XRTableRow" Name="tableRow16" Weight="1">
+                  <Cells>
+                    <Item1 Ref="109" ControlType="XRTableCell" Name="tableCell44" Weight="0.46206230453795161" Text="xrTableCell100" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="110" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="111" ControlType="XRTableCell" Name="tableCell45" Weight="1.23493738414459" Text="전 화 번 호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="112" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="113" ControlType="XRTableCell" Name="tableCell46" Weight="3.3212046551927288" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="114" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[PhoneNo2]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="115" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item4>
+                <Item5 Ref="116" ControlType="XRTableRow" Name="tableRow17" Weight="2.0472440944881889">
+                  <Cells>
+                    <Item1 Ref="117" ControlType="XRTableCell" Name="tableCell47" Weight="0.46206230453795161" Text="xrTableCell107" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="118" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="119" ControlType="XRTableCell" Name="tableCell48" Weight="1.23493738414459" Text="주          소" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="120" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="121" ControlType="XRTableCell" Name="tableCell49" Weight="3.3212046551927288" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="122" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[Address2]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="123" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item5>
+              </Rows>
+              <StylePriority Ref="124" UseFont="false" UseForeColor="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+            </Item5>
+            <Item6 Ref="125" ControlType="XRTable" Name="table3" TextAlignment="MiddleLeft" SizeF="311.3287,179.131958" LocationFloat="0,55.890274" Font="맑은 고딕, 9pt" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="126" ControlType="XRTableRow" Name="tableRow8" Weight="1">
+                  <Cells>
+                    <Item1 Ref="127" ControlType="XRTableCell" Name="tableCell22" Weight="0.46314356440044635" RowSpan="5" Multiline="true" Text="공&#xD;&#xA;급&#xD;&#xA;받&#xD;&#xA;는&#xD;&#xA;자" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="128" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="129" ControlType="XRTableCell" Name="tableCell23" Weight="4.4036444943991846" Multiline="true" Text="                                                      귀하&#xD;&#xA;" TextAlignment="MiddleLeft" ForeColor="Black" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="130" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[CustomerNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="131" UseForeColor="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                  </Cells>
+                </Item1>
+                <Item2 Ref="132" ControlType="XRTableRow" Name="tableRow9" Weight="1">
+                  <Cells>
+                    <Item1 Ref="133" ControlType="XRTableCell" Name="tableCell24" Weight="0.46314356440044635" Multiline="true" Text="tableCell3" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="134" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="135" ControlType="XRTableCell" Name="tableCell25" Weight="4.4036444943991846" Multiline="true" Text="아래와 같이 공급합니다." TextAlignment="MiddleCenter" Font="맑은 고딕, 9pt, style=Bold">
+                      <StylePriority Ref="136" UseFont="false" UseTextAlignment="false" />
+                    </Item2>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="137" ControlType="XRTableRow" Name="tableRow10" Weight="1">
+                  <Cells>
+                    <Item1 Ref="138" ControlType="XRTableCell" Name="tableCell26" Weight="0.46314356440044646" Text="xrTableCell55" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="139" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="140" ControlType="XRTableCell" Name="tableCell27" Weight="1.1891187617489927" Text="공   급   일" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="141" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="142" ControlType="XRTableCell" Name="tableCell28" Weight="3.2145257326501917" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="143" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[OutDate]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="144" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item3>
+                <Item4 Ref="145" ControlType="XRTableRow" Name="tableRow11" Weight="1">
+                  <Cells>
+                    <Item1 Ref="146" ControlType="XRTableCell" Name="tableCell29" Weight="0.46314356440044646" Text="xrTableCell100" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="147" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="148" ControlType="XRTableCell" Name="tableCell30" Weight="1.1891187617489927" Text="전 화 번 호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="149" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="150" ControlType="XRTableCell" Name="tableCell31" Weight="3.2145257326501921" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="151" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[PhoneNo]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="152" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item4>
+                <Item5 Ref="153" ControlType="XRTableRow" Name="tableRow12" Weight="2.0472440944881889">
+                  <Cells>
+                    <Item1 Ref="154" ControlType="XRTableCell" Name="tableCell32" Weight="0.46314356440044646" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="155" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="156" ControlType="XRTableCell" Name="tableCell33" Weight="1.1891187617489927" Text="주          소" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="157" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="158" ControlType="XRTableCell" Name="tableCell34" Weight="3.2145257326501921" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="159" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[Address]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="160" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item5>
+              </Rows>
+              <StylePriority Ref="161" UseFont="false" UseForeColor="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+            </Item6>
+          </Controls>
+        </Item1>
+      </Bands>
+    </Item4>
+    <Item5 Ref="162" ControlType="DetailReportBand" Name="DetailReport1" Level="1" DataSource="#Ref-0">
+      <Bands>
+        <Item1 Ref="163" ControlType="DetailBand" Name="Detail2" HeightF="459.921082">
+          <Controls>
+            <Item1 Ref="164" ControlType="XRTable" Name="table7" TextAlignment="MiddleCenter" SizeF="629,162.923309" LocationFloat="0.000254313141,243.75" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="165" ControlType="XRTableRow" Name="tableRow27" Weight="1">
+                  <Cells>
+                    <Item1 Ref="166" ControlType="XRTableCell" Name="tableCell88" Weight="1.436876125877276" Multiline="true" Text="품목코드" />
+                    <Item2 Ref="167" ControlType="XRTableCell" Name="tableCell89" Weight="2.03138315047238" Multiline="true" Text="품목명" />
+                    <Item3 Ref="168" ControlType="XRTableCell" Name="tableCell90" Weight="0.87501983294910834" Multiline="true" Text="수량" />
+                    <Item4 Ref="169" ControlType="XRTableCell" Name="tableCell91" Weight="0.9864017040694727" Multiline="true" Text="금액" />
+                    <Item5 Ref="170" ControlType="XRTableCell" Name="tableCell92" Weight="0.86409603939666457" Multiline="true" Text="부가세" />
+                    <Item6 Ref="171" ControlType="XRTableCell" Name="tableCell93" Weight="0.81339882628953586" Multiline="true" Text="통관비" />
+                  </Cells>
+                </Item1>
+                <Item2 Ref="172" ControlType="XRTableRow" Name="tableRow28" Weight="1">
+                  <Cells>
+                    <Item1 Ref="173" ControlType="XRTableCell" Name="tableCell94" Weight="1.4368764658487088" Multiline="true" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="174" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[ItemCd]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="175" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="176" ControlType="XRTableCell" Name="tableCell95" Weight="2.031382810500947" Multiline="true" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="177" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[ItemNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="178" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="179" ControlType="XRTableCell" Name="tableCell96" Weight="0.87501983294910834" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="7,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="180" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[OutQty]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="181" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="182" ControlType="XRTableCell" Name="tableCell97" Weight="0.9864017040694727" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="7,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="183" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[Price]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="184" UsePadding="false" UseTextAlignment="false" />
+                    </Item4>
+                    <Item5 Ref="185" ControlType="XRTableCell" Name="tableCell98" Weight="0.86409603939666457" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="7,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="186" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[VAT]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="187" UsePadding="false" UseTextAlignment="false" />
+                    </Item5>
+                    <Item6 Ref="188" ControlType="XRTableCell" Name="tableCell99" Weight="0.81339882628953586" TextFormatString="{0:#,#}" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="189" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[Tax]" />
+                      </ExpressionBindings>
+                    </Item6>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="190" ControlType="XRTableRow" Name="tableRow29" Weight="1">
+                  <Cells>
+                    <Item1 Ref="191" ControlType="XRTableCell" Name="tableCell100" Weight="1.4368764658487088" Multiline="true" />
+                    <Item2 Ref="192" ControlType="XRTableCell" Name="tableCell101" Weight="2.031382810500947" Multiline="true" />
+                    <Item3 Ref="193" ControlType="XRTableCell" Name="tableCell102" Weight="0.87501983294910834" Multiline="true" />
+                    <Item4 Ref="194" ControlType="XRTableCell" Name="tableCell103" Weight="0.9864017040694727" Multiline="true" />
+                    <Item5 Ref="195" ControlType="XRTableCell" Name="tableCell104" Weight="0.86409603939666457" Multiline="true" />
+                    <Item6 Ref="196" ControlType="XRTableCell" Name="tableCell105" Weight="0.81339882628953586" Multiline="true" />
+                  </Cells>
+                </Item3>
+                <Item4 Ref="197" ControlType="XRTableRow" Name="tableRow30" Weight="1">
+                  <Cells>
+                    <Item1 Ref="198" ControlType="XRTableCell" Name="tableCell106" Weight="1.4368764658487088" Multiline="true" />
+                    <Item2 Ref="199" ControlType="XRTableCell" Name="tableCell107" Weight="2.031382810500947" Multiline="true" />
+                    <Item3 Ref="200" ControlType="XRTableCell" Name="tableCell108" Weight="0.87501983294910834" Multiline="true" />
+                    <Item4 Ref="201" ControlType="XRTableCell" Name="tableCell109" Weight="0.9864017040694727" Multiline="true" />
+                    <Item5 Ref="202" ControlType="XRTableCell" Name="tableCell110" Weight="0.86409603939666457" Multiline="true" />
+                    <Item6 Ref="203" ControlType="XRTableCell" Name="tableCell111" Weight="0.81339882628953586" Multiline="true" />
+                  </Cells>
+                </Item4>
+                <Item5 Ref="204" ControlType="XRTableRow" Name="tableRow31" Weight="1">
+                  <Cells>
+                    <Item1 Ref="205" ControlType="XRTableCell" Name="tableCell112" Weight="1.4368764658487088" Multiline="true" />
+                    <Item2 Ref="206" ControlType="XRTableCell" Name="tableCell124" Weight="2.031382810500947" Multiline="true" />
+                    <Item3 Ref="207" ControlType="XRTableCell" Name="tableCell125" Weight="0.87501983294910834" Multiline="true" />
+                    <Item4 Ref="208" ControlType="XRTableCell" Name="tableCell126" Weight="0.9864017040694727" Multiline="true" />
+                    <Item5 Ref="209" ControlType="XRTableCell" Name="tableCell127" Weight="0.86409603939666457" Multiline="true" />
+                    <Item6 Ref="210" ControlType="XRTableCell" Name="tableCell128" Weight="0.81339882628953586" Multiline="true" />
+                  </Cells>
+                </Item5>
+                <Item6 Ref="211" ControlType="XRTableRow" Name="tableRow34" Weight="1">
+                  <Cells>
+                    <Item1 Ref="212" ControlType="XRTableCell" Name="tableCell135" Weight="1.4368764658487088" Multiline="true" />
+                    <Item2 Ref="213" ControlType="XRTableCell" Name="tableCell136" Weight="2.031382810500947" Multiline="true" />
+                    <Item3 Ref="214" ControlType="XRTableCell" Name="tableCell137" Weight="0.87501983294910834" Multiline="true" />
+                    <Item4 Ref="215" ControlType="XRTableCell" Name="tableCell138" Weight="0.9864017040694727" Multiline="true" />
+                    <Item5 Ref="216" ControlType="XRTableCell" Name="tableCell139" Weight="0.86409603939666457" Multiline="true" />
+                    <Item6 Ref="217" ControlType="XRTableCell" Name="tableCell140" Weight="0.81339882628953586" Multiline="true" />
+                  </Cells>
+                </Item6>
+              </Rows>
+              <StylePriority Ref="218" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+            </Item1>
+            <Item2 Ref="219" ControlType="XRLabel" Name="label1" Multiline="true" Text="거래명세서" TextAlignment="MiddleCenter" SizeF="627.000061,34.45835" LocationFloat="0,10.0000067" Font="맑은 고딕, 13pt, style=Bold" ForeColor="Black">
+              <StylePriority Ref="220" UseFont="false" UseForeColor="false" UseTextAlignment="false" />
+            </Item2>
+            <Item3 Ref="221" ControlType="XRTable" Name="table2" TextAlignment="MiddleLeft" SizeF="311.3287,179.131958" LocationFloat="0,53.7174835" Font="맑은 고딕, 9pt" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="222" ControlType="XRTableRow" Name="tableRow6" Weight="1">
+                  <Cells>
+                    <Item1 Ref="223" ControlType="XRTableCell" Name="tableCell60" Weight="0.46314356440044635" RowSpan="5" Multiline="true" Text="공&#xD;&#xA;급&#xD;&#xA;받&#xD;&#xA;는&#xD;&#xA;자" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="224" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="225" ControlType="XRTableCell" Name="tableCell61" Weight="4.4036444943991846" Multiline="true" Text="                                                      귀하&#xD;&#xA;" TextAlignment="MiddleLeft" ForeColor="Black" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="226" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[CustomerNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="227" UseForeColor="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                  </Cells>
+                </Item1>
+                <Item2 Ref="228" ControlType="XRTableRow" Name="tableRow7" Weight="1">
+                  <Cells>
+                    <Item1 Ref="229" ControlType="XRTableCell" Name="tableCell62" Weight="0.46314356440044635" Multiline="true" Text="tableCell3" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="230" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="231" ControlType="XRTableCell" Name="tableCell63" Weight="4.4036444943991846" Multiline="true" Text="아래와 같이 공급합니다." TextAlignment="MiddleCenter" Font="맑은 고딕, 9pt, style=Bold">
+                      <StylePriority Ref="232" UseFont="false" UseTextAlignment="false" />
+                    </Item2>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="233" ControlType="XRTableRow" Name="tableRow19" Weight="1">
+                  <Cells>
+                    <Item1 Ref="234" ControlType="XRTableCell" Name="tableCell64" Weight="0.46314356440044646" Text="xrTableCell55" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="235" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="236" ControlType="XRTableCell" Name="tableCell65" Weight="1.1891187617489927" Text="공   급   일" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="237" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="238" ControlType="XRTableCell" Name="tableCell66" Weight="3.2145257326501917" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="239" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[OutDate]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="240" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item3>
+                <Item4 Ref="241" ControlType="XRTableRow" Name="tableRow20" Weight="1">
+                  <Cells>
+                    <Item1 Ref="242" ControlType="XRTableCell" Name="tableCell67" Weight="0.46314356440044646" Text="xrTableCell100" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="243" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="244" ControlType="XRTableCell" Name="tableCell68" Weight="1.1891187617489927" Text="전 화 번 호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="245" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="246" ControlType="XRTableCell" Name="tableCell69" Weight="3.2145257326501921" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="247" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[PhoneNo2]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="248" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item4>
+                <Item5 Ref="249" ControlType="XRTableRow" Name="tableRow21" Weight="2.0472440944881889">
+                  <Cells>
+                    <Item1 Ref="250" ControlType="XRTableCell" Name="tableCell70" Weight="0.46314356440044646" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="251" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="252" ControlType="XRTableCell" Name="tableCell71" Weight="1.1891187617489927" Text="주          소" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="253" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="254" ControlType="XRTableCell" Name="tableCell72" Weight="3.2145257326501921" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="255" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[Address]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="256" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item5>
+              </Rows>
+              <StylePriority Ref="257" UseFont="false" UseForeColor="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+            </Item3>
+            <Item4 Ref="258" ControlType="XRTable" Name="table6" TextAlignment="MiddleLeft" SizeF="310.7037,179.131958" LocationFloat="316.296356,53.7174873" Font="맑은 고딕, 9pt" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="259" ControlType="XRTableRow" Name="tableRow22" Weight="1">
+                  <Cells>
+                    <Item1 Ref="260" ControlType="XRTableCell" Name="tableCell73" Weight="0.46206233534371621" RowSpan="5" Multiline="true" Text="공&#xD;&#xA;&#xD;&#xA;급&#xD;&#xA;&#xD;&#xA;자" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="261" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="262" ControlType="XRTableCell" Name="tableCell74" Weight="1.2349373533388255" Text="사업자번호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="263" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="264" ControlType="XRTableCell" Name="tableCell75" Weight="3.3212046551927283" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="265" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[BusiNo]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="266" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item1>
+                <Item2 Ref="267" ControlType="XRTableRow" Name="tableRow23" Weight="1">
+                  <Cells>
+                    <Item1 Ref="268" ControlType="XRTableCell" Name="tableCell76" Weight="0.46206233534371621" Multiline="true" Text="tableCell14" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="269" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="270" ControlType="XRTableCell" Name="tableCell77" Weight="1.2349373533388255" Multiline="true" Text="상         호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="271" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="272" ControlType="XRTableCell" Name="tableCell78" Weight="3.3212046551927283" Multiline="true" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="273" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[BizNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="274" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="275" ControlType="XRTableRow" Name="tableRow24" Weight="1">
+                  <Cells>
+                    <Item1 Ref="276" ControlType="XRTableCell" Name="tableCell79" Weight="0.46206230453795161" Text="xrTableCell55" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="277" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="278" ControlType="XRTableCell" Name="tableCell80" Weight="1.23493738414459" Text="담   당   자" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="279" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="280" ControlType="XRTableCell" Name="tableCell81" Weight="3.3212046551927283" TextAlignment="MiddleLeft" ForeColor="Black" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="281" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[UserNm]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="282" UseForeColor="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item3>
+                <Item4 Ref="283" ControlType="XRTableRow" Name="tableRow25" Weight="1">
+                  <Cells>
+                    <Item1 Ref="284" ControlType="XRTableCell" Name="tableCell82" Weight="0.46206230453795161" Text="xrTableCell100" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="285" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="286" ControlType="XRTableCell" Name="tableCell83" Weight="1.23493738414459" Text="전 화 번 호" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="287" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="288" ControlType="XRTableCell" Name="tableCell84" Weight="3.3212046551927288" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="289" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[PhoneNo2]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="290" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item4>
+                <Item5 Ref="291" ControlType="XRTableRow" Name="tableRow26" Weight="2.0472440944881889">
+                  <Cells>
+                    <Item1 Ref="292" ControlType="XRTableCell" Name="tableCell85" Weight="0.46206230453795161" Text="xrTableCell107" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="293" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="294" ControlType="XRTableCell" Name="tableCell86" Weight="1.23493738414459" Text="주          소" TextAlignment="MiddleCenter">
+                      <StylePriority Ref="295" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="296" ControlType="XRTableCell" Name="tableCell87" Weight="3.3212046551927288" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="297" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[Address2]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="298" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                  </Cells>
+                </Item5>
+              </Rows>
+              <StylePriority Ref="299" UseFont="false" UseForeColor="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+            </Item4>
+            <Item5 Ref="300" ControlType="XRTable" Name="table8" TextAlignment="MiddleCenter" SizeF="627.000061,42.01242" LocationFloat="0,417.908661" Font="맑은 고딕, 9pt, charSet=0" ForeColor="Black" Borders="All">
+              <Rows>
+                <Item1 Ref="301" ControlType="XRTableRow" Name="tableRow32" Weight="1">
+                  <Cells>
+                    <Item1 Ref="302" ControlType="XRTableCell" Name="tableCell113" Weight="0.51156303378378321" Multiline="true" Text="인수자" />
+                    <Item2 Ref="303" ControlType="XRTableCell" Name="tableCell114" Weight="1.3189792231286426" Multiline="true" Text="                    (인)" />
+                    <Item3 Ref="304" ControlType="XRTableCell" Name="tableCell115" Weight="0.555776027865515" Multiline="true" Text="납품자" />
+                    <Item4 Ref="305" ControlType="XRTableCell" Name="tableCell116" Weight="1.3445428394233336" Multiline="true" Text="                    (인)" />
+                    <Item5 Ref="306" ControlType="XRTableCell" Name="tableCell117" Weight="0.87041522105675706" Multiline="true" Text="합계금액&#xD;&#xA;(VAT포함)" />
+                    <Item6 Ref="307" ControlType="XRTableCell" Name="tableCell118" Weight="1.3987236547419688" TextFormatString="{0:#,#}" Multiline="true" TextAlignment="MiddleRight" Padding="7,7,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="308" EventName="BeforePrint" PropertyName="Text" Expression="[RP_Transaction_PDItem].[TotPrice]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="309" UsePadding="false" UseTextAlignment="false" />
+                    </Item6>
+                  </Cells>
+                </Item1>
+              </Rows>
+              <StylePriority Ref="310" UseFont="false" UseForeColor="false" UseBorders="false" UseTextAlignment="false" />
+            </Item5>
+          </Controls>
+        </Item1>
+      </Bands>
+    </Item5>
+  </Bands>
+  <ComponentStorage>
+    <Item1 Ref="311" ObjectType="DevExpress.DataAccess.Sql.SqlDataSource,DevExpress.DataAccess.v20.1" Name="sqlDataSource1" Base64="PFNxbERhdGFTb3VyY2UgTmFtZT0ic3FsRGF0YVNvdXJjZTEiPjxDb25uZWN0aW9uIE5hbWU9IkdNSU5XRUJfQ0pDQ29udGV4dENvbm5lY3Rpb24iIEZyb21BcHBDb25maWc9InRydWUiIC8+PFF1ZXJ5IFR5cGU9IlN0b3JlZFByb2NRdWVyeSIgTmFtZT0iUlBfVHJhbnNhY3Rpb25fUERJdGVtIj48UGFyYW1ldGVyIE5hbWU9IkBSX0NSVUQiIFR5cGU9IlN5c3RlbS5TdHJpbmciPlAxMDwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQENvbXBDZCIgVHlwZT0iU3lzdGVtLlN0cmluZyI+MTM0MDwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQEJpelVuaXQiIFR5cGU9IlN5c3RlbS5TdHJpbmciIElzTnVsbD0idHJ1ZSIgLz48UGFyYW1ldGVyIE5hbWU9IkBGYWN0Qml6VW5pdCIgVHlwZT0iU3lzdGVtLlN0cmluZyIgSXNOdWxsPSJ0cnVlIiAvPjxQYXJhbWV0ZXIgTmFtZT0iQExvZ2luSWQiIFR5cGU9IlN5c3RlbS5TdHJpbmciIElzTnVsbD0idHJ1ZSIgLz48UGFyYW1ldGVyIE5hbWU9IkBPcmRlck5vIiBUeXBlPSJTeXN0ZW0uU3RyaW5nIiBJc051bGw9InRydWUiIC8+PFBhcmFtZXRlciBOYW1lPSJAT3V0U2VxIiBUeXBlPSJTeXN0ZW0uSW50MzIiPjA8L1BhcmFtZXRlcj48UHJvY05hbWU+UlBfVHJhbnNhY3Rpb25fUERJdGVtPC9Qcm9jTmFtZT48L1F1ZXJ5PjxSZXN1bHRTY2hlbWE+PERhdGFTZXQgTmFtZT0ic3FsRGF0YVNvdXJjZTEiPjxWaWV3IE5hbWU9IlJQX1RyYW5zYWN0aW9uX1BESXRlbSI+PEZpZWxkIE5hbWU9IkN1c3RvbWVyTm0iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iT3V0RGF0ZSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJQaG9uZU5vIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkFkZHJlc3MiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQnVzaU5vIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkJpek5tIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IlVzZXJObSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJQaG9uZU5vMiIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJBZGRyZXNzMiIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJJdGVtQ2QiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iSXRlbU5tIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9Ik91dFF0eSIgVHlwZT0iRGVjaW1hbCIgLz48RmllbGQgTmFtZT0iUHJpY2UiIFR5cGU9IkRlY2ltYWwiIC8+PEZpZWxkIE5hbWU9IlZBVCIgVHlwZT0iRGVjaW1hbCIgLz48L1ZpZXc+PC9EYXRhU2V0PjwvUmVzdWx0U2NoZW1hPjxDb25uZWN0aW9uT3B0aW9ucyBDbG9zZUNvbm5lY3Rpb249InRydWUiIC8+PC9TcWxEYXRhU291cmNlPg==" />
+    <Item2 Ref="0" ObjectType="DevExpress.DataAccess.Sql.SqlDataSource,DevExpress.DataAccess.v20.1" Name="sqlDataSource2" Base64="PFNxbERhdGFTb3VyY2UgTmFtZT0ic3FsRGF0YVNvdXJjZTIiPjxDb25uZWN0aW9uIE5hbWU9IkdNSU5XRUJfQ0pDQ29udGV4dENvbm5lY3Rpb24iIEZyb21BcHBDb25maWc9InRydWUiIC8+PFF1ZXJ5IFR5cGU9IlN0b3JlZFByb2NRdWVyeSIgTmFtZT0iUlBfVHJhbnNhY3Rpb25fUERJdGVtIj48UGFyYW1ldGVyIE5hbWU9IkBSX0NSVUQiIFR5cGU9IlN5c3RlbS5TdHJpbmciPlAxMDwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQENvbXBDZCIgVHlwZT0iU3lzdGVtLlN0cmluZyI+MTM0MDwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQEJpelVuaXQiIFR5cGU9IkRldkV4cHJlc3MuRGF0YUFjY2Vzcy5FeHByZXNzaW9uIj4oU3lzdGVtLlN0cmluZykoP0JpelVuaXQpPC9QYXJhbWV0ZXI+PFBhcmFtZXRlciBOYW1lPSJARmFjdEJpelVuaXQiIFR5cGU9IkRldkV4cHJlc3MuRGF0YUFjY2Vzcy5FeHByZXNzaW9uIj4oU3lzdGVtLlN0cmluZykoP0ZhY3RCaXpVbml0KTwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQExvZ2luSWQiIFR5cGU9IlN5c3RlbS5TdHJpbmciIElzTnVsbD0idHJ1ZSIgLz48UGFyYW1ldGVyIE5hbWU9IkBPcmRlck5vIiBUeXBlPSJEZXZFeHByZXNzLkRhdGFBY2Nlc3MuRXhwcmVzc2lvbiI+KFN5c3RlbS5TdHJpbmcpKD9PcmRlck5vKTwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQE91dFNlcSIgVHlwZT0iRGV2RXhwcmVzcy5EYXRhQWNjZXNzLkV4cHJlc3Npb24iPihTeXN0ZW0uSW50MzIpKD9PdXRTZXEpPC9QYXJhbWV0ZXI+PFByb2NOYW1lPlJQX1RyYW5zYWN0aW9uX1BESXRlbTwvUHJvY05hbWU+PC9RdWVyeT48UmVzdWx0U2NoZW1hPjxEYXRhU2V0IE5hbWU9InNxbERhdGFTb3VyY2UyIj48VmlldyBOYW1lPSJSUF9UcmFuc2FjdGlvbl9QREl0ZW0iPjxGaWVsZCBOYW1lPSJCaXpVbml0IiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkZhY3RCaXpVbml0IiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9Ik9yZGVyTm8iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iT3V0U2VxIiBUeXBlPSJJbnQzMiIgLz48RmllbGQgTmFtZT0iQ3VzdG9tZXJObSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJPdXREYXRlIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IlBob25lTm8iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQWRkcmVzcyIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJCdXNpTm8iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQml6Tm0iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iVXNlck5tIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IlBob25lTm8yIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkFkZHJlc3MyIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9Ikl0ZW1DZCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJJdGVtTm0iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iT3V0UXR5IiBUeXBlPSJEZWNpbWFsIiAvPjxGaWVsZCBOYW1lPSJQcmljZSIgVHlwZT0iRGVjaW1hbCIgLz48RmllbGQgTmFtZT0iVkFUIiBUeXBlPSJEZWNpbWFsIiAvPjxGaWVsZCBOYW1lPSJUb3RQcmljZSIgVHlwZT0iRGVjaW1hbCIgLz48RmllbGQgTmFtZT0iVGF4IiBUeXBlPSJEZWNpbWFsIiAvPjwvVmlldz48L0RhdGFTZXQ+PC9SZXN1bHRTY2hlbWE+PENvbm5lY3Rpb25PcHRpb25zIENsb3NlQ29ubmVjdGlvbj0idHJ1ZSIgLz48L1NxbERhdGFTb3VyY2U+" />
+  </ComponentStorage>
+  <ObjectStorage>
+    <Item1 ObjectType="DevExpress.XtraReports.Serialization.ObjectStorageInfo, DevExpress.XtraReports.v20.1" Ref="6" Content="System.Int32" Type="System.Type" />
+  </ObjectStorage>
+</XtraReportsLayoutSerializer>

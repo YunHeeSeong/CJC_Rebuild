@@ -1,0 +1,461 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="20.1.12.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v20.1, Version=20.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="WorkorderM" Margins="31, 30, 11, 100" PaperKind="A4" PageWidth="827" PageHeight="1169" Version="20.1" DataMember="RP_WorkOrder_M" DataSource="#Ref-0" Font="Arial, 9.75pt">
+  <Parameters>
+    <Item1 Ref="3" Description="WorkOrderNo" Name="WorkOrderNo" />
+    <Item2 Ref="4" Description="BizUnit" Name="BizUnit" />
+    <Item3 Ref="5" Description="FactBizUnit" Name="FactBizUnit" />
+    <Item4 Ref="6" Description="ItemCd" Name="ItemCd" />
+  </Parameters>
+  <Bands>
+    <Item1 Ref="7" ControlType="TopMarginBand" Name="TopMargin" HeightF="11" />
+    <Item2 Ref="8" ControlType="BottomMarginBand" Name="BottomMargin" />
+    <Item3 Ref="9" ControlType="DetailBand" Name="Detail" Expanded="false" HeightF="484.166656" />
+    <Item4 Ref="10" ControlType="DetailReportBand" Name="DetailReport" Level="0" DataSource="#Ref-0">
+      <Bands>
+        <Item1 Ref="11" ControlType="DetailBand" Name="Detail1" Expanded="false" HeightF="39.6665955" />
+        <Item2 Ref="12" ControlType="GroupHeaderBand" Name="GroupHeader1" HeightF="424.833435">
+          <Controls>
+            <Item1 Ref="13" ControlType="XRTable" Name="table3" TextAlignment="MiddleCenter" SizeF="764,55.833374" LocationFloat="0,368.833374" Font="맑은 고딕, 9pt" Padding="2,2,0,0,96" Borders="Left, Right, Bottom">
+              <Rows>
+                <Item1 Ref="14" ControlType="XRTableRow" Name="tableRow12" Weight="1">
+                  <Cells>
+                    <Item1 Ref="15" ControlType="XRTableCell" Name="tableCell2" Weight="0.84293205700619689" RowSpan="2" Multiline="true" Text="      구&#xD;&#xA;분&#xD;&#xA;호수" TextAlignment="MiddleLeft" Padding="7,2,0,0,100">
+                      <StylePriority Ref="16" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="17" ControlType="XRTableCell" Name="tableCell6" Weight="2.9738222691401135" Multiline="true" Text="정모" />
+                    <Item3 Ref="18" ControlType="XRTableCell" Name="tableCell29" Weight="3.4581157424687095" Multiline="true" Text="쌍침" />
+                    <Item4 Ref="19" ControlType="XRTableCell" Name="tableCell44" Weight="4.7251299313849806" Multiline="true" Text="컬" />
+                  </Cells>
+                </Item1>
+                <Item2 Ref="20" ControlType="XRTableRow" Name="tableRow13" Weight="1.3714286611128201">
+                  <Cells>
+                    <Item1 Ref="21" ControlType="XRTableCell" Name="tableCell45" Weight="0.84293205700619689" Multiline="true" />
+                    <Item2 Ref="22" ControlType="XRTableCell" Name="tableCell46" Weight="0.96073286445977146" Multiline="true" Text="재단" />
+                    <Item3 Ref="23" ControlType="XRTableCell" Name="tableCell47" Weight="0.960732984293194" Multiline="true" Text="정모" />
+                    <Item4 Ref="24" ControlType="XRTableCell" Name="tableCell48" Weight="1.0523558212200384" Multiline="true" Text="중량" />
+                    <Item5 Ref="25" ControlType="XRTableCell" Name="tableCell49" Weight="0.8821990127962922" Multiline="true" Text="모장" />
+                    <Item6 Ref="26" ControlType="XRTableCell" Name="tableCell50" Weight="0.90837758249013212" Multiline="true" Text="자수" />
+                    <Item7 Ref="27" ControlType="XRTableCell" Name="tableCell89" Weight="1.6675397463493946" Multiline="true" Text="CUT길이 및 결수" Font="맑은 고딕, 8pt">
+                      <StylePriority Ref="28" UseFont="false" />
+                    </Item7>
+                    <Item8 Ref="29" ControlType="XRTableCell" Name="tableCell90" Weight="0.94764417877996154" Multiline="true" Text="파이프" />
+                    <Item9 Ref="30" ControlType="XRTableCell" Name="tableCell91" Weight="0.947642740778898" Multiline="true" Text="방향" />
+                    <Item10 Ref="31" ControlType="XRTableCell" Name="tableCell92" Weight="0.96073238512608394" Multiline="true" Text="특수컬" />
+                    <Item11 Ref="32" ControlType="XRTableCell" Name="tableCell93" Weight="0.97382202947326979" Multiline="true" Text="비고" />
+                    <Item12 Ref="33" ControlType="XRTableCell" Name="tableCell94" Weight="0.895288597226767" Multiline="true" Text="두께" />
+                  </Cells>
+                </Item2>
+              </Rows>
+              <StylePriority Ref="34" UseFont="false" UseBorders="false" UseTextAlignment="false" />
+            </Item1>
+            <Item2 Ref="35" ControlType="XRTable" Name="table1" SizeF="764,169.1667" LocationFloat="0,199.666641" Padding="2,2,0,0,96" Borders="Left, Right, Bottom">
+              <Rows>
+                <Item1 Ref="36" ControlType="XRTableRow" Name="tableRow1" Weight="1">
+                  <Cells>
+                    <Item1 Ref="37" ControlType="XRTableCell" Name="tableCell1" Weight="6" Multiline="true" Text="CAP" TextAlignment="MiddleCenter" Font="맑은 고딕, 10pt">
+                      <StylePriority Ref="38" UseFont="false" UseTextAlignment="false" />
+                    </Item1>
+                  </Cells>
+                </Item1>
+                <Item2 Ref="39" ControlType="XRTableRow" Name="tableRow2" Weight="1">
+                  <Cells>
+                    <Item1 Ref="40" ControlType="XRTableCell" Name="tableCell4" Weight="0.79712039887593056" Multiline="true" Text="중량" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="41" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="42" ControlType="XRTableCell" Name="tableCell12" Weight="1.2028796011240694" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="43" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[CapWeight]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="44" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="45" ControlType="XRTableCell" Name="tableCell13" Weight="0.80366510121610146" Multiline="true" Text="둘레" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="46" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="47" ControlType="XRTableCell" Name="tableCell14" Weight="1.261780004850857" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="48" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[CapRound]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="49" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item4>
+                    <Item5 Ref="50" ControlType="XRTableCell" Name="tableCell17" Weight="0.76282790818139512" Multiline="true" Text="길이" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="51" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item5>
+                    <Item6 Ref="52" ControlType="XRTableCell" Name="tableCell18" Weight="1.1717269857516464" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="53" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[CapLength]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="54" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item6>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="55" ControlType="XRTableRow" Name="tableRow3" Weight="1">
+                  <Cells>
+                    <Item1 Ref="56" ControlType="XRTableCell" Name="tableCell19" Weight="0.79712039887593056" Multiline="true" Text="앞뒤" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="57" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="58" ControlType="XRTableCell" Name="tableCell20" Weight="1.2028796011240694" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="59" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[CapFrontBack]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="60" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="61" ControlType="XRTableCell" Name="tableCell21" Weight="0.80366510121610146" Multiline="true" Text="자재" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="62" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="63" ControlType="XRTableCell" Name="tableCell22" Weight="1.261780004850857" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="64" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[CapPartItem]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="65" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item4>
+                    <Item5 Ref="66" ControlType="XRTableCell" Name="tableCell23" Weight="0.76282790818139512" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="67" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item5>
+                    <Item6 Ref="68" ControlType="XRTableCell" Name="tableCell24" Weight="1.1717269857516464" Multiline="true" />
+                  </Cells>
+                </Item3>
+                <Item4 Ref="69" ControlType="XRTableRow" Name="tableRow4" Weight="1">
+                  <Cells>
+                    <Item1 Ref="70" ControlType="XRTableCell" Name="tableCell25" Weight="6" Multiline="true" Text="SKIN PART" TextAlignment="MiddleCenter" Font="맑은 고딕, 10pt">
+                      <StylePriority Ref="71" UseFont="false" UseTextAlignment="false" />
+                    </Item1>
+                  </Cells>
+                </Item4>
+                <Item5 Ref="72" ControlType="XRTableRow" Name="tableRow5" Weight="1">
+                  <Cells>
+                    <Item1 Ref="73" ControlType="XRTableCell" Name="tableCell31" Weight="0.79712039887593056" Multiline="true" Text="PART 모" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="74" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="75" ControlType="XRTableCell" Name="tableCell32" Weight="1.2028796011240694" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 10.2pt, charSet=0" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="76" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[PartHair]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="77" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="78" ControlType="XRTableCell" Name="tableCell33" Weight="0.80366510121610146" Multiline="true" Text="PART 규격" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="79" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="80" ControlType="XRTableCell" Name="tableCell34" Weight="1.261780004850857" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="81" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[PartSize]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="82" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item4>
+                    <Item5 Ref="83" ControlType="XRTableCell" Name="tableCell35" Weight="0.76282790818139512" Multiline="true" Text="SKIN 중량" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="84" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item5>
+                    <Item6 Ref="85" ControlType="XRTableCell" Name="tableCell36" Weight="1.1717269857516464" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="86" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[SkinWeight]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="87" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item6>
+                  </Cells>
+                </Item5>
+                <Item6 Ref="88" ControlType="XRTableRow" Name="tableRow11" Weight="1">
+                  <Cells>
+                    <Item1 Ref="89" ControlType="XRTableCell" Name="tableCell37" Weight="0.79712039887593056" Multiline="true" Text="LOSS&#x9;" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="90" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                    <Item2 Ref="91" ControlType="XRTableCell" Name="tableCell38" Weight="1.2028796011240694" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="92" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[Loss]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="93" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item2>
+                    <Item3 Ref="94" ControlType="XRTableCell" Name="tableCell39" Weight="0.80366510121610146" Multiline="true" Text="완성중량" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="95" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="96" ControlType="XRTableCell" Name="tableCell40" Weight="1.261780004850857" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <ExpressionBindings>
+                        <Item1 Ref="97" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[TotalWeight]" />
+                      </ExpressionBindings>
+                      <StylePriority Ref="98" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item4>
+                    <Item5 Ref="99" ControlType="XRTableCell" Name="tableCell41" Weight="0.76282790818139512" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                      <StylePriority Ref="100" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item5>
+                    <Item6 Ref="101" ControlType="XRTableCell" Name="tableCell42" Weight="1.1717269857516464" Multiline="true" />
+                  </Cells>
+                </Item6>
+              </Rows>
+              <StylePriority Ref="102" UseBorders="false" />
+            </Item2>
+            <Item3 Ref="103" ControlType="XRLabel" Name="label2" Multiline="true" Text="제품규격 명세서" TextAlignment="MiddleCenter" SizeF="764,43.83334" LocationFloat="0,0" Font="맑은 고딕, 13pt, style=Bold">
+              <StylePriority Ref="104" UseFont="false" UseTextAlignment="false" />
+            </Item3>
+            <Item4 Ref="105" ControlType="XRTable" Name="table2" TextAlignment="MiddleLeft" SizeF="764,155.8333" LocationFloat="0,43.83334" Font="맑은 고딕, 9pt" Padding="7,0,0,0,100" Borders="All">
+              <Rows>
+                <Item1 Ref="106" ControlType="XRTableRow" Name="tableRow6" Weight="1">
+                  <Cells>
+                    <Item1 Ref="107" ControlType="XRTableCell" Name="tableCell3" Weight="0.8254799967660954" Multiline="true" Text="지시일자" />
+                    <Item2 Ref="108" ControlType="XRTableCell" Name="tableCell5" Weight="2.610820510624591" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="109" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[WorkOrderDt]" />
+                      </ExpressionBindings>
+                    </Item2>
+                    <Item3 Ref="110" ControlType="XRTableCell" Name="tableCell8" Weight="1.4581151832460735" Multiline="true" Text="작업지시번호" TextAlignment="MiddleCenter" Padding="0,0,0,0,100">
+                      <StylePriority Ref="111" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="112" ControlType="XRTableCell" Name="tableCell9" Weight="2.4472079451795645" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="113" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[WorkOrderNo]" />
+                      </ExpressionBindings>
+                    </Item4>
+                    <Item5 Ref="114" ControlType="XRTableCell" Name="tableCell15" Weight="1.3128263263802251" Multiline="true" Text="공급" TextAlignment="MiddleCenter" Padding="0,0,0,0,100">
+                      <StylePriority Ref="115" UsePadding="false" UseTextAlignment="false" />
+                    </Item5>
+                    <Item6 Ref="116" ControlType="XRTableCell" Name="tableCell16" Weight="1.3455500378034504" Multiline="true" Text="중량" TextAlignment="MiddleCenter" Padding="0,0,0,0,100">
+                      <StylePriority Ref="117" UsePadding="false" UseTextAlignment="false" />
+                    </Item6>
+                  </Cells>
+                </Item1>
+                <Item2 Ref="118" ControlType="XRTableRow" Name="tableRow7" Weight="1">
+                  <Cells>
+                    <Item1 Ref="119" ControlType="XRTableCell" Name="tableCell51" Weight="0.82547997679385832" Multiline="true" Text="주문매장" />
+                    <Item2 Ref="120" ControlType="XRTableCell" Name="tableCell52" Weight="2.61082045070788" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="121" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[BizUnitNm]" />
+                      </ExpressionBindings>
+                    </Item2>
+                    <Item3 Ref="122" ControlType="XRTableCell" Name="tableCell53" Weight="1.4581146839401484" Multiline="true" Text="생산사업장" TextAlignment="MiddleCenter" Padding="0,0,0,0,100">
+                      <StylePriority Ref="123" UsePadding="false" UseTextAlignment="false" />
+                    </Item3>
+                    <Item4 Ref="124" ControlType="XRTableCell" Name="tableCell54" Weight="2.4472085243744379" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="125" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[FactBizUnitNm]" />
+                      </ExpressionBindings>
+                    </Item4>
+                    <Item5 Ref="126" ControlType="XRTableCell" Name="tableCell55" Weight="0.52006984131498468" Multiline="true" Text="고침" />
+                    <Item6 Ref="127" ControlType="XRTableCell" Name="tableCell56" Weight="0.79275648506524043" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="128" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[GongGo]" />
+                      </ExpressionBindings>
+                    </Item6>
+                    <Item7 Ref="129" ControlType="XRTableCell" Name="tableCell57" Weight="0.5091626032484764" Multiline="true" Text="수제" />
+                    <Item8 Ref="130" ControlType="XRTableCell" Name="tableCell58" Weight="0.83638743455497389" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="131" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[WeightHand]" />
+                      </ExpressionBindings>
+                    </Item8>
+                  </Cells>
+                </Item2>
+                <Item3 Ref="132" ControlType="XRTableRow" Name="tableRow8" Weight="1">
+                  <Cells>
+                    <Item1 Ref="133" ControlType="XRTableCell" Name="tableCell59" Weight="0.8254799967660954" Multiline="true" Text="BUYER" />
+                    <Item2 Ref="134" ControlType="XRTableCell" Name="tableCell60" Weight="1.6544502617801045" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="135" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[Buyer]" />
+                      </ExpressionBindings>
+                    </Item2>
+                    <Item3 Ref="136" ControlType="XRTableCell" Name="tableCell61" Weight="0.95637024884448629" Multiline="true" Text="FIBER" />
+                    <Item4 Ref="137" ControlType="XRTableCell" Name="tableCell62" Weight="1.4581151832460735" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="138" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[Fiber]" />
+                      </ExpressionBindings>
+                    </Item4>
+                    <Item5 Ref="139" ControlType="XRTableCell" Name="tableCell63" Weight="0.80366452202122873" Multiline="true" Text="종류" />
+                    <Item6 Ref="140" ControlType="XRTableCell" Name="tableCell64" Weight="1.6435434231583359" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="141" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[MachineType]" />
+                      </ExpressionBindings>
+                    </Item6>
+                    <Item7 Ref="142" ControlType="XRTableCell" Name="tableCell65" Weight="0.52006984131498468" Multiline="true" Text="인수" />
+                    <Item8 Ref="143" ControlType="XRTableCell" Name="tableCell66" Weight="0.79275648506524043" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="144" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[GongInsoo]" />
+                      </ExpressionBindings>
+                    </Item8>
+                    <Item9 Ref="145" ControlType="XRTableCell" Name="tableCell67" Weight="0.5091626032484764" Multiline="true" Text="인수" />
+                    <Item10 Ref="146" ControlType="XRTableCell" Name="tableCell68" Weight="0.83638743455497389" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="147" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[WeightInsoo]" />
+                      </ExpressionBindings>
+                    </Item10>
+                  </Cells>
+                </Item3>
+                <Item4 Ref="148" ControlType="XRTableRow" Name="tableRow9" Weight="1">
+                  <Cells>
+                    <Item1 Ref="149" ControlType="XRTableCell" Name="tableCell69" Weight="0.8254799967660954" Multiline="true" Text="제품코드" />
+                    <Item2 Ref="150" ControlType="XRTableCell" Name="tableCell70" Weight="1.6544502617801045" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="151" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[ItemCd]" />
+                      </ExpressionBindings>
+                    </Item2>
+                    <Item3 Ref="152" ControlType="XRTableCell" Name="tableCell71" Weight="0.95637024884448629" Multiline="true" Text="중량" />
+                    <Item4 Ref="153" ControlType="XRTableCell" Name="tableCell72" Weight="1.4581151832460735" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="154" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[Weight]" />
+                      </ExpressionBindings>
+                    </Item4>
+                    <Item5 Ref="155" ControlType="XRTableCell" Name="tableCell73" Weight="0.80366452202122873" Multiline="true" Text="제조일자" />
+                    <Item6 Ref="156" ControlType="XRTableCell" Name="tableCell74" Weight="1.6435434231583359" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="157" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[ManufactedDt]" />
+                      </ExpressionBindings>
+                    </Item6>
+                    <Item7 Ref="158" ControlType="XRTableCell" Name="tableCell75" Weight="0.52006984131498468" Multiline="true" Text="인계" />
+                    <Item8 Ref="159" ControlType="XRTableCell" Name="tableCell76" Weight="0.79275648506524043" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="160" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[GongInsoo]" />
+                      </ExpressionBindings>
+                    </Item8>
+                    <Item9 Ref="161" ControlType="XRTableCell" Name="tableCell77" Weight="0.5091626032484764" Multiline="true" Text="인계" />
+                    <Item10 Ref="162" ControlType="XRTableCell" Name="tableCell78" Weight="0.83638743455497389" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="163" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[WeightIngye]" />
+                      </ExpressionBindings>
+                    </Item10>
+                  </Cells>
+                </Item4>
+                <Item5 Ref="164" ControlType="XRTableRow" Name="tableRow10" Weight="1">
+                  <Cells>
+                    <Item1 Ref="165" ControlType="XRTableCell" Name="tableCell79" Weight="0.8254799967660954" Multiline="true" Text="제품명" />
+                    <Item2 Ref="166" ControlType="XRTableCell" Name="tableCell80" Weight="1.6544502617801045" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="167" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[ItemNm]" />
+                      </ExpressionBindings>
+                    </Item2>
+                    <Item3 Ref="168" ControlType="XRTableCell" Name="tableCell81" Weight="0.95637024884448629" Multiline="true" Text="모장" />
+                    <Item4 Ref="169" ControlType="XRTableCell" Name="tableCell82" Weight="1.4581151832460735" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="170" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[HairLength]" />
+                      </ExpressionBindings>
+                    </Item4>
+                    <Item5 Ref="171" ControlType="XRTableCell" Name="tableCell83" Weight="0.80366452202122873" Multiline="true" Text="작성자" />
+                    <Item6 Ref="172" ControlType="XRTableCell" Name="tableCell84" Weight="1.6435434231583359" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="173" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[RegUserIdNm]" />
+                      </ExpressionBindings>
+                    </Item6>
+                    <Item7 Ref="174" ControlType="XRTableCell" Name="tableCell85" Weight="0.52006984131498468" Multiline="true" />
+                    <Item8 Ref="175" ControlType="XRTableCell" Name="tableCell86" Weight="0.79275648506524043" Multiline="true" />
+                    <Item9 Ref="176" ControlType="XRTableCell" Name="tableCell87" Weight="0.5091626032484764" Multiline="true" Text="모장" />
+                    <Item10 Ref="177" ControlType="XRTableCell" Name="tableCell88" Weight="0.83638743455497389" Multiline="true">
+                      <ExpressionBindings>
+                        <Item1 Ref="178" EventName="BeforePrint" PropertyName="Text" Expression="[RP_WorkOrder_M].[WeightLength]" />
+                      </ExpressionBindings>
+                    </Item10>
+                  </Cells>
+                </Item5>
+              </Rows>
+              <StylePriority Ref="179" UseFont="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+            </Item4>
+          </Controls>
+        </Item2>
+        <Item3 Ref="180" ControlType="GroupFooterBand" Name="GroupFooter1" HeightF="464.833282">
+          <Controls>
+            <Item1 Ref="181" ControlType="XRTable" Name="table6" SizeF="764,189.166672" LocationFloat="0,38.3333321" Padding="2,2,0,0,96" Borders="Left, Right, Bottom">
+              <Rows>
+                <Item1 Ref="182" ControlType="XRTableRow" Name="tableRow16" Weight="1">
+                  <Cells>
+                    <Item1 Ref="183" ControlType="XRTableCell" Name="tableCell100" Weight="1" Multiline="true">
+                      <Controls>
+                        <Item1 Ref="184" ControlType="XRPictureBox" Name="pictureBox1" Sizing="Squeeze" SizeF="187.966751,189.166687" LocationFloat="1.499939,1.14440918E-05" />
+                      </Controls>
+                    </Item1>
+                  </Cells>
+                </Item1>
+              </Rows>
+              <StylePriority Ref="185" UseBorders="false" />
+            </Item1>
+            <Item2 Ref="186" ControlType="XRTable" Name="table4" SizeF="764,38.3333321" LocationFloat="1.27156572E-05,0" Padding="2,2,0,0,96" Borders="Left, Right, Bottom">
+              <Rows>
+                <Item1 Ref="187" ControlType="XRTableRow" Name="tableRow14" Weight="1">
+                  <Cells>
+                    <Item1 Ref="188" ControlType="XRTableCell" Name="tableCell7" Weight="1" Multiline="true" Text="작업설명도" TextAlignment="MiddleLeft" Font="맑은 고딕, 11pt" Padding="10,2,0,0,100">
+                      <StylePriority Ref="189" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                    </Item1>
+                  </Cells>
+                </Item1>
+              </Rows>
+              <StylePriority Ref="190" UseBorders="false" />
+            </Item2>
+          </Controls>
+        </Item3>
+        <Item4 Ref="192" ControlType="DetailReportBand" Name="DetailReport1" Level="0" DataMember="RP_WorkOrder_M" DataSource="#Ref-191">
+          <Bands>
+            <Item1 Ref="193" ControlType="DetailBand" Name="Detail2" HeightF="38.3333321">
+              <Controls>
+                <Item1 Ref="194" ControlType="XRTable" Name="table5" TextAlignment="MiddleLeft" SizeF="764,38.3333321" LocationFloat="0,0" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100" Borders="Left, Right, Bottom">
+                  <Rows>
+                    <Item1 Ref="195" ControlType="XRTableRow" Name="tableRow15" Weight="1">
+                      <Cells>
+                        <Item1 Ref="196" ControlType="XRTableCell" Name="tableCell10" Weight="0.84293187725606389" Multiline="true" TextAlignment="MiddleLeft" Font="맑은 고딕, 9.75pt" Padding="7,2,0,0,100">
+                          <ExpressionBindings>
+                            <Item1 Ref="197" EventName="BeforePrint" PropertyName="Text" Expression="[Size]" />
+                          </ExpressionBindings>
+                          <StylePriority Ref="198" UseFont="false" UsePadding="false" UseTextAlignment="false" />
+                        </Item1>
+                        <Item2 Ref="199" ControlType="XRTableCell" Name="tableCell11" Weight="0.96073293391935333" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="200" EventName="BeforePrint" PropertyName="Text" Expression="[StretchCut]" />
+                          </ExpressionBindings>
+                        </Item2>
+                        <Item3 Ref="201" ControlType="XRTableCell" Name="tableCell26" Weight="0.960733468163656" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="202" EventName="BeforePrint" PropertyName="Text" Expression="[StretchYN]" />
+                          </ExpressionBindings>
+                        </Item3>
+                        <Item4 Ref="203" ControlType="XRTableCell" Name="tableCell28" Weight="1.0523551078513647" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="204" EventName="BeforePrint" PropertyName="Text" Expression="[StretchWeight]" />
+                          </ExpressionBindings>
+                        </Item4>
+                        <Item5 Ref="205" ControlType="XRTableCell" Name="tableCell43" Weight="0.88219905957200118" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="206" EventName="BeforePrint" PropertyName="Text" Expression="[TwinHairLength]" />
+                          </ExpressionBindings>
+                        </Item5>
+                        <Item6 Ref="207" ControlType="XRTableCell" Name="tableCell96" Weight="0.90837807543414328" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="208" EventName="BeforePrint" PropertyName="Text" Expression="[TwinHand]" />
+                          </ExpressionBindings>
+                        </Item6>
+                        <Item7 Ref="209" ControlType="XRTableCell" Name="tableCell95" Weight="1.6675395827126331" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="210" EventName="BeforePrint" PropertyName="Text" Expression="[TwinCut]" />
+                          </ExpressionBindings>
+                        </Item7>
+                        <Item8 Ref="211" ControlType="XRTableCell" Name="tableCell30" Weight="0.94764415140287417" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="212" EventName="BeforePrint" PropertyName="Text" Expression="[CurlPipe]" />
+                          </ExpressionBindings>
+                        </Item8>
+                        <Item9 Ref="213" ControlType="XRTableCell" Name="tableCell97" Weight="0.94764271590485871" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="214" EventName="BeforePrint" PropertyName="Text" Expression="[CurlDirection]" />
+                          </ExpressionBindings>
+                        </Item9>
+                        <Item10 Ref="215" ControlType="XRTableCell" Name="tableCell98" Weight="0.9607313824989282" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="216" EventName="BeforePrint" PropertyName="Text" Expression="[CurlSpecial]" />
+                          </ExpressionBindings>
+                        </Item10>
+                        <Item11 Ref="217" ControlType="XRTableCell" Name="tableCell27" Weight="0.97382393617006724" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="218" EventName="BeforePrint" PropertyName="Text" Expression="[CurlRemk]" />
+                          </ExpressionBindings>
+                        </Item11>
+                        <Item12 Ref="219" ControlType="XRTableCell" Name="tableCell99" Weight="0.8952877091140562" Multiline="true">
+                          <ExpressionBindings>
+                            <Item1 Ref="220" EventName="BeforePrint" PropertyName="Text" Expression="[CurlThickness]" />
+                          </ExpressionBindings>
+                        </Item12>
+                      </Cells>
+                    </Item1>
+                  </Rows>
+                  <StylePriority Ref="221" UseFont="false" UsePadding="false" UseBorders="false" UseTextAlignment="false" />
+                </Item1>
+              </Controls>
+            </Item1>
+          </Bands>
+        </Item4>
+      </Bands>
+    </Item4>
+  </Bands>
+  <ComponentStorage>
+    <Item1 Ref="0" ObjectType="DevExpress.DataAccess.Sql.SqlDataSource,DevExpress.DataAccess.v20.1" Name="sqlDataSource1" Base64="PFNxbERhdGFTb3VyY2UgTmFtZT0ic3FsRGF0YVNvdXJjZTEiPjxDb25uZWN0aW9uIE5hbWU9IkdNSU5XRUJfQ0pDQ29udGV4dENvbm5lY3Rpb24iIEZyb21BcHBDb25maWc9InRydWUiIC8+PFF1ZXJ5IFR5cGU9IlN0b3JlZFByb2NRdWVyeSIgTmFtZT0iUlBfV29ya09yZGVyX00iPjxQYXJhbWV0ZXIgTmFtZT0iQFJfQ1JVRCIgVHlwZT0iU3lzdGVtLlN0cmluZyI+UDEwPC9QYXJhbWV0ZXI+PFBhcmFtZXRlciBOYW1lPSJAQ29tcENkIiBUeXBlPSJTeXN0ZW0uU3RyaW5nIiBJc051bGw9InRydWUiIC8+PFBhcmFtZXRlciBOYW1lPSJAV29ya09yZGVyTm8iIFR5cGU9IkRldkV4cHJlc3MuRGF0YUFjY2Vzcy5FeHByZXNzaW9uIj4oU3lzdGVtLlN0cmluZykoP1dvcmtPcmRlck5vKTwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQEl0ZW1DZCIgVHlwZT0iU3lzdGVtLlN0cmluZyIgSXNOdWxsPSJ0cnVlIiAvPjxQYXJhbWV0ZXIgTmFtZT0iQEJpelVuaXQiIFR5cGU9IkRldkV4cHJlc3MuRGF0YUFjY2Vzcy5FeHByZXNzaW9uIj4oU3lzdGVtLlN0cmluZykoP0JpelVuaXQpPC9QYXJhbWV0ZXI+PFBhcmFtZXRlciBOYW1lPSJARmFjdEJpelVuaXQiIFR5cGU9IkRldkV4cHJlc3MuRGF0YUFjY2Vzcy5FeHByZXNzaW9uIj4oU3lzdGVtLlN0cmluZykoP0ZhY3RCaXpVbml0KTwvUGFyYW1ldGVyPjxQcm9jTmFtZT5SUF9Xb3JrT3JkZXJfTTwvUHJvY05hbWU+PC9RdWVyeT48UmVzdWx0U2NoZW1hPjxEYXRhU2V0IE5hbWU9InNxbERhdGFTb3VyY2UxIj48VmlldyBOYW1lPSJSUF9Xb3JrT3JkZXJfTSI+PEZpZWxkIE5hbWU9IldvcmtPcmRlckR0IiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IldvcmtPcmRlck5vIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkJpelVuaXQiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQml6VW5pdE5tIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkZhY3RCaXpVbml0IiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkZhY3RCaXpVbml0Tm0iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQnV5ZXIiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iRmliZXIiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iTWFjaGluZVR5cGUiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iSXRlbUNkIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IldlaWdodCIgVHlwZT0iRGVjaW1hbCIgLz48RmllbGQgTmFtZT0iTWFudWZhY3RlZER0IiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9Ikl0ZW1ObSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJIYWlyTGVuZ3RoIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IlJlZ1VzZXJJZCIgVHlwZT0iSW50MzIiIC8+PEZpZWxkIE5hbWU9IlJlZ1VzZXJJZE5tIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkdvbmdHbyIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJHb25nSW5zb28iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iR29uZ0luZ3llIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IldlaWdodEhhbmQiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iV2VpZ2h0SW5zb28iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iV2VpZ2h0SW5neWUiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iV2VpZ2h0TGVuZ3RoIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkNhcFdlaWdodCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJDYXBSb3VuZCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJDYXBMZW5ndGgiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQ2FwRnJvbnRCYWNrIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkNhcFBhcnRJdGVtIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IlBhcnRIYWlyIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IlBhcnRTaXplIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IlNraW5XZWlnaHQiIFR5cGU9IkRlY2ltYWwiIC8+PEZpZWxkIE5hbWU9Ikxvc3MiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iVG90YWxXZWlnaHQiIFR5cGU9IkRlY2ltYWwiIC8+PEZpZWxkIE5hbWU9IkltYWdlRGF0YSIgVHlwZT0iU3RyaW5nIiAvPjwvVmlldz48L0RhdGFTZXQ+PC9SZXN1bHRTY2hlbWE+PENvbm5lY3Rpb25PcHRpb25zIENsb3NlQ29ubmVjdGlvbj0idHJ1ZSIgLz48L1NxbERhdGFTb3VyY2U+" />
+    <Item2 Ref="191" ObjectType="DevExpress.DataAccess.Sql.SqlDataSource,DevExpress.DataAccess.v20.1" Name="sqlDataSource2" Base64="PFNxbERhdGFTb3VyY2UgTmFtZT0ic3FsRGF0YVNvdXJjZTIiPjxDb25uZWN0aW9uIE5hbWU9IkdNSU5XRUJfQ0pDQ29udGV4dENvbm5lY3Rpb24iIEZyb21BcHBDb25maWc9InRydWUiIC8+PFF1ZXJ5IFR5cGU9IlN0b3JlZFByb2NRdWVyeSIgTmFtZT0iUlBfV29ya09yZGVyX00iPjxQYXJhbWV0ZXIgTmFtZT0iQFJfQ1JVRCIgVHlwZT0iU3lzdGVtLlN0cmluZyI+UDExPC9QYXJhbWV0ZXI+PFBhcmFtZXRlciBOYW1lPSJAQ29tcENkIiBUeXBlPSJTeXN0ZW0uU3RyaW5nIiBJc051bGw9InRydWUiIC8+PFBhcmFtZXRlciBOYW1lPSJAV29ya09yZGVyTm8iIFR5cGU9IlN5c3RlbS5TdHJpbmciIElzTnVsbD0idHJ1ZSIgLz48UGFyYW1ldGVyIE5hbWU9IkBJdGVtQ2QiIFR5cGU9IkRldkV4cHJlc3MuRGF0YUFjY2Vzcy5FeHByZXNzaW9uIj4oU3lzdGVtLlN0cmluZykoP0l0ZW1DZCk8L1BhcmFtZXRlcj48UGFyYW1ldGVyIE5hbWU9IkBCaXpVbml0IiBUeXBlPSJEZXZFeHByZXNzLkRhdGFBY2Nlc3MuRXhwcmVzc2lvbiI+KFN5c3RlbS5TdHJpbmcpKD9CaXpVbml0KTwvUGFyYW1ldGVyPjxQYXJhbWV0ZXIgTmFtZT0iQEZhY3RCaXpVbml0IiBUeXBlPSJEZXZFeHByZXNzLkRhdGFBY2Nlc3MuRXhwcmVzc2lvbiI+KFN5c3RlbS5TdHJpbmcpKD9GYWN0Qml6VW5pdCk8L1BhcmFtZXRlcj48UHJvY05hbWU+UlBfV29ya09yZGVyX008L1Byb2NOYW1lPjwvUXVlcnk+PFJlc3VsdFNjaGVtYT48RGF0YVNldCBOYW1lPSJzcWxEYXRhU291cmNlMiI+PFZpZXcgTmFtZT0iUlBfV29ya09yZGVyX00iPjxGaWVsZCBOYW1lPSJXb3JrT3JkZXJEdCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJXb3JrT3JkZXJObyIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJCaXpVbml0IiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkJpelVuaXRObSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJGYWN0Qml6VW5pdCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJGYWN0Qml6VW5pdE5tIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkJ1eWVyIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkZpYmVyIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9Ik1hY2hpbmVUeXBlIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9Ikl0ZW1DZCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJXZWlnaHQiIFR5cGU9IkRlY2ltYWwiIC8+PEZpZWxkIE5hbWU9Ik1hbnVmYWN0ZWREdCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJJdGVtTm0iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iSGFpckxlbmd0aCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJSZWdVc2VySWQiIFR5cGU9IkludDMyIiAvPjxGaWVsZCBOYW1lPSJSZWdVc2VySWRObSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJHb25nR28iIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iR29uZ0luc29vIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkdvbmdJbmd5ZSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJXZWlnaHRIYW5kIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IldlaWdodEluc29vIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IldlaWdodEluZ3llIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IldlaWdodExlbmd0aCIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJDYXBXZWlnaHQiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQ2FwUm91bmQiIFR5cGU9IlN0cmluZyIgLz48RmllbGQgTmFtZT0iQ2FwTGVuZ3RoIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IkNhcEZyb250QmFjayIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJDYXBQYXJ0SXRlbSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJQYXJ0SGFpciIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJQYXJ0U2l6ZSIgVHlwZT0iU3RyaW5nIiAvPjxGaWVsZCBOYW1lPSJTa2luV2VpZ2h0IiBUeXBlPSJEZWNpbWFsIiAvPjxGaWVsZCBOYW1lPSJMb3NzIiBUeXBlPSJTdHJpbmciIC8+PEZpZWxkIE5hbWU9IlRvdGFsV2VpZ2h0IiBUeXBlPSJEZWNpbWFsIiAvPjxGaWVsZCBOYW1lPSJJbWFnZURhdGEiIFR5cGU9IlN0cmluZyIgLz48L1ZpZXc+PC9EYXRhU2V0PjwvUmVzdWx0U2NoZW1hPjxDb25uZWN0aW9uT3B0aW9ucyBDbG9zZUNvbm5lY3Rpb249InRydWUiIC8+PC9TcWxEYXRhU291cmNlPg==" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>

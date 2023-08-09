@@ -1,0 +1,153 @@
+﻿@page "/ASManagement"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic
+@using System.Security.Claims
+
+@inject IASData _db
+@inject IRoleData _RoleManager
+@inject IJSRuntime jsRuntime
+@inject NotificationService NotificationService
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    <RadzenLabel Text=" > 고객관리 > " />
+    <strong>AS등록</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+            <div>
+                <div class="info_title">
+                    <h1 class="sub_title">AS 등록</h1>
+                    <div class="post_btn">
+                        <RadzenButton Click="btnNewClick" Style="background-color:black; color:white">신규</RadzenButton>
+                    </div>
+
+                </div>
+
+                <RadzenTabs   RenderMode="TabRenderMode.Client">
+                    <Tabs>
+                        <RadzenTabsItem Text="AS리스트">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                            FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@asModels" TItem="ASModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="ASModel" Property="AsNo" Title="AS번호" Width="130px" CssClass="data_center"/>
+                                    <RadzenDataGridColumn TItem="ASModel" Property="CustomerNm" Title="고객명" Width="120px" />
+                                    <RadzenDataGridColumn TItem="ASModel" Property="CustomerPhone" Title="고객전화번호" Width="150px" CssClass="data_center"/>
+                                    <RadzenDataGridColumn TItem="ASModel" Property="ItemCd" Title="제품코드" Width="130px" CssClass="data_center"/>
+                                    <RadzenDataGridColumn TItem="ASModel" Property="ItemNm" Title="제품명" Width="200px" />
+                                    <RadzenDataGridColumn TItem="ASModel" Property="AsTypeNm" Title="AS구분" Width="120px" />
+                                    <RadzenDataGridColumn TItem="ASModel" Property="ProcStatusNm" Title="처리상태" Width="120px" />
+                                    <RadzenDataGridColumn TItem="ASModel" Filterable="false" Title="수정 및 삭제" Width="230px" CssClass="data_center">
+                                        <Template Context="asModel">
+                                            @*<RadzenButton Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" ButtonStyle="ButtonStyle.Info" Click="()=>btnImageUploadClick(asModel)">이미지등록</RadzenButton>*@
+                                            <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" ButtonStyle="ButtonStyle.Light" Click="()=>btnUpdateClick(asModel)">수정</RadzenButton>
+                                            <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkred; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Click="()=>btnDeleteClick(asModel)">삭제</RadzenButton>
+                                        </Template>
+                                    </RadzenDataGridColumn>
+                                </Columns>
+                            </RadzenDataGrid>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+
+                <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+
+            </div>
+        }
+        else
+        {
+            <p>조회 권한이 없는 사용자입니다.</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public ASModel selectedAS { get; set; }
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    public int MenuId = 51;
+
+    ClaimsPrincipal CurrentUser;
+    private List<ASModel> asModels;
+    private string RoleYN;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            if (CurrentUser.Identity.Name is not null)
+            {
+                var RoleList = await _RoleManager.GetRoleYN(CurrentUser.Identity.Name, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                if (RoleYN == "Y")
+                {
+                    asModels = await _db.GetAllAS(CurrentUser.Identity.Name);
+                }
+            }
+        }
+    }
+
+    private async Task GetAllDatas()
+    {
+        asModels = await _db.GetAllAS(CurrentUser.Identity.Name);
+    }
+
+    void btnImageUploadClick(ASModel asModel)
+    {
+
+    }
+
+    void btnNewClick()
+    {
+        navigationManager.NavigateTo("/asEdit" + "/" + CurrentUser.Identity.Name);
+    }
+
+
+    void btnUpdateClick(ASModel asModel)
+    {
+        navigationManager.NavigateTo("/asEdit" + "/" + CurrentUser.Identity.Name + "/" + asModel.AsNo);
+
+    }
+
+    void btnDeleteClick(ASModel asModel)
+    {
+        DeleteConfirmation.Show("정말 삭제하시겠습니까 ?");
+
+        selectedAS = asModel;
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteData(selectedAS, CurrentUser.Identity.Name);
+            await GetAllDatas();
+        }
+        else
+        {
+            selectedAS = null;
+        }
+    }
+
+}

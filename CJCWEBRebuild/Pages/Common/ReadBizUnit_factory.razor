@@ -1,0 +1,162 @@
+﻿@page "/ReadBizUnitFactory"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic;
+@using System.Security.Claims
+
+@inject IBizUnitData _db
+@inject IRoleData _RoleManager
+@inject IJSRuntime jsRuntime
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    > 기준정보관리 >
+    <strong>공장조회</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+            <div>
+                <div class="info_title">
+                    <h1 class="sub_title">공장 조회</h1>
+                    <div style="margin-bottom:15px"></div>
+                </div>
+
+                <div style="margin-top:45px">
+                    <RadzenTabs RenderMode="TabRenderMode.Client">
+                        <Tabs>
+                            <RadzenTabsItem Text="공장리스트">
+                                <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                                FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@bizunit" TItem="BizUnitModel" ColumnWidth="300px"
+                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 공장이 없습니다.">
+                                    <Columns>
+                                        <RadzenDataGridColumn TItem="BizUnitModel" Property="BizNm" Title="사업장명" Width="250px" />
+                                        <RadzenDataGridColumn TItem="BizUnitModel" Property="BizLoc" Title="사업장위치" Width="400px" />
+                                        <RadzenDataGridColumn TItem="BizUnitModel" Property="OwnerNm" Title="대표자명" Width="100px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="BizUnitModel" Property="PICNm" Title="담당자명" Width="100px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="BizUnitModel" Property="PhoneNo" Title="연락처" Width="200px" CssClass="data_center" />
+                                        @*<RadzenDataGridColumn TItem="BizUnitModel" Filterable="false" Title="수정 및 삭제" Width="230px" CssClass="data_center">
+                                <Template Context="bizUnit">
+                                    <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" ButtonStyle="ButtonStyle.Light" Click="()=>btnUpdateClick(bizUnit)">수정</RadzenButton>
+                                    <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkred; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Click="()=>btnDeleteClick(bizUnit)">삭제</RadzenButton>
+                                </Template>
+                            </RadzenDataGridColumn>*@
+                                    </Columns>
+                                </RadzenDataGrid>
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+                </div>
+
+
+                <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+            </div>
+        }
+        else
+        {
+            <p>조회 권한이 없는 사용자입니다.</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private BizUnitModel bizUnitModel = new BizUnitModel();
+
+    public BizUnitModel selectedBizUnit { get; set; }
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+    ClaimsPrincipal CurrentUser;
+
+    public int MenuId = 6;
+    private string RoleYN;
+
+    private List<BizUnitModel> bizunit;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            if (CurrentUser.Identity.Name is not null)
+            {
+                var RoleList = await _RoleManager.GetRoleYN(CurrentUser.Identity.Name, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                if (RoleYN == "Y")
+                {
+                    bizunit = await _db.GetFactoryBizUnit(CurrentUser.Identity.Name);
+                }
+            }
+
+        }
+    }
+
+    private async Task GetAllDatas()
+    {
+        bizunit = await _db.GetFactoryBizUnit(CurrentUser.Identity.Name);
+    }
+
+    async Task btnNewClick()
+    {
+        var bizUnitFactoryEdit = Modal.Show<BizUnitFactoryEdit>("공장등록 및 수정");
+        var result = await bizUnitFactoryEdit.Result;
+
+        if (!result.Cancelled)
+        {
+            await GetAllDatas();
+        }
+    }
+
+    async Task btnUpdateClick(BizUnitModel bizUnit)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(BizUnitFactoryEdit.selectedBizUnit), bizUnit);
+        parameters.Add("loginId", CurrentUser.Identity.Name);
+
+        var customerEdit = Modal.Show<BizUnitFactoryEdit>("공장등록 및 수정", parameters);
+        var result = await customerEdit.Result;
+
+        if (!result.Cancelled)
+        {
+            await GetAllDatas();
+        }
+
+    }
+
+    void btnDeleteClick(BizUnitModel bizUnit)
+    {
+        DeleteConfirmation.Show("정말 삭제하시겠습니까 ?");
+
+        selectedBizUnit = bizUnit;
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteData(selectedBizUnit, CurrentUser.Identity.Name);
+            await GetAllDatas();
+        }
+        else
+        {
+            selectedBizUnit = null;
+        }
+    }
+
+}

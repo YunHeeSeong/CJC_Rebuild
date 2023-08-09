@@ -1,0 +1,316 @@
+﻿@using GMINWEB_CJC.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject ICustHistData _db
+@inject ICustomerData _customerManager
+@inject IOrderData _orderManager
+@inject IJSRuntime jsRuntime
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Style="width:1200px; overflow-x:auto; height:550px; overflow-y:auto;" Data="custHistModel">
+    <div class="row">
+        <div class="col-sm">
+            <RadzenFieldset Text="이용이력 정보">
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="코드(자동채번)"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenNumeric TValue="string" ReadOnly="true" style="width: 100%;" Name="CodeId" @bind-Value="@custHistModel.CustHistCd" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="고객명" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@custHistModel.CustomerCd" Name="CustomerCd" Disabled="isDisable"
+                                        AllowFiltering="true" Data=@customerList TextProperty="CustomerNm" ValueProperty="CustomerCd"
+                                        Change=@(args => OnChangeCustomerCd(args, "DropDown with virtualization")) />
+                    </div>
+                </div>
+            </RadzenFieldset>
+
+            <RadzenFieldset Text="이용이력 상세 정보">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="신규" Click="@InsertRow" Disabled=@(custHistToInsert != null) />
+                <RadzenDataGrid @ref="detailGrid" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                Data="@custHistDetailModels" TItem="CustHistModel" EmptyText="">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="CustHistModel" Property="CustHistCd" Title="코드" Width="70px" />
+                        <RadzenDataGridColumn TItem="CustHistModel" Property="Seq" Title="순번" Width="70px" />
+                        <RadzenDataGridColumn TItem="CustHistModel" Property="OrderNo" Title="주문번호" Width="120px">
+                            <EditTemplate Context="custHist">
+                                <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@custHist.OrderNo" Name="OrderNo"
+                                                AllowFiltering="true" Data=@orderList TextProperty="OrderNo" ValueProperty="OrderNo"
+                                                Change=@(args => OnChangeOrderNo(args, "DropDown with virtualization")) />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="CustHistModel" Property="History" Title="이용이력" Width="150px">
+                            <EditTemplate Context="custHist">
+                                <RadzenTextBox @bind-Value="custHist.History" Style="width:100%; display: block"/>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="CustHistModel" Context="custHist" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                            <Template Context="custHist">
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(custHist))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="custHist">
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(custHist))">
+                                </RadzenButton>
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(custHist))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="CustHistModel" Context="custHist" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                            <Template Context="custHist">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(custHist))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="custHist">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(custHist))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <div style="width:300px;margin:0 auto;">
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+    <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public CustHistModel selectedCustHist { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+
+    private List<CustHistModel> custHistModels;
+    private List<CustHistModel> custHistDetailModels;
+    private List<CustomerModel> customerList;
+    private List<OrderModel> orderList;
+    public CustHistModel codeToDelete { get; set; }
+    private CustHistModel custHistModel = new CustHistModel();
+    private CustHistModel custHistDetailModel = new CustHistModel();
+    RadzenDataGrid<CustHistModel> detailGrid;
+
+    private CustHistModel custHistToInsert;
+
+    private bool isDisable;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedCustHist is not null)
+        {
+            isDisable = true;
+
+            custHistModel.CustHistCd = selectedCustHist.CustHistCd;
+            custHistModel.CustomerCd = selectedCustHist.CustomerCd;
+            custHistModel.CustomerNm = selectedCustHist.CustomerNm;
+
+            orderList = await _orderManager.GetOrderFromCustomer(custHistModel.CustomerCd, loginId);
+
+            custHistDetailModels = await _db.GetCustHist(selectedCustHist.CustHistCd, loginId);
+
+            if (custHistDetailModels.Count > 0)
+            {
+                custHistDetailModel = custHistDetailModels.FirstOrDefault();
+            }
+        }
+        else
+        {
+            isDisable = false;
+        }
+
+        customerList = await _customerManager.GetAllCustomers(loginId);
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+    async Task InsertRow()
+    {
+        if (custHistModel.CustHistCd.GetNullToEmpty() != string.Empty)
+        {
+            custHistToInsert = new CustHistModel();
+            custHistToInsert.CustHistCd = custHistModel.CustHistCd;
+
+            await detailGrid.InsertRow(custHistToInsert);
+        }
+
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "상세 정보는 저장 후 등록할 수 있습니다.");
+        }
+    }
+
+    async Task EditRow(CustHistModel custHist)
+    {
+        custHistToInsert = custHist;
+
+        await detailGrid.EditRow(custHist);
+    }
+
+    async Task SaveRow(CustHistModel custHist)
+    {
+        if (custHist == custHistToInsert)
+        {
+            custHistToInsert = null;
+        }
+
+        if (ValidationCheckCustHistDetail(custHist) == true)
+        {
+            if (custHist.Seq == 0)
+            {
+                //코드가 채번되기 전이면 INSERT
+                await _db.InsertDetailData(custHist, custHistModel.CustHistCd, loginId);
+            }
+            else
+            {
+                //파일넘버가 기존에 존재하면 UPDATE
+                await _db.UpdateDetailData(custHist, loginId);
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "코드명을 입력하여 주십시오");
+        }
+
+        await detailGrid.UpdateRow(custHist);
+
+        custHistDetailModels = await _db.GetCustHist(custHistModel.CustHistCd, loginId);
+    }
+
+    void CancelEdit(CustHistModel custHist)
+    {
+        if (custHist == custHistToInsert)
+        {
+            custHistToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(custHist);
+    }
+
+    async Task DeleteRow(CustHistModel custHist)
+    {
+        if (custHist == custHistToInsert)
+        {
+            custHistToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (custHistDetailModels.Contains(custHist))
+        {
+            codeToDelete = custHist;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            detailGrid.CancelEditRow(custHist);
+            await detailGrid.Reload();
+        }
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckCustHistMaster(custHistModel) == true)
+        {
+            if (custHistModel.CustHistCd.GetNullToEmpty() == string.Empty)
+            {
+                var result = await _db.InsertMasterData(custHistModel, loginId);
+                var custHistCd =  result.FirstOrDefault().RTN_KEY;
+
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+            else
+            {
+                //await _db.InsertDetailData(custHistModel, custHistModel.CustHistCd, loginId);
+                //await _db.UpdateMasterData(custHistModel, loginId);
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "코드명을 입력하여 주십시오.");
+        }
+
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteDetailData(codeToDelete, loginId);
+            custHistDetailModels = await _db.GetCustHist(custHistModel.CustHistCd, loginId);
+            await detailGrid.Reload();
+        }
+        else
+        {
+            codeToDelete = null;
+        }
+    }
+
+    bool ValidationCheckCustHistDetail(CustHistModel custHist)
+    {
+        //필수값 미입력시 false 반환
+        if (custHist.OrderNo.GetNullToEmpty() == string.Empty)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    bool ValidationCheckCustHistMaster(CustHistModel custHist)
+    {
+        //필수값 미입력시 false 반환
+        if (custHist.CustomerCd.GetNullToEmpty() == string.Empty)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void OnChangeCustomerCd(object value, string name)
+    {
+        if (value is not null)
+        {
+            custHistModel.CustomerCd = value.ToString();
+        }
+    }
+
+    void OnChangeOrderNo(object value, string name)
+    {
+        if (value is not null)
+        {
+            custHistModel.OrderNo = value.ToString();
+
+        }
+    }
+}

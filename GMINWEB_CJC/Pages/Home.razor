@@ -1,0 +1,179 @@
+﻿@page "/"
+@using System.Resources
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic;
+
+@inject IDashboardData _db
+
+<div class="container-fluid" style="position: relative">
+    <div class="row">
+        <div class="col-lg-6 py-2">
+            <RadzenCard>
+                <h2>입고 현황 <label style="color: #cb2431; position: absolute; font-size: 3rem; right: 2rem; top: 1rem">@POInTotQty.ToString("G29")</label></h2>
+                <RadzenChart style="width: 100%; height: 200px">
+                    <RadzenColumnSeries Data=@inModels ValueProperty="SumPOInQty" CategoryProperty="BizUnitNm" Title="입고" Fill="#cb2431" />
+                    <RadzenValueAxis Visible="true" FormatString="{0:n0}" />
+                    <RadzenCategoryAxis Visible="true" FormatString="{0:n0}" />
+                    <RadzenColumnOptions Margin="10" />
+                    <RadzenLegend Visible="true" />
+                </RadzenChart>
+            </RadzenCard>
+        </div>
+        <div class="col-lg-6 py-2">
+            <RadzenCard>
+                <h2>주문 현황 <label style="color: gold; position: absolute; font-size: 3rem; right: 2rem; top: 1rem">@OrderTotQty.ToString("G29")</label></h2>
+                <RadzenChart style="width: 100%; height: 200px">
+                    <RadzenColumnSeries Data=@orderModels ValueProperty="SumOrderQTY" CategoryProperty="BizUnitNm" Title="주문" Fill="gold" />
+                    <RadzenValueAxis Visible="true" FormatString="{0:n0}" />
+                    <RadzenCategoryAxis Visible="true" FormatString="{0:n0}" />
+                    <RadzenColumnOptions Margin="10" />
+                    <RadzenLegend Visible="true" />
+                </RadzenChart>
+            </RadzenCard>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 py-2">
+            <RadzenCard>
+                <h2>생산 현황 <label style="color: blue; position: absolute; font-size: 3rem; right: 2rem; top: 1rem">@OkTotQty.ToString("G29")</label></h2>
+                <RadzenChart style="width: 100%; height: 200px">
+                    <RadzenColumnSeries Data=@workModels ValueProperty="SumOkQTY" CategoryProperty="BizUnitNm" Title="생산" Fill="blue" />
+                    <RadzenValueAxis Visible="true" FormatString="{0:n0}" />
+                    <RadzenCategoryAxis Visible="true" FormatString="{0:n0}" />
+                    <RadzenColumnOptions Margin="10" />
+                    <RadzenLegend Visible="true" />
+                </RadzenChart>
+            </RadzenCard>
+        </div>
+        <div class="col-lg-6 py-2">
+            <RadzenCard>
+                <h2>출고 현황 <label style="color: green; position: absolute; font-size: 3rem; right: 2rem; top: 1rem">@OutTotQty.ToString("G29")</label></h2>
+                <RadzenChart style="width: 100%; height: 200px">
+                    <RadzenColumnSeries Data=@outModels ValueProperty="SumOutQty" CategoryProperty="BizUnitNm" Title="출고" Fill="green" />
+                    <RadzenValueAxis Visible="true" FormatString="{0:n0}" />
+                    <RadzenCategoryAxis Visible="true" FormatString="{0:n0}" />
+                    <RadzenColumnOptions Margin="10" />
+                    <RadzenLegend Visible="true" />
+                </RadzenChart>
+            </RadzenCard>
+        </div>
+    </div>
+        
+        <div class="row">
+            <div class="col-lg-6 py-2">
+                <RadzenCard>
+                    <h2>클레임율</h2>
+                    <div>
+                        <RadzenLabel Text="기간선택(개월)" Style="float:right;"></RadzenLabel>
+                    </div>
+                    <div>
+                        <RadzenNumeric TValue="int" @bind-Value="month" Name="month" Style="float:right;" Min="1" Max="6" Change="@(args => DropDownChanged(args))"></RadzenNumeric>
+                    </div>
+                    <RadzenChart style="width: 100%; height: 200px">
+                        <RadzenColumnSeries Data="@ClameRateModels" CategoryProperty="month" Title="클레임율" ValueProperty="ClameRate" />
+                        <RadzenValueAxis Visible="true"  />
+                        <RadzenCategoryAxis Visible="true"  />
+                        <RadzenColumnOptions Margin="10" />
+                        <RadzenLegend Visible="true" />
+                    </RadzenChart>
+                </RadzenCard>
+            </div>
+            <div class="col-lg-6 py-2">
+                <RadzenCard>
+                    <h2>수주출하 리드타임 </h2>
+                    <div>
+                        <RadzenLabel Text="기간선택(개월)" Style="float:right;"></RadzenLabel>
+                    </div>
+                    <div>
+                        <RadzenNumeric TValue="int"  @bind-Value="month2" Name="month2" Style="float:right;" Min="1" Max="10" Change="@(args => DropDownChanged2(args))"></RadzenNumeric>
+                    </div>
+                    <RadzenChart style="width: 100%; height: 200px">
+                        <RadzenColumnSeries Data=@OrderLeadModels ValueProperty="leadtime" CategoryProperty="month2" Title="출고" Fill="green" />                        
+                        <RadzenColumnOptions Margin="10" />
+                        <RadzenLegend Visible="true" />
+                    </RadzenChart>
+                </RadzenCard>
+            </div>
+        </div>
+    </div>
+
+    @code{
+        private List<DashboardModel> inModels = new List<DashboardModel>();
+        private List<DashboardModel> orderModels = new List<DashboardModel>();
+        private List<DashboardModel> workModels = new List<DashboardModel>();
+        private List<DashboardModel> outModels = new List<DashboardModel>();
+        private List<DashboardModel> ClameRateModels = new List<DashboardModel>();
+        private List<DashboardModel> OrderLeadModels = new List<DashboardModel>();
+
+        private decimal POInTotQty = 0;
+        private int OrderTotQty = 0;
+        private decimal OkTotQty = 0;
+        private decimal OutTotQty = 0;
+        private decimal ClameRate = 0;
+        private int month = 0;
+        private int month2 = 0;
+        private int leadtime = 0;
+
+
+        protected override async Task OnInitializedAsync()
+        {
+            inModels = await _db.GetPOInItem();
+            if (inModels.Count > 0)
+            {
+                POInTotQty = inModels.FirstOrDefault().TotQty;
+
+            }
+
+            orderModels = await _db.GetOrder();
+            if (orderModels.Count > 0)
+            {
+                OrderTotQty = orderModels.FirstOrDefault().TotalQty;
+            }
+
+            workModels = await _db.GetWorkPerform();
+            if (workModels.Count > 0)
+            {
+                OkTotQty = workModels.FirstOrDefault().TotQty;
+
+            }
+
+            outModels = await _db.GetOutPDItem();
+            if (outModels.Count > 0)
+            {
+                OutTotQty = outModels.FirstOrDefault().TotQty;
+
+            }
+
+            ClameRateModels = await _db.GetClameRate(1);
+            if(ClameRateModels.Count > 0)
+            {
+                ClameRate = ClameRateModels.FirstOrDefault().ClameRate;
+                month = ClameRateModels.FirstOrDefault().month;
+            }
+
+            OrderLeadModels = await _db.GetLeadTime(1);
+            if (OrderLeadModels.Count > 0)
+            {
+                leadtime = OrderLeadModels.FirstOrDefault().leadtime;
+                month2 = OrderLeadModels.FirstOrDefault().month2;
+            }
+        }
+
+        private async Task DropDownChanged(int month)
+        {
+            ClameRateModels = await _db.GetClameRate(month);
+            if (ClameRateModels.Count > 0)
+            {
+                ClameRate = ClameRateModels.FirstOrDefault().ClameRate;
+            }
+        }
+        private async Task DropDownChanged2(int month)
+        {
+            OrderLeadModels = await _db.GetLeadTime(month);
+            if (OrderLeadModels.Count > 0)
+            {
+                leadtime = OrderLeadModels.FirstOrDefault().leadtime;
+            }
+        }
+    }

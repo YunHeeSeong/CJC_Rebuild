@@ -1,0 +1,162 @@
+﻿@page "/ReadVOC"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic
+@using System.Security.Claims
+
+@inject IVOCData _db
+@inject IRoleData _RoleManager
+@inject IJSRuntime jsRuntime
+@inject NotificationService NotificationService
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    <RadzenLabel Text=" > 영업관리 > " />
+    <strong>VOC조회</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+        <div>
+            <div class="info_title">
+                <h1 class="sub_title">VOC 조회</h1>
+                @*<div class="post_btn">
+                <RadzenButton Click="btnNewClick" Style="background-color:black; color:white">신규</RadzenButton>
+            </div>*@
+
+            </div>
+
+            <div style="margin-top:45px">
+                <RadzenTabs RenderMode="TabRenderMode.Client">
+                    <Tabs>
+                        <RadzenTabsItem Text="VOC 리스트">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                            FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@vocModels" TItem="VOCModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="VOCModel" Property="VocNo" Title="VOC번호" Width="130px" CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="VOCModel" Property="VocDt" Title="VOC일자" Width="130px" CssClass="data_center">
+                                        <Template Context="data">
+                                            @data.VocDt.ToString("yyyy-MM-dd")
+                                        </Template>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="VOCModel" Property="VocClsNm" Title="VOC구분" Width="100px" />
+                                        <RadzenDataGridColumn TItem="VOCModel" Property="VocDetailClsNm" Title="VOC상세구분" Width="120px" />
+                                        <RadzenDataGridColumn TItem="VOCModel" Property="CustomerNm" Title="고객명" Width="100px" />
+                                        <RadzenDataGridColumn TItem="VOCModel" Property="Title" Title="제목" Width="150px" />
+                                        <RadzenDataGridColumn TItem="VOCModel" Property="VocUserIdNm" Title="VOC접수자" Width="100px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="VOCModel" Property="VocManageIdNm" Title="VOC처리자" Width="100px" CssClass="data_center" />
+
+                                        @*<RadzenDataGridColumn TItem="VOCModel" Filterable="false" Title="수정 및 삭제" Width="230px">
+            <Template Context="vocModel">
+                <RadzenButton Style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Info" Click="()=>btnImageUploadClick(vocModel)">이미지등록</RadzenButton>
+                <RadzenButton Style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Light" Click="()=>btnUpdateClick(vocModel)">수정</RadzenButton>
+                <RadzenButton Style="margin: 0 1rem 1rem 0; background-color: #375E99;" Click="()=>btnDeleteClick(vocModel)">삭제</RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>*@
+</Columns>
+                            </RadzenDataGrid>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+            </div>
+
+                <GMINWEB_Rebuild.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+
+            </div>
+            }
+            else
+            {
+            <p>조회 권한이 없는 사용자입니다.</p>
+            }
+</Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public VOCModel selectedVoc { get; set; }
+
+    public GMINWEB_Rebuild.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    public int MenuId = 54;
+
+    ClaimsPrincipal CurrentUser;
+    private List<VOCModel> vocModels;
+    private string RoleYN;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            if (CurrentUser.Identity.Name is not null)
+            {
+                var RoleList = await _RoleManager.GetRoleYN(CurrentUser.Identity.Name, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                if (RoleYN == "Y")
+                {
+                    vocModels = await _db.GetAllVoc(CurrentUser.Identity.Name);
+                }
+            }
+        }
+    }
+
+    private async Task GetAllDatas()
+    {
+        vocModels = await _db.GetAllVoc(CurrentUser.Identity.Name);
+    }
+
+    void btnImageUploadClick(VOCModel vocModel)
+    {
+
+    }
+
+    void btnNewClick()
+    {
+        navigationManager.NavigateTo("/vocEdit" + "/" + CurrentUser.Identity.Name);
+    }
+
+
+    void btnUpdateClick(VOCModel vocModel)
+    {
+        navigationManager.NavigateTo("/vocEdit" + "/" + CurrentUser.Identity.Name + "/" + vocModel.VocNo);
+
+    }
+
+    void btnDeleteClick(VOCModel vocModel)
+    {
+        DeleteConfirmation.Show("삭제시 등록된 AS 관련 이미지도 삭제됩니다. 정말 삭제하시겠습니까 ?");
+
+        selectedVoc = vocModel;
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteData(selectedVoc, CurrentUser.Identity.Name);
+            await GetAllDatas();
+        }
+        else
+        {
+            selectedVoc = null;
+        }
+    }
+
+}

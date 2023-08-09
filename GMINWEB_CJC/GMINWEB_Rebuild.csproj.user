@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_SelectedScaffolderID>MvcControllerEmptyScaffolder</_SelectedScaffolderID>
+    <_SelectedScaffolderCategoryPath>root/Common</_SelectedScaffolderCategoryPath>
+    <NameOfLastUsedPublishProfile>D:\작업장\Desktop\개발 솔루션\cjc관련 파일\CJCWEB_Rebuild\CJC\GMINWEB_CJC\Properties\PublishProfiles\IISProfile.pubxml</NameOfLastUsedPublishProfile>
+    <ActiveDebugProfile>IIS Express</ActiveDebugProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="Reports\Contract.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Reports\HelloWorld.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Reports\QRCode.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Reports\test.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Reports\Transaction.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Reports\Transaction_Item.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Reports\WorkorderH.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Reports\WorkorderM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\App.es.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\App.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

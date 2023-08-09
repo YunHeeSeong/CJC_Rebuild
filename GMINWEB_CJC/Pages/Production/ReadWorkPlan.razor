@@ -1,0 +1,1035 @@
+﻿@page "/ReadWorkPlan"
+@using System.Security.Claims
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using GMINWEB_Rebuild.Pages.Dialog
+
+
+@inject IWorkPlanData _db
+@inject IBizUnitData _bizUnitManager
+@inject IItemData _itemManager
+@inject ICommonCodeData _codeManager
+@inject IRoleData _roleManager
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@inject IJSRuntime jsRuntime
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    > 생산관리 >
+    <strong>생산계획조회</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+            <div>
+                <div class="info_title">
+                    <h1 class="sub_title">생산계획 조회</h1>
+                </div>
+
+                @*<RadzenCard>
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <h3>※ 승인 정보 입력 ※</h3>
+                                <div class="col-sm-3 align-items-center d-flex">
+                                    <RadzenLabel Text="승인일자"></RadzenLabel>
+                                </div>
+                                <div class="col-sm-3">
+                                    <RadzenDatePicker @bind-Value=@AppDt DateFormat="yyyy-MM-dd" Class="w-100" />
+                                </div>
+                            </div>
+                        </div>
+                    </RadzenCard>*@
+
+                <div style="margin-top:45px">
+                    <RadzenTabs RenderMode="TabRenderMode.Client">
+                        <Tabs>
+                            <RadzenTabsItem Text="생산계획 리스트">
+                                <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                                FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@workPlanModels" TItem="WorkPlanModel" ColumnWidth="300px"
+                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" RowSelect="@RowSelect"
+                                                LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 생산계획이 없습니다.">
+                                    <Columns>
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="BizUnitNm" Title="매장명" Width="150px" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="FactBizUnitNm" Title="공장명" Width="150px" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="WorkPlanNo" Title="생산계획번호" Width="150px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="ItemCd" Title="품목코드" Width="120px" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="ItemNm" Title="품목명" Width="200px" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="Qty" Title="계획수량" Width="120px" CssClass="data_center" FormatString="{0:n0}" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="EctRequest" Title="지시사항" Width="150px" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="AppUserIdNm" Title="승인자명" Width="100px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="AppDt" Title="승인일자" Width="150px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="AppYNNm" Title="승인여부" Width="80px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="Remk" Title="비고" Width="200px" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Property="WorkOrderNo" Title="작업지시번호" Width="130px" CssClass="data_center" />
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Filterable="false" Title="이미지 조회" Width="170px" CssClass="data_center">
+                                            <Template Context="workPlan">
+                                                <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkorange; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Click="()=>btnImageUpload(workPlan)">이미지 조회</RadzenButton>
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                        <RadzenDataGridColumn TItem="WorkPlanModel" Filterable="false" Title="승인" Width="240px" CssClass="data_center">
+                                            <Template Context="workPlan">
+                                                <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Click="()=>btnApproveClick(workPlan)">승인</RadzenButton>
+                                                <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkcyan; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Click="()=>btnNotApproveClick(workPlan)">미승인</RadzenButton>
+                                            </Template>
+                                        </RadzenDataGridColumn>
+                                    </Columns>
+                                </RadzenDataGrid>
+
+
+                                @if (itemModel is not null)
+                                {
+                                    <RadzenTemplateForm Data="itemModel" Context="item" Style="margin-top:20px">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <RadzenFieldset Text="제품 정보">
+                                                    <div class="row">
+                                                        <div class="col-sm-1 align-items-center d-flex">
+                                                            <RadzenLabel Text="품목코드"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <RadzenTextBox TValue="string" Placeholder="자동채번" style="width: 100%;" Name="ItemCd" Disabled="true" @bind-Value="@itemModel.ItemCd"></RadzenTextBox>
+                                                        </div>
+                                                        <div class="col-sm-2"></div>
+                                                        <div class="col-sm-1 align-items-center d-flex">
+                                                            <RadzenLabel Text="품목명" Style="color: red"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <RadzenTextBox TValue="string" style="width: 100%;" Name="ItemCd" @bind-Value="@itemModel.ItemNm" Disabled="true"></RadzenTextBox>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="align-items-center d-flex col-md-1">
+                                                            <RadzenLabel Text="단위"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <RadzenTextBox Style="width:100%;" Name="Unit" @bind-Value="@itemModel.Unit" Disabled="true"></RadzenTextBox>
+
+                                                        </div>
+                                                        <div class="col-sm-2"></div>
+                                                        <div class="align-items-center d-flex col-md-1">
+                                                            <RadzenLabel Text="금액"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <RadzenNumeric TValue="decimal" Name="Price" @bind-Value="@itemModel.Price" Disabled="true"></RadzenNumeric>
+                                                        </div>
+                                                    </div>
+                                                </RadzenFieldset>
+                                                <RadzenFieldset Text="품목 상세">
+                                                    <div class="row">
+                                                        <div class="col-sm-1 align-items-center d-flex">
+                                                            <RadzenLabel Text="품목구분" Style="color: red"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@itemModel.ItemCls"
+                                                                            AllowFiltering="true" Data=@itemClsList TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                        </div>
+                                                        <div class="col-sm-2"></div>
+                                                        <div class="col-sm-1 align-items-center d-flex">
+                                                            <RadzenLabel Text="대분류" Style="color: red"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@itemModel.Item1Cls"
+                                                                            AllowFiltering="true" Data=@item1ClsList TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-1 align-items-center d-flex">
+                                                            <RadzenLabel Text="중분류" Style="color: red"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@itemModel.Item2Cls"
+                                                                            AllowFiltering="true" Data=@item2ClsList TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                        </div>
+                                                        <div class="col-sm-2"></div>
+                                                        <div class="col-sm-1 align-items-center d-flex">
+                                                            <RadzenLabel Text="소분류" Style="color: red"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@itemModel.Item3Cls"
+                                                                            AllowFiltering="true" Data=@item3ClsList TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-1 align-items-center d-flex">
+                                                            <RadzenLabel Text="제작방식" Style="color:red"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <RadzenRadioButtonList @bind-Value=@itemModel.MadeType TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                   Disabled="true" Data="@madeTypeList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" />
+                                                        </div>
+                                                        <div class="col-sm-2"></div>
+                                                        <div class="col-sm-1 align-items-center d-flex">
+                                                            <RadzenLabel Text="생산사업장" Style="color:red"></RadzenLabel>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@itemModel.FactBizUnit"
+                                                                            AllowFiltering="true" Data=@factBizUnitList TextProperty="BizNm" ValueProperty="BizUnit" Disabled="true" />
+                                                        </div>
+                                                    </div>
+                                                </RadzenFieldset>
+                                                @*핸드메이드*@
+                                                @if (itemModel.MadeType == 1)
+                                                {
+                                                    <RadzenFieldset Text="품목 상세 정보">
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="종류" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.ModelType TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@modelTypeList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="부착방식" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.AttachType TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@attachTypeList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="부착수량" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" Name="AttachQty" @bind-Value="@handMdItemModel.AttachQty" Disabled="true"></RadzenNumeric>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="제품 사이즈 가로" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" Name="ItemWidth" @bind-Value="@handMdItemModel.ItemWidth" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="제품 사이즈 세로" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" Name="ItemHeight" @bind-Value="@handMdItemModel.ItemHeight" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="모방향" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.HairDirection TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@hairDirectioneList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="모발종류" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="중국모"></RadzenLabel>
+                                                                <RadzenNumeric TValue="decimal" Name="FiberTypeCN" @bind-Value="@handMdItemModel.FiberTypeCN" Style="width:100px" Disabled="true"></RadzenNumeric>
+                                                                <RadzenLabel Text="%"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="인도모"></RadzenLabel>
+                                                                <RadzenNumeric TValue="decimal" Name="FiberTypeIN" @bind-Value="@handMdItemModel.FiberTypeIN" Style="width:100px" Disabled="true"></RadzenNumeric>
+                                                                <RadzenLabel Text="%"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="STN"></RadzenLabel>
+                                                                <RadzenNumeric TValue="decimal" Name="FiberTypeSTN" @bind-Value="@handMdItemModel.FiberTypeSTN" Style="width:100px" Disabled="true"></RadzenNumeric>
+                                                                <RadzenLabel Text="%"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="고열사"></RadzenLabel>
+                                                                <RadzenNumeric TValue="decimal" Name="FiberTypeH" @bind-Value="@handMdItemModel.FiberTypeH" Style="width:100px" Disabled="true"></RadzenNumeric>
+                                                                <RadzenLabel Text="%"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="기타"></RadzenLabel>
+                                                                <RadzenNumeric TValue="decimal" Name="FiberTypeEtc" @bind-Value="@handMdItemModel.FiberTypeEtc" Style="width:100px" Disabled="true"></RadzenNumeric>
+                                                                <RadzenLabel Text="%"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="모발색상" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.HairColor TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@hairColorList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="margin-top:40px">
+                                                            <div class="col-sm-1 align-items-center d-flex"></div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="앞(F)" Style="text-align:center"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="중앙(T)" Style="text-align:center"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="귀(TP)" Style="text-align:center"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="옆(S)" Style="text-align:center"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="뒤(B)" Style="text-align:center"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-1 align-items-center d-flex">
+                                                                <RadzenLabel Text="식모방법"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenTextBox TValue="string" Name="HairColorFront" @bind-Value="@handMdItemModel.HairColorFront" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenTextBox TValue="string" Name="HairColorCenter" @bind-Value="@handMdItemModel.HairColorCenter" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenTextBox TValue="string" Name="HairColorEar" @bind-Value="@handMdItemModel.HairColorEar" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenTextBox TValue="string" Name="HairColorSide" @bind-Value="@handMdItemModel.HairColorSide" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenTextBox TValue="string" Name="HairColorBack" @bind-Value="@handMdItemModel.HairColorBack" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-1 align-items-center d-flex">
+                                                                <RadzenLabel Text="모발길이"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.HairLengthFornt" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.HairLengthCenter" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.HairLengthEar" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.HairLengthSide" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.HairLengthBack" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-1 align-items-center d-flex">
+                                                                <RadzenLabel Text="백모량"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.WHairAmountFront" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.WHairAmountCenter" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.WHairAmountEar" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.WHairAmountSide" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.WHairAmountBack" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-1 align-items-center d-flex">
+                                                                <RadzenLabel Text="모발컬"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.CurlFront" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.CurlCenter" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.CurlEar" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.CurlSide" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenNumeric TValue="decimal" @bind-Value="@handMdItemModel.CurlBack" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="margin-top:40px">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="앞라인 너팅"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.FrontKnotting TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@frontKnottingList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="망" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.BaseNet TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@baseNetList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="앞" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.Front TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@frontList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="나노스킨두께" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-ValuNe=@handMdItemModel.NanoSkinThin TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@nanoSkinThinList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="나노스킨코팅" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.NanoSkinCoating TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@nanoSkinCoatingList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="스킨색상" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.SkinColor TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@skinColorList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="가르마,크라운" Style="color:red"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenRadioButtonList @bind-Value=@handMdItemModel.PartCrown TValue="int" Orientation="Radzen.Orientation.Horizontal"
+                                                                                       Data="@partCrownList" TextProperty="CodeSubNm" ValueProperty="CodeSeq" Disabled="true" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="지시사항"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-12 align-items-center d-flex">
+                                                                <RadzenTextArea @bind-Value="@handMdItemModel.WorkOrderContent" Class="w-100" Disabled="true" />
+
+                                                            </div>
+                                                        </div>
+                                                    </RadzenFieldset>
+                                                    @*<RadzenFieldset Text="이미지 등록">
+                                                            <div class="row">
+                                                                <div class="col-sm-3 align-items-center d-flex">
+                                                                    <RadzenLabel Text="작업이미지"></RadzenLabel>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-sm-6 align-items-center d-flex">
+                                                                    <RadzenFileInput @bind-Value="itemImgModel.ImageData" TValue="string" Class="w-100" ChooseText="이미지 선택" Disabled="true" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xl-6">
+                                                                    <RadzenImage Path="@itemImgModel.ImageData" Style="width: 100%;">
+                                                                    </RadzenImage>
+                                                                </div>
+                                                            </div>
+                                                        </RadzenFieldset>*@
+                                                }
+                                                //머신메이드
+                                                else if (itemModel.MadeType == 2)
+                                                {
+                                                    <RadzenFieldset Text="품목 상세 정보">
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="BUYER"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.Buyer" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="FIBER"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.Fiber" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="종류"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.MachineType" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="중량"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenNumeric TValue="decimal" style="width: 100%;" @bind-Value="@machineMdItemMaster.Weight" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="제조일자"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenDatePicker @bind-Value=@manufactedDt DateFormat="yyyy-MM-dd" Class="w-100" Disabled="true" />
+                                                            </div>
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                <RadzenLabel Text="모장"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.HairLength" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row"></div>
+
+                                                        <div class="row">
+                                                            <div class="col-sm-2 align-items-center d-flex"></div>
+                                                            <div class="col-sm-5 align-items-center d-flex">
+                                                                <RadzenLabel Text="공급" Style="font-weight:bold"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-5 align-items-center d-flex">
+                                                                <RadzenLabel Text="중량" Style="font-weight:bold"></RadzenLabel>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row"></div>
+
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                @*공급-고침*@
+                                                                <RadzenLabel Text="고침"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.GongGo" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                @*중량-수제*@
+                                                                <RadzenLabel Text="수제"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.WeightHand" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                @*공급-인수*@
+                                                                <RadzenLabel Text="인수"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" Placeholder="GR" style="width: 100%;" @bind-Value="@machineMdItemMaster.GongInsoo" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                @*중량-인수*@
+                                                                <RadzenLabel Text="인수"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" Placeholder="GR" style="width: 100%;" @bind-Value="@machineMdItemMaster.WeightInsoo" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                @*공급-인계*@
+                                                                <RadzenLabel Text="인계"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" Placeholder="GR" style="width: 100%;" @bind-Value="@machineMdItemMaster.GongIngye" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                @*중량-인계*@
+                                                                <RadzenLabel Text="인계"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" Placeholder="GR" style="width: 100%;" @bind-Value="@machineMdItemMaster.WeightIngye" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3 align-items-center d-flex"></div>
+                                                            <div class="col-sm-3"></div>
+                                                            <div class="col-sm-3 align-items-center d-flex">
+                                                                @*중량-모장*@
+                                                                <RadzenLabel Text="모장"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-3">
+                                                                <RadzenTextBox TValue="string" Placeholder="GR" style="width: 100%;" @bind-Value="@machineMdItemMaster.WeightLength" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row"></div>
+
+                                                        <div class="row">
+                                                            <div class="col-sm-5 align-items-center d-flex"></div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="CAP" Style="font-weight:bold"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-5 align-items-center d-flex"></div>
+                                                        </div>
+                                                        <div class="row"></div>
+
+                                                        <div class="row">
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="CAP-중량"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.CapWeight" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="CAP-둘레"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.CapRound" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="CAP-길이"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.CapLength" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="CAP-앞뒤"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.CapFrontBack" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="CAP-자재"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.CapPartItem" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row"></div>
+                                                        <div class="row">
+                                                            <div class="col-sm-5 align-items-center d-flex"></div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="SKIN PART" Style="font-weight:bold"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-5 align-items-center d-flex"></div>
+                                                        </div>
+                                                        <div class="row"></div>
+                                                        <div class="row">
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="PART모"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.PartHair" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="PART규격"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.PartSize" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="SKIN중량"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenNumeric TValue="decimal" style="width: 100%;" @bind-Value="@machineMdItemMaster.SkinWeight" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="LOSS"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemMaster.Loss" Disabled="true"></RadzenTextBox>
+                                                            </div>
+                                                            <div class="col-sm-2 align-items-center d-flex">
+                                                                <RadzenLabel Text="완성중량"></RadzenLabel>
+                                                            </div>
+                                                            <div class="col-sm-2">
+                                                                <RadzenNumeric TValue="decimal" style="width: 100%;" @bind-Value="@machineMdItemMaster.TotalWeight" Disabled="true"></RadzenNumeric>
+                                                            </div>
+                                                        </div>
+                                                    </RadzenFieldset>
+                                                    //머신메이드 상세 정보 그리드
+                                                    <RadzenFieldset Text="머신메이드 상세 정보">
+                                                        <RadzenDataGrid @ref="detailGrid" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                                                        Data="@machineMdItemModels" TItem="MachineMdItemModel" EmptyText="">
+                                                            <Columns>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="ItemCd" Title="품목코드" Width="70px" Visible="false" />
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="Seq" Title="순번" Width="70px" CssClass="data_center" />
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="Size" Title="호수" Width="70px" CssClass="data_center">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenNumeric TValue="int" @bind-Value="machineMdItemDetail.Size"></RadzenNumeric>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="StretchCut" Title="정모-재단" Width="120px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.StretchCut"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="StretchYN" Title="정모-정모" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.StretchYN"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="StretchWeight" Title="정모-중량" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.StretchWeight"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="TwinHairLength" Title="쌍침-모장" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.TwinHairLength"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="TwinHand" Title="쌍침-자수" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.TwinHand"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="TwinCut" Title="쌍침-CUT길이및결수" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.TwinCut"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="CurlPipe" Title="컬-파이프" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.CurlPipe"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="CurlDirection" Title="컬-방향" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.CurlDirection"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="CurlSpecial" Title="컬-특수컬" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.CurlSpecial"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="CurlRemk" Title="컬-비고" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.CurlRemk"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TItem="MachineMdItemModel" Property="CurlThickness" Title="컬-두께" Width="150px">
+                                                                    <EditTemplate Context="machineMdItemDetail">
+                                                                        <RadzenTextBox TValue="string" style="width: 100%;" @bind-Value="@machineMdItemDetail.CurlThickness"></RadzenTextBox>
+                                                                    </EditTemplate>
+                                                                </RadzenDataGridColumn>
+                                                            </Columns>
+                                                        </RadzenDataGrid>
+                                                    </RadzenFieldset>
+                                                    @*<RadzenFieldset Text="이미지 등록">
+                                                            <div class="row">
+                                                                <div class="col-sm-3 align-items-center d-flex">
+                                                                    <RadzenLabel Text="작업이미지"></RadzenLabel>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-sm-6 align-items-center d-flex">
+                                                                    <RadzenFileInput @bind-Value="itemImgModel.ImageData" TValue="string" Class="w-100" ChooseText="이미지 선택" Disabled="true" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-xl-6">
+                                                                    <RadzenImage Path="@itemImgModel.ImageData" Style="width: 100%;">
+                                                                    </RadzenImage>
+                                                                </div>
+                                                            </div>
+                                                        </RadzenFieldset>*@
+                                                }
+                                                else if (itemModel.MadeType == 3)
+                                                {
+
+                                                }
+                                            </div>
+                                        </div>
+                                    </RadzenTemplateForm>
+                                }
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p>권한이 없는 사용자입니다.</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    public WorkPlanModel deleteWorkPlanModel { get; set; }
+    public GMINWEB_Rebuild.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+    public int MenuId = 17; //생산계획조회
+
+    ClaimsPrincipal CurrentUser;
+    private string RoleYN;
+    private string loginId;
+    private DateTime AppDt;
+    private DateTime manufactedDt;      //머신메이드-제조일자
+
+    //기타아이템모델추가
+    private EtcItemModel etcItemModel = new EtcItemModel();
+
+    private PDItemImgModel itemImgModel = new PDItemImgModel();
+    private HandMdItemModel handMdItemModel = new HandMdItemModel();
+    private ItemModel itemModel; /* = new ItemModel();*/
+    private MachineMdItemModel machineMdItemMaster = new MachineMdItemModel();
+    private MachineMdItemModel machineMdItemDetail = new MachineMdItemModel();
+
+    private List<WorkPlanModel> workPlanModels;
+    private List<MachineMdItemModel> machineMdItemModels;
+
+    RadzenDataGrid<MachineMdItemModel> detailGrid;
+
+    //코드헬프
+    List<BizUnitModel> factBizUnitList;
+    List<CommonCodeModel> itemClsList;
+    List<CommonCodeModel> item1ClsList;
+    List<CommonCodeModel> item2ClsList;
+    List<CommonCodeModel> item3ClsList;
+    List<CommonCodeModel> modelTypeList;
+    List<CommonCodeModel> attachTypeList;
+    List<CommonCodeModel> hairDirectioneList;
+    List<CommonCodeModel> hairColorList;
+    List<CommonCodeModel> frontKnottingList;
+    List<CommonCodeModel> baseNetList;
+    List<CommonCodeModel> frontList;
+    List<CommonCodeModel> nanoSkinThinList;
+    List<CommonCodeModel> nanoSkinCoatingList;
+    List<CommonCodeModel> skinColorList;
+    List<CommonCodeModel> partCrownList;
+    List<CommonCodeModel> madeTypeList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            if (CurrentUser.Identity.Name is not null)
+            {
+                loginId = CurrentUser.Identity.Name;
+
+                var RoleList = await _roleManager.GetRoleYN(loginId, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                if (RoleYN == "Y")
+                {
+                    workPlanModels = await _db.GetAllWorkPlanForFact(loginId);
+
+
+                    factBizUnitList = await _bizUnitManager.GetFactoryBizUnit(loginId);
+                    itemClsList = await _codeManager.FindCommonCodeFromName("품목구분", loginId);
+                    item1ClsList = await _codeManager.FindCommonCodeFromName("품목대분류", loginId);
+                    item2ClsList = await _codeManager.FindCommonCodeFromName("품목중분류", loginId);
+                    item3ClsList = await _codeManager.FindCommonCodeFromName("품목소분류", loginId);
+                    modelTypeList = await _codeManager.FindCommonCodeFromName("종류", loginId);
+                    attachTypeList = await _codeManager.FindCommonCodeFromName("부착방식", loginId);
+                    hairDirectioneList = await _codeManager.FindCommonCodeFromName("모방향", loginId);
+                    frontKnottingList = await _codeManager.FindCommonCodeFromName("앞라인넛팅", loginId);
+                    baseNetList = await _codeManager.FindCommonCodeFromName("망", loginId);
+                    frontList = await _codeManager.FindCommonCodeFromName("앞", loginId);
+                    nanoSkinThinList = await _codeManager.FindCommonCodeFromName("나노스킨두께", loginId);
+                    nanoSkinCoatingList = await _codeManager.FindCommonCodeFromName("나노스킨코팅", loginId);
+                    skinColorList = await _codeManager.FindCommonCodeFromName("스킨색상", loginId);
+                    partCrownList = await _codeManager.FindCommonCodeFromName("가르마,크라운", loginId);
+                    madeTypeList = await _codeManager.FindCommonCodeFromName("제작형태", loginId);
+                    hairColorList = await _codeManager.FindCommonCodeFromName("모발색상", loginId);
+                }
+            }
+        }
+    }
+
+    #region // ** 이벤트 ** //
+
+    async Task btnImageUpload(WorkPlanModel workPlan)
+    {
+        ItemModel itemModel = new ItemModel();
+        itemModel.BizUnit = workPlan.BizUnit;
+        itemModel.FactBizUnit = workPlan.FactBizUnit;
+        itemModel.BizUnitNm = workPlan.BizUnitNm;
+        itemModel.FactBizUnitNm = workPlan.FactBizUnitNm;
+        itemModel.ItemCd = workPlan.ItemCd;
+        itemModel.ItemNm = workPlan.ItemNm;
+
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ReadPDItemImgEdit.selectedPDItem), itemModel);
+        parameters.Add("loginId", CurrentUser.Identity.Name);
+
+        var groupEdit = Modal.Show<ReadPDItemImgEdit>("제품 이미지 조회", parameters);
+        var result = await groupEdit.Result;
+
+        if (!result.Cancelled)
+        {
+            await GetAllDatas();
+        }
+    }
+
+    //승인처리
+    async Task btnApproveClick(WorkPlanModel workPlan)
+    {
+        //workPlan.AppDt = AppDt.ToString("yyyy-MM-dd");
+        workPlan.AppYN = "Y";
+
+        var result = await _db.ApproveWorkPlan(workPlan, loginId);
+
+        if (result.IsError())
+        {
+            await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "승인 처리 되었습니다.");
+            await GetAllDatas();
+        }
+    }
+
+    //미승인처리
+    async Task btnNotApproveClick(WorkPlanModel workPlan)
+    {
+        //workPlan.AppDt = AppDt.ToString("yyyy-MM-dd");
+        workPlan.AppYN = "N";
+
+        var result = await _db.ApproveWorkPlan(workPlan, loginId);
+
+        if (result.IsError())
+        {
+            await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "미승인 처리 되었습니다.");
+            await GetAllDatas();
+        }
+    }
+
+    public async Task RowSelect(WorkPlanModel workPlan)
+    {
+        //생산계획 클릭 시 하단에 제품 상세 내역 로드
+        var itemList = await _itemManager.GetPDItem(loginId, workPlan.BizUnit, workPlan.FactBizUnit, workPlan.ItemCd);
+        itemModel = itemList.FirstOrDefault();
+
+        //var pdItemImgList = await _itemManager.GetPDItemImg(loginId, itemModel);
+        //if (pdItemImgList.Count > 0)
+        //{
+        //    itemImgModel = pdItemImgList.FirstOrDefault();
+        //}
+
+        //핸드메이드일 경우
+        if (itemModel.MadeType == 1)
+        {
+            var handMdItemList = await _itemManager.GetHandMdItem(loginId, workPlan.BizUnit, workPlan.FactBizUnit, workPlan.ItemCd);
+            handMdItemModel = handMdItemList.FirstOrDefault();
+        }
+        else if (itemModel.MadeType == 2)
+        {
+            //머신메이드 마스터 조회
+            var machineMdItemList = await _itemManager.GetMachineMdItemMaster(loginId, workPlan.BizUnit, workPlan.FactBizUnit, workPlan.ItemCd);
+            machineMdItemMaster = machineMdItemList.FirstOrDefault();
+
+            if (machineMdItemMaster.ManufactedDt.GetNullToEmpty() != string.Empty)
+            {
+                manufactedDt = Convert.ToDateTime(machineMdItemMaster.ManufactedDt);
+            }
+
+            //머신메이드 상세 조회
+            machineMdItemModels = await _itemManager.GetMachineMdItemDetail(loginId, workPlan.BizUnit, workPlan.FactBizUnit, workPlan.ItemCd);
+        }
+        //기타일 경우
+        else if (itemModel.MadeType == 3)
+        {
+            var etcItemList = await _itemManager.GetEtcItem(loginId, workPlan.BizUnit, workPlan.FactBizUnit, workPlan.ItemCd);
+            etcItemModel = etcItemList.FirstOrDefault();
+        }
+
+
+    }
+
+    void ManufactedDtChanged(DateTime? value)
+    {
+        if (value is not null)
+        {
+            machineMdItemMaster.ManufactedDt = ((DateTime)value).ToString("yyyy-MM-dd");
+        }
+    }
+    #endregion
+
+    #region // ** 메서드 ** //
+
+    /// <summary>
+    /// 전체 조회
+    /// </summary>
+    /// <returns></returns>
+    private async Task GetAllDatas()
+    {
+        workPlanModels = await _db.GetAllWorkPlanForFact(loginId);
+    }
+
+    #endregion
+
+}
+

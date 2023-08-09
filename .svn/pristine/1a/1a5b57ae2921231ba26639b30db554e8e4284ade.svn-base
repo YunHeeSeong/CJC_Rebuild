@@ -1,0 +1,511 @@
+﻿@page "/customerEdit"
+@page "/customerEdit/{loginId}"
+@page "/customerEdit/{loginId}/{selectedCustomerCd}"
+
+@using GMINWEB_CJC.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject ICustomerData _db
+@inject ICommonCodeData _codeManager
+@inject IJSRuntime jsRuntime
+@inject IFileData _fileManager
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Data="customerModel">
+    <div class="row">
+        <div class="col-md">
+            <RadzenFieldset Text="고객 정보">
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="고객코드" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox ReadOnly="true" Placeholder="자동채번" Style="width:100%;" Name="CustomerCd" @bind-Value="@customerModel.CustomerCd"></RadzenTextBox>
+                    </div>
+                    <div class="col-sm-2 align-items-center d-flex">
+                        <RadzenLabel Text="업체여부"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-1">
+                        <RadzenCheckBox @bind-Value=isCompany Name="CheckBox1" TValue="bool" Change=@(args => OnCheck(args, "CheckBox1 CheckBox")) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="성명" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox Style="width:100%;" Name="CustomerNm" @bind-Value="@customerModel.CustomerNm"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="상담일자" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenDatePicker @bind-Value=@consultDt DateFormat="yyyy-MM-dd" Change="@(arg=> ConsultDtChanged(arg))" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="생년월일"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox Style="width:100%;" Name="Birth" @bind-Value="@customerModel.Birth"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="고객등급"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100"
+                                        AllowFiltering="true" Data=@RankList TextProperty="CodeSubNm" ValueProperty="CodeSeq" @bind-Value="customerModel.Rank"
+                                        Change=@(args => OnChangeRank(args, "고객등급")) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="성별"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox Style="width:100%;" Name="Gender" @bind-Value="@customerModel.Gender"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="이동전화"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenTextBox Style="width:100%;" Name="PhoneNo" @bind-Value="@customerModel.PhoneNo"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="우편번호"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox Style="width: 100%;" Name="ZipCode" @bind-Value="@customerModel.ZipCode"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="주소"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenTextBox Style="width:100%;" Name="Address" @bind-Value="@customerModel.Address"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="상세주소"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextBox Style="width:100%;" Name="DetailAddress" @bind-Value="@customerModel.DetailAddress"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="직업"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox Style="width:100%;" Name="Job" @bind-Value="@customerModel.Job"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="취미"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenTextBox Style="width:100%;" Name="Hobby" @bind-Value="@customerModel.Hobby"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="방문동기"></RadzenLabel>
+                    </div>
+                    <div class="col-md-9">
+                        <RadzenTextBox Style="width:100%;" Name="Motive" @bind-Value="@customerModel.Motive"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="탈모유형"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox Style="width:100%;" Name="HairLossType" @bind-Value="@customerModel.HairLossType"></RadzenTextBox>
+                    </div>
+                    <div class="align-items-center d-flex col-md-2">
+                        <RadzenLabel Text="가발착용경험"></RadzenLabel>
+                    </div>
+                    <div class="col-md-4">
+                        <RadzenTextBox Style="width:100%;" Name="WigExperience" @bind-Value="@customerModel.WigExperience"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="이메일"></RadzenLabel>
+                    </div>
+                    <div class="col-md-3">
+                        <RadzenTextBox Style="width:100%;" Name="Email" @bind-Value="@customerModel.Email"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="align-items-center d-flex col-md-3">
+                        <RadzenLabel Text="상담내역"></RadzenLabel>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <RadzenTextArea @bind-Value="@customerModel.Remk" Class="w-100" Style="height:200px" />
+                    </div>
+                </div>
+            </RadzenFieldset>
+
+            <RadzenFieldset Text="고객 관련 문서">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="신규" Click="@InsertRow" Disabled=@(fileModelToInsert != null) />
+                <RadzenDataGrid @ref="detailGrid" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                Data="@fileModels" TItem="FileModel" EmptyText="">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="FileModel" Property="FileNo" Title="파일코드" Width="70px" CssClass="data_center" />
+                        <RadzenDataGridColumn TItem="FileModel" Property="GroupCd" Title="조직코드" Width="70px" CssClass="data_center" />
+                        <RadzenDataGridColumn TItem="FileModel" Property="DetailCls" Title="파일구분" Width="120px" Visible="false">
+                            <EditTemplate Context="file">
+                                <RadzenNumeric Name="DetailCls" ReadOnly="true" @bind-Value="file.DetailCls"></RadzenNumeric>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Property="DetailClsNm" Title="파일구분명" Width="120px">
+
+                            <EditTemplate Context="file">
+                                <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100"
+                                                AllowFiltering="true" Data=@DetailClsList TextProperty="CodeSubNm" ValueProperty="CodeSubNm" @bind-Value="file.DetailClsNm"
+                                                SelectedItemChanged="@(args => OnChangeDetailCls(args, "파일구분"))" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Filterable="false" Title="업로드" Width="220px" CssClass="data_center">
+                            <EditTemplate Context="file">
+                                <BlazorFileUploader.InputFile OnChange="HandleFileSelected"></BlazorFileUploader.InputFile>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Property="FileNm" Title="파일명" Width="200px" />
+                        <RadzenDataGridColumn TItem="FileModel" Property="FileData" Title="데이터" Width="100px" />
+                        <RadzenDataGridColumn TItem="FileModel" Property="FileType" Title="파일형식" Width="120px" />
+                        <RadzenDataGridColumn TItem="FileModel" Title="다운로드" Width="150px" CssClass="data_center">
+                            <Template Context="file">
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Click="()=>btnDownloadFile(file)">다운로드</RadzenButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                            <Template Context="file">
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(file))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="file">
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(file))">
+                                </RadzenButton>
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(file))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="FileModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                            <Template Context="file">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(file))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="file">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(file))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <div>
+        <RadzenButton style="margin: 0 1rem 1rem 500px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton  style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary"  Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+    <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [Parameter] public string selectedCustomerCd { get; set; }
+    //[Parameter] public CustomerModel selectedCustomer { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+    private CustomerModel customerModel = new CustomerModel();
+
+    private List<FileModel> fileModels;
+    public FileModel selectedFile { get; set; }
+
+    RadzenDataGrid<FileModel> detailGrid;
+
+    private FileModel fileModelToInsert;
+    private FileModel fileModelToDelete;
+
+    string imgSrc = "";
+    IFileListEntry file = null;
+    byte[] _fileBytes = null;
+    private bool isCompany;
+
+
+    private List<CommonCodeModel> RankList;
+    private List<CommonCodeModel> DetailClsList;
+
+    DateTime consultDt;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedCustomerCd is not null)
+        {
+            var customerModelList = await _db.GetCustomer(loginId, selectedCustomerCd);
+            customerModel = customerModelList.FirstOrDefault();
+
+            consultDt = Convert.ToDateTime(customerModel.ConsultDt);
+
+            fileModels = await _db.GetFile(customerModel.CustomerCd, loginId);
+
+            if (customerModel.CompanyYN == "N")
+            {
+                isCompany = false;
+            }
+            else
+            {
+                isCompany = true;
+            }
+
+        }
+        else
+        {
+            isCompany = false;
+            customerModel.CompanyYN = "N";
+            consultDt = DateTime.Today;
+            customerModel.ConsultDt = DateTime.Today.ToString("yyyy-MM-dd");
+        }
+
+        RankList = await _codeManager.FindCommonCodeFromName("고객등급", loginId);
+        DetailClsList = await _codeManager.FindCommonCodeFromName("고객관련파일", loginId);
+    }
+
+    void ConsultDtChanged(DateTime? value)
+    {
+        if (value is not null)
+        {
+            customerModel.ConsultDt = ((DateTime)value).ToString("yyyy-MM-dd");
+        }
+    }
+    void OnChangeRank(object value, string name)
+    {
+        if (value is not null)
+        {
+            customerModel.Rank = Convert.ToInt32(value);
+
+        }
+    }
+
+    void OnCheck(bool? value, string name)
+    {
+        if (value == true)
+        {
+            isCompany = true;
+            customerModel.CompanyYN = "Y";
+        }
+        else
+        {
+            isCompany = false;
+            customerModel.CompanyYN = "N";
+        }
+    }
+
+    void OnChangeDetailCls(object value, string name)
+    {
+        if (value is not null && fileModelToInsert is not null)
+        {
+            fileModelToInsert.DetailCls = ((CommonCodeModel)value).CodeSeq;
+            fileModelToInsert.DetailClsNm = ((CommonCodeModel)value).CodeSubNm;
+
+        }
+    }
+
+    void btnCancleClick()
+    {
+        navigationManager.NavigateTo("/CustomerManagement");
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckCustomer(customerModel) == true)
+        {
+            if (customerModel.CustomerCd.GetNullToEmpty() == string.Empty)
+            {
+                await _db.InsertData(customerModel, loginId);
+            }
+            else
+            {
+                await _db.UpdateData(customerModel, loginId);
+            }
+
+            navigationManager.NavigateTo("/CustomerManagement");
+
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "고객명을 입력하여 주세요.");
+        }
+
+    }
+
+    async Task InsertRow()
+    {
+        if (customerModel.CustomerCd.GetNullToEmpty() != string.Empty)
+        {
+            fileModelToInsert = new FileModel();
+            fileModelToInsert.CustomerCd = customerModel.CustomerCd;
+            fileModelToInsert.FileCls = 2;
+
+            await detailGrid.InsertRow(fileModelToInsert);
+        }
+
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "파일 업로드는 고객 정보 저장 후 등록할 수 있습니다.");
+            //ShowNotification(new NotificationMessage { Severity = NotificationSeverity.Warning, Summary = "!경고!", Detail = "파일 업로드는 조직 정보 저장 후 등록할 수 있습니다." });
+        }
+    }
+
+    async Task EditRow(FileModel file)
+    {
+        fileModelToInsert = file;
+
+        await detailGrid.EditRow(file);
+    }
+
+    async Task SaveRow(FileModel file)
+    {
+        if (file == fileModelToInsert)
+        {
+            fileModelToInsert = null;
+        }
+
+        if (ValidationCheckFile(file) == true)
+        {
+            if (file.FileNo == 0)
+            {
+                //파일넘버가 채번되기 전이면 INSERT
+                await _fileManager.InsertData(file, loginId);
+            }
+            else
+            {
+                //파일넘버가 기존에 존재하면 UPDATE
+                await _fileManager.UpdateData(file, loginId);
+            }
+            await detailGrid.UpdateRow(file);
+            fileModels = await _db.GetFile(customerModel.CustomerCd, loginId);
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "파일 종류와 파일을 선택하여 주십시오.");
+        }
+    }
+
+    void CancelEdit(FileModel file)
+    {
+        if (file == fileModelToInsert)
+        {
+            fileModelToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(file);
+    }
+
+    async Task DeleteRow(FileModel file)
+    {
+        if (file == fileModelToInsert)
+        {
+            fileModelToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (fileModels.Contains(file))
+        {
+            selectedFile = file;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            detailGrid.CancelEditRow(file);
+            await detailGrid.Reload();
+        }
+    }
+
+    public async Task HandleFileSelected(IFileListEntry[] files)
+    {
+        if (files.Count() > 0)
+        {
+            file = files.FirstOrDefault();
+            using (var ms = new MemoryStream())
+            {
+                await file.Data.CopyToAsync(ms);
+                _fileBytes = ms.ToArray();
+
+                fileModelToInsert.FileNm = file.Name;
+                fileModelToInsert.FileType = file.Type;
+                fileModelToInsert.FileData = Convert.ToBase64String(_fileBytes);
+            }
+        }
+    }
+
+
+    void btnDownloadFile(FileModel file)
+    {
+        var fileArr = Convert.FromBase64String(file.FileData);
+        jsRuntime.InvokeVoidAsync("DownloadAsFile", file.FileNm, file.FileType, fileArr);
+    }
+
+    bool ValidationCheckCustomer(CustomerModel customer)
+    {
+        ////필수값 미입력시 false 반환
+        if (customer.CustomerNm.GetNullToEmpty() == string.Empty)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    bool ValidationCheckFile(FileModel file)
+    {
+        //필수값 미입력시 false 반환
+        if (file.FileNm is null || file.FileData is null || file.FileType is null || file.DetailCls.GetIntNullToZero() == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _fileManager.DeleteData(selectedFile, loginId);
+            fileModels = await _db.GetFile(customerModel.CustomerCd, loginId);
+            await detailGrid.Reload();
+        }
+        else
+        {
+            selectedFile = null;
+        }
+    }
+}

@@ -1,0 +1,554 @@
+﻿@page "/porderEdit"
+@page "/porderEdit/{loginId}"
+@page "/porderEdit/{loginId}/{selectedPOrderNo}"
+
+
+@using GMINWEB_CJC.Model;
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+
+@inject IPOrderData _db
+@inject ICustomerData _customerManager
+@inject IItemData _itemManager
+@inject IGroupData _groupManager
+@inject IUserData _userManager
+@inject IJSRuntime jsRuntime
+
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Data="masterModel">
+    <div class="row">
+        <div class="col-sm">
+            <RadzenFieldset Text="발주서 내역">
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="부가세여부"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenCheckBox @bind-Value=isVat Name="CheckBox1" TValue="bool" Change=@(args => OnCheck(args, "CheckBox1 CheckBox")) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="발주번호"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox ReadOnly="true" Placeholder="자동채번" Style="width:100%;" Name="POrderNo" @bind-Value="@masterModel.POrderNo"></RadzenTextBox>
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="발주일자"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenDatePicker @bind-Value=@POrderDt DateFormat="yyyy-MM-dd" Change="@(arg=> POrderDtChanged(arg))" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="발주부서" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@masterModel.GroupCd" Name="GroupCd"
+                                        AllowFiltering="true" Data=@GroupCdList TextProperty="GroupNm" ValueProperty="GroupCd" Disabled="true" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="발주담당자" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@masterModel.POrderUserId" Name="POrderUserId"
+                                        AllowFiltering="true" Data=@POrderUserIdList TextProperty="UserNm" ValueProperty="UserCd"
+                                        Change=@(args => OnChangePOrderUserId(args, "DropDown with virtualization")) />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="발주업체" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100" @bind-Value="@masterModel.POrderCustCd" Name="POrderCustCd"
+                                        AllowFiltering="true" Data=@CustomerCdList TextProperty="CustomerNm" ValueProperty="CustomerCd"
+                                        Change=@(args => OnChangeCustomerCd(args, "DropDown with virtualization")) />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="공급가"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenNumeric TValue="decimal" style="width: 100%;" Name="Amt" @bind-Value="@masterModel.Amt" ReadOnly="true" Format="n0"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="비고"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-9">
+                        <RadzenTextBox Style="width:100%;" Name="Remk" @bind-Value="@masterModel.Remk"></RadzenTextBox>
+                    </div>
+                </div>
+            </RadzenFieldset>
+            <RadzenFieldset Text="발주서 상세">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="신규" Click="@InsertRow" />
+                @*Disabled=@(purchaseOrderToInsert != null)*@
+                <RadzenDataGrid @ref="detailGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                Data="detailModels" TItem="POrderModel" EmptyText="">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="POrderNo" Title="발주번호" Width="120px" CssClass="data_center"/>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="Seq" Title="순번" Width="80px" CssClass="data_center"/>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="ItemCd" Title="품목코드" Width="120px" CssClass="data_center">
+                            <EditTemplate Context="pOrder">
+                                @*<RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100"
+                                                AllowFiltering="true" Data=@ItemCdList TextProperty="ItemNm" ValueProperty="ItemCd" @bind-Value="pOrder.ItemCd"
+                                                SelectedItemChanged="@(args => OnChangeItemCd(args))" />*@
+
+                                <RadzenDropDownDataGrid AllowClear="false" TValue="string" AllowVirtualization="true" Class="w-100" PageSize="int.MaxValue"
+                                                        AllowFiltering="true" Data=@ItemCdList TextProperty="ItemCd" ValueProperty="ItemCd" @bind-Value="pOrder.ItemCd"
+                                                        SelectedItemChanged="@(args => OnChangeItemCd(args))">
+                                    <Columns>
+                                        <RadzenDropDownDataGridColumn Property="ItemCd" Title="품목코드" Width="100px" />
+                                        <RadzenDropDownDataGridColumn Property="ItemNm" Title="품목명" Width="200px" />
+                                    </Columns>
+                                </RadzenDropDownDataGrid>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="ItemNm" Title="품목명" Width="120px" >
+                            <EditTemplate Context="pOrder">
+                                <RadzenTextBox Style="width:100%;" Name="ItemNm" @bind-Value=@pOrder.ItemNm Disabled="true"></RadzenTextBox>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="Qty" Title="수량" Width="100px" FormatString="{0:n0}">
+                            <EditTemplate Context="pOrder">
+                                <RadzenNumeric TValue="decimal" style="width: 100%;" Name="Qty" @bind-Value="pOrder.Qty" Change="(args)=>OnChangeQty(args)" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="Price" Title="단가" Width="100px" FormatString="{0:n0}">
+                            <EditTemplate Context="pOrder">
+                                <RadzenNumeric TValue="decimal" style="width: 100%;" Name="Price" @bind-Value="pOrder.Price" Change="(args)=>OnChangePrice(args)" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="Amt" Title="금액" Width="100px" FormatString="{0:n0}">
+                            <EditTemplate Context="pOrder">
+                                <RadzenNumeric TValue="decimal" style="width: 100%;" Name="Amt" @bind-Value="pOrder.Amt" Disabled="true" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="UnitCd" Title="단위" Width="100px">
+                            <EditTemplate Context="pOrder">
+                                <RadzenTextBox Style="width:100%;" Name="UnitCd" @bind-Value="pOrder.UnitCd" Disabled="true"></RadzenTextBox>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="Weight" Title="중량" Width="100px" FormatString="{0:n0}">
+                            <EditTemplate Context="pOrder">
+                                <RadzenNumeric TValue="decimal" style="width: 100%;" Name="Weight" @bind-Value="pOrder.Weight" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="ReqDelvDate" Title="납품요구일자" Width="200px" CssClass="data_center">
+                            <EditTemplate Context="pOrder">
+                                <RadzenDatePicker Name="ReqDelvDate" @bind-Value=@pOrder.ReqDelvDate DateFormat="yyyy-MM-dd" Change="@(arg=> ReqDelvDateChanged(arg))" Class="w-100" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Property="DelvPlace" Title="납품장소" Width="150px" >
+                            <EditTemplate Context="pOrder">
+                                <RadzenTextBox Style="width:100%;" Name="DelvPlace" @bind-Value=@pOrder.DelvPlace></RadzenTextBox>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                            <Template Context="pOrder">
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(pOrder))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="pOrder">
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(pOrder))">
+                                </RadzenButton>
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(pOrder))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="POrderModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                            <Template Context="pOrder">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(pOrder))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="pOrder">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(pOrder))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+
+    <div style="width:300px;margin:0 auto;">
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+</RadzenTemplateForm>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public string selectedPOrderNo { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+    private List<POrderModel> masterModels;
+    private List<POrderModel> detailModels;
+    private List<UserModel> POrderUserIdList;
+    private List<GroupModel> GroupCdList;
+    private List<ItemModel> ItemCdList;
+    private List<CustomerModel> CustomerCdList;
+
+    RadzenDataGrid<POrderModel> detailGrid;
+
+    POrderModel masterModel = new POrderModel();
+    POrderModel detailModel = new POrderModel();
+
+    private POrderModel pOrderToInsert;
+    private DateTime POrderDt;
+    private bool isVat = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedPOrderNo is not null)
+        {
+            masterModels = await _db.GetMasterPOrder(selectedPOrderNo, loginId);
+            masterModel = masterModels.FirstOrDefault();
+
+            if (masterModel.VatYN == "Y")
+            {
+                isVat = true;
+            }
+            else
+            {
+                isVat = false;
+            }
+
+            POrderDt = Convert.ToDateTime(masterModel.POrderDt);
+
+            detailModels = await _db.GetDetailPOrder(selectedPOrderNo, loginId);
+
+            if (detailModels.Count > 0)
+            {
+                detailModel = detailModels.FirstOrDefault();
+            }
+        }
+        else
+        {
+            masterModel.VatYN = "N";
+            detailModel.ReqDelvDate = DateTime.Today;
+            POrderDt = DateTime.Today;
+            masterModel.POrderDt = POrderDt.ToString("yyyy-MM-dd");
+        }
+
+        POrderUserIdList = await _userManager.GetUserFromCodehelp(loginId);
+        GroupCdList = await _groupManager.GetGroup(loginId);
+        ItemCdList = await _itemManager.GetAllItemCodeHelp(loginId);
+
+        //거래처여부가 Y인 거래처만 조회
+        CustomerCdList = await _customerManager.GetAccountFromCodehelp(loginId);
+
+
+    }
+
+    void btnCancleClick()
+    {
+        navigationManager.NavigateTo("/pOrderManagement");
+    }
+
+    async Task InsertRow()
+    {
+        //마스터 저장 후 
+        if (masterModel.POrderNo.GetNullToEmpty() != string.Empty)
+        {
+            pOrderToInsert = new POrderModel();
+            pOrderToInsert.POrderNo = masterModel.POrderNo;
+            pOrderToInsert.ReqDelvDate = DateTime.Today;
+
+            await detailGrid.InsertRow(pOrderToInsert);
+        }
+
+        //마스터 저장 전이라면 마스터 먼저 저장
+        else
+        {
+            var result = await _db.InsertMasterData(masterModel, loginId);
+            if (result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+            }
+            else
+            {
+                //await jsRuntime.InvokeVoidAsync("alert", "처리되었습니다.");
+
+                masterModels = await _db.GetMasterPOrder(result.FirstOrDefault().RTN_KEY, loginId);
+                masterModel = masterModels.FirstOrDefault();
+
+                detailModels = await _db.GetDetailPOrder(masterModel.POrderNo, loginId);
+            }
+        }
+    }
+
+    async Task EditRow(POrderModel pOrder)
+    {
+        pOrderToInsert = pOrder;
+
+        await detailGrid.EditRow(pOrder);
+    }
+
+    async Task SaveRow(POrderModel pOrder)
+    {
+        if (pOrder == pOrderToInsert)
+        {
+            pOrderToInsert = null;
+        }
+
+        if (ValidationCheckPOrderDetail(pOrder) == true)
+        {
+            if (pOrder.Seq == 0)
+            {
+                //순번이 채번되기 전이면 INSERT
+                await _db.InsertDetailData(pOrder, masterModel.POrderNo, loginId);
+
+            }
+            else
+            {
+                //코드가 기존에 존재하면 UPDATE
+                await _db.UpdateDetailData(pOrder, loginId);
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "품목코드와 수량, 입고예정일자를 입력하여 주십시오.");
+        }
+
+        await detailGrid.UpdateRow(pOrder);
+
+        detailModels = await _db.GetDetailPOrder(pOrder.POrderNo, loginId);
+
+        //발주서 금액과 부가세 재계산 후 재로드
+        CalculateAmtVat(masterModel.VatYN, detailModels);
+        var result = await _db.UpdateMasterData(masterModel, loginId);
+        masterModels = await _db.GetMasterPOrder(pOrder.POrderNo, loginId);
+        masterModel = masterModels.FirstOrDefault();
+    }
+
+    void CancelEdit(POrderModel pOrder)
+    {
+        if (pOrder == pOrderToInsert)
+        {
+            pOrderToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(pOrder);
+    }
+
+    async Task DeleteRow(POrderModel pOrder)
+    {
+        if (pOrder == pOrderToInsert)
+        {
+            pOrderToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (detailModels.Contains(pOrder))
+        {
+            pOrderToInsert = pOrder;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            detailGrid.CancelEditRow(pOrder);
+            await detailGrid.Reload();
+        }
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckPOrderMaster(masterModel) == true)
+        {
+
+            var result = await _db.UpdateMasterData(masterModel, loginId);
+
+            //입고가 진행되어 수정이 불가능할 경우 팝업
+            if (result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+
+            }
+            else
+            {
+                navigationManager.NavigateTo("/pOrderManagement");
+
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "발주담당자를 입력하여 주십시오.");
+        }
+
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteDetailData(pOrderToInsert, loginId);
+
+            detailModels = await _db.GetDetailPOrder(masterModel.POrderNo, loginId);
+            await detailGrid.Reload();
+        }
+        else
+        {
+            pOrderToInsert = null;
+        }
+    }
+
+    bool ValidationCheckPOrderDetail(POrderModel pOrder)
+    {
+        //필수값 미입력시 false 반환
+        if (pOrder.ItemCd.GetNullToEmpty() == string.Empty || pOrder.Qty.GetDecimalNullToZero() == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    bool ValidationCheckPOrderMaster(POrderModel pOrder)
+    {
+        //필수값 미입력시 false 반환
+        if (pOrder.POrderUserId.GetIntNullToZero() == 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    async Task OnChangePOrderUserId(object value, string name)
+    {
+        if (value is not null)
+        {
+            masterModel.POrderUserId = (int)value;
+
+            var userModels = await _userManager.GetUser(masterModel.POrderUserId, loginId);
+            masterModel.GroupCd = userModels.FirstOrDefault().GroupCd;
+        }
+    }
+
+    void OnChangeItemCd(object value)
+    {
+        if (value is not null && pOrderToInsert is not null)
+        {
+            //pOrderToInsert.ItemCd = ((ItemModel)value).ItemCd;
+            pOrderToInsert.ItemNm = ((ItemModel)value).ItemNm;
+            pOrderToInsert.UnitCd = ((ItemModel)value).Unit;
+        }
+    }
+
+    void ReqDelvDateChanged(object value)
+    {
+        if (value is not null)
+        {
+            pOrderToInsert.ReqDelvDate = Convert.ToDateTime(value);
+        }
+    }
+    void OnCheck(bool? value, string name)
+    {
+        if (value == true)
+        {
+            isVat = true;
+            masterModel.VatYN = "Y";
+        }
+        else
+        {
+            isVat = false;
+            masterModel.VatYN = "N";
+        }
+    }
+    void OnChangeCustomerCd(object value, string name)
+    {
+        if (value is not null)
+        {
+            masterModel.POrderCustCd = value.ToString();
+        }
+    }
+
+    void OnChangeQty(object value)
+    {
+        if (value is not null)
+        {
+            var qty = Convert.ToDecimal(value);
+
+            //부가세 여부가 Y 일 때 부가세 계산
+            if (masterModel.VatYN == "Y")
+            {
+                pOrderToInsert.Amt = qty * pOrderToInsert.Price;
+                pOrderToInsert.Amt = pOrderToInsert.Amt + pOrderToInsert.Amt * Convert.ToDecimal(0.1);
+            }
+            else
+            {
+                pOrderToInsert.Amt = qty * pOrderToInsert.Price;
+            }
+        }
+    }
+
+    void OnChangePrice(object value)
+    {
+        if (value is not null)
+        {
+            var price = Convert.ToDecimal(value);
+
+            //부가세 여부가 Y 일 때 부가세 계산
+            if (masterModel.VatYN == "Y")
+            {
+                pOrderToInsert.Amt = pOrderToInsert.Qty * price;
+                pOrderToInsert.Amt = pOrderToInsert.Amt + pOrderToInsert.Amt * Convert.ToDecimal(0.1);
+            }
+            else
+            {
+                pOrderToInsert.Amt = pOrderToInsert.Qty * price;
+            }
+        }
+    }
+
+    void CalculateAmtVat(string VatYN , List<POrderModel> detailModels)
+    {
+        //총금액
+        decimal totAmt = 0;
+
+
+        if (detailModels.Count > 0)
+        {
+            foreach (var item in detailModels)
+            {
+                totAmt += item.Amt;
+            }
+
+            masterModel.Amt = totAmt;
+        }
+    }
+
+    void POrderDtChanged(object value)
+    {
+        if (value is not null)
+        {
+            masterModel.POrderDt = Convert.ToDateTime(value).ToString("yyyy-MM-dd");
+        }
+    }
+}

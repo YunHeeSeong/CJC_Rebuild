@@ -1,0 +1,175 @@
+﻿@page "/ReadWork"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic
+@using System.Security.Claims
+
+@inject IWorkData _db
+@inject IRoleData _RoleManager
+@inject IJSRuntime jsRuntime
+@inject NotificationService NotificationService
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    <RadzenLabel Text=" > 생산관리 > " />
+    <strong>생산실적조회</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+        <div>
+            <div class="info_title">
+                <h1 class="sub_title">생산실적조회</h1>
+
+            </div>
+
+            <div style="margin-top:45px">
+                <RadzenTabs RenderMode="TabRenderMode.Client">
+                    <Tabs>
+                        <RadzenTabsItem Text="작업지시 리스트">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                            FilterMode="FilterMode.Simple" PageSize="10" AllowPaging="true" AllowSorting="true" Data="@workOrderModels" TItem="WorkOrderModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" RowSelect="@RowSelect"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="WorkOrderModel" Property="FactBizUnitNm" Title="사업장명" Width="150px" />
+                                    <RadzenDataGridColumn TItem="WorkOrderModel" Property="BizUnitNm" Title="매장명" Width="150px" />
+                                    <RadzenDataGridColumn TItem="WorkOrderModel" Property="WorkOrderNo" Title="작업지시번호" Width="130px" CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="WorkOrderModel" Property="WorkOrderDt" Title="지시일자" Width="150px" CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="WorkOrderModel" Property="ItemCd" Title="품목코드" Width="200px" />
+                                    <RadzenDataGridColumn TItem="WorkOrderModel" Property="ItemNm" Title="품목명" Width="200px" />
+                                    <RadzenDataGridColumn TItem="WorkOrderModel" Property="Qty" Title="지시수량" Width="80px" CssClass="data_center" FormatString="{0:n0}" />
+                                </Columns>
+                            </RadzenDataGrid>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+            </div>
+
+            <div style="margin-top:20px">
+                <RadzenTabs RenderMode="TabRenderMode.Client">
+                    <Tabs>
+                        <RadzenTabsItem Text="작업지시 리스트">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" Style="margin-top:20px"
+                                            FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@selectedWorkOrderModels" TItem="WorkModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 생산실적이 없습니다.">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="WorkModel" Property="WorkOrderNo" Title="작업지시번호" Width="130px" CssClass="data_center"/>
+                                    <RadzenDataGridColumn TItem="WorkModel" Property="Seq" Title="실적순번" Width="80px"CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="WorkModel" Property="WorkPerformDt" Title="작업일자" Width="150px"CssClass="data_center" />
+                                    <RadzenDataGridColumn TItem="WorkModel" Property="Qty" Title="생산수량" Width="80px" CssClass="data_center" FormatString="{0:n0}"/>
+                                    <RadzenDataGridColumn TItem="WorkModel" Property="OkQty" Title="양품수량" Width="80px" CssClass="data_center" FormatString="{0:n0}"/>
+                                    <RadzenDataGridColumn TItem="WorkModel" Property="BadQty" Title="불량수량" Width="80px" CssClass="data_center" FormatString="{0:n0}"/>
+                                    <RadzenDataGridColumn TItem="WorkModel" Property="BadTypeNm" Title="불량유형" Width="150px"/>
+                                    <RadzenDataGridColumn TItem="WorkModel" Property="BadReason" Title="불량사유" Width="150px"/>
+                                    <RadzenDataGridColumn TItem="WorkModel" Property="Remk" Title="비고" Width="200px"/>
+                                    <RadzenDataGridColumn TItem="WorkModel" Filterable="false" Title="QR코드 출력" Width="180px" CssClass="data_center">
+                                        <Template Context="work">
+                                            <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Click="()=>btnQRCodePrint(work)">QR코드 출력</RadzenButton>
+                                        </Template>
+                                    </RadzenDataGridColumn>
+                                </Columns>
+                            </RadzenDataGrid>
+                        </RadzenTabsItem>
+
+                    </Tabs>
+                </RadzenTabs>
+            </div>
+                @*<GMINWEB_Rebuild.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />*@
+
+
+            </div>
+            }
+            else
+            {
+            <p>조회 권한이 없는 사용자입니다.</p>
+            }
+</Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public WorkOrderModel selectedWorkOrder { get; set; }
+    public GMINWEB_Rebuild.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    public int MenuId = 21;
+
+    ClaimsPrincipal CurrentUser;
+    private List<WorkOrderModel> workOrderModels;
+    private List<WorkModel> selectedWorkOrderModels;
+    private string RoleYN;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            if (CurrentUser.Identity.Name is not null)
+            {
+                var RoleList = await _RoleManager.GetRoleYN(CurrentUser.Identity.Name, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                if (RoleYN == "Y")
+                {
+                    workOrderModels = await _db.GetAllWorkOrders(CurrentUser.Identity.Name);
+                }
+            }
+        }
+    }
+
+    private async Task GetAllDatas()
+    {
+        workOrderModels = await _db.GetAllWorkOrders(CurrentUser.Identity.Name);
+        selectedWorkOrderModels = null;
+    }
+
+    async Task btnQRCodePrint(WorkModel workModel)
+    {
+        //불량만 입력한 실적의 경우 QR코드 출력 할 수 없음
+        if (workModel.BadQty.GetIntNullToZero() > 0 && workModel.OkQty.GetIntNullToZero() == 0)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "불량으로 등록된 실적은 QR코드가 발행되지 않습니다.");
+        }
+        //QR코드 출력 팝업
+        else
+        {
+            var parameters = new ModalParameters();
+            parameters.Add(nameof(DialogQRCode.selectedWork), workModel);
+            parameters.Add("loginId", CurrentUser.Identity.Name);
+
+            var options = new ModalOptions()
+            {
+                HideCloseButton = true
+            };
+
+            var workEdit = Modal.Show<DialogQRCode>("",parameters,options);
+            var result = await workEdit.Result;
+
+            if (!result.Cancelled)
+            {
+                //show
+                await GetAllDatas();
+            }
+        }
+    }
+
+    public async Task RowSelect(WorkOrderModel workOrder)
+    {
+        selectedWorkOrderModels = await _db.GetWorkPerform(CurrentUser.Identity.Name,workOrder);
+    }
+
+}

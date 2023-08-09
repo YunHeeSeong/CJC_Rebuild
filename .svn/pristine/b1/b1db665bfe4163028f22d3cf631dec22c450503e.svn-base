@@ -1,0 +1,25 @@
+{
+  //"ConnectionStrings": {
+  //  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=aspnet-GMINWEB_CJC-D1FA40B5-13B8-4CE1-8D2F-90A968CF7900;Trusted_Connection=True;MultipleActiveResultSets=true",
+  //  "Default": "Data Source=175.196.75.58,2433;Initial Catalog=18_CJC;User ID=sa;Password=rmffhqjf687881!;",
+  //  "GMINWEB_CJCContextConnection": "Data Source=175.196.75.58,2433;Initial Catalog=18_CJC;User ID=sa;Password=rmffhqjf687881!;"
+  //},
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=aspnet-GMINWEB_CJC-D1FA40B5-13B8-4CE1-8D2F-90A968CF7900;Trusted_Connection=True;MultipleActiveResultSets=true",
+    "Default": "Data Source=mes.gmin.co.kr,6816;Initial Catalog=18_CJC;User ID=sa;Password=rmffhqjf687881!;",
+    "GMINWEB_CJCContextConnection": "Data Source=mes.gmin.co.kr,6816;Initial Catalog=18_CJC;User ID=sa;Password=rmffhqjf687881!;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "AllowedHosts": "*",
+  "Cultures": {
+    "en-US": "USA",
+    "es-KR": "Korea"
+  }
+
+}

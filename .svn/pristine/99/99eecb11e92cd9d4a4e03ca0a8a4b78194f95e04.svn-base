@@ -1,0 +1,23 @@
+﻿using DataAccessLibrary.Model;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace DataAccessLibrary.Data
+{
+    public interface IUserData
+    {
+        Task<List<UserModel>> GetUserCodeHelp(string loginId);
+        Task DeleteUser(UserModel user);
+        Task<List<FileModel>> GetFile(int userCd, string loginId);
+        Task<List<UserModel>> GetUser(int userCd,string loginId);
+        Task<List<UserModel>> GetUserFromCodehelp(string loginId);
+        Task ChangePassword(string LoginPw, string LoginId);
+        Task<List<UserModel>> GetAllUsers(string loginId);
+        Task<List<UserModel>> GetUser(string loginId);
+        Task InsertData(UserModel user);
+        Task<List<UserModel>> LoginAsync(UserModel user = null);
+        Task UpdateUser(UserModel user, string loginId);
+        Task UpdateUserName(string email, string userNm);
+        Task <List<UserModel>> PasswordInfo(string Email);
+    }
+}

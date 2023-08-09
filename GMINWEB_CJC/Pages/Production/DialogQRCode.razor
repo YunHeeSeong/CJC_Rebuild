@@ -1,0 +1,134 @@
+﻿@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using QRCoder;
+@using System.Drawing;
+@using System.Drawing.Imaging;
+@using System.IO;
+@using static QRCoder.PayloadGenerator;
+
+@inject IWorkData _db
+@inject ICommonCodeData _codeManager
+@inject IJSRuntime jsRuntime
+
+
+<style>
+    .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<div class="row" style="width: 800px; overflow-x: auto; height: 500px; overflow-y: auto;">
+    <div class="col-sm">
+        <h2 class="row col-sm-6" id="modal-title">QR코드 출력</h2>
+        <div>
+                <RadzenFieldset>
+                    <div class="row">
+                        <div class="col-sm-6" style="margin-top:20px">
+                            <div class="row">
+                                <div class="col-sm-12 align-items-center d-flex">
+                                    <img src="@qrcodeStr" style="width:80%; height: 300px" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" style="margin-top:60px">
+                            <div class="row">
+                                <div class="col-sm-4 align-items-center d-flex">
+                                    <RadzenLabel Text="작업지시번호"></RadzenLabel>
+                                </div>
+                                <div class="col-sm-5">
+                                    <RadzenTextBox TValue="string" ReadOnly="true" style="width: 100%;" Name="WorkOrderNo" @bind-Value="@workModel.WorkOrderNo" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 align-items-center d-flex">
+                                    <RadzenLabel Text="실적순번"></RadzenLabel>
+                                </div>
+                                <div class="col-sm-5">
+                                    <RadzenTextBox TValue="string" ReadOnly="true" style="width: 100%;" Name="Seq" @bind-Value="@seq" />
+                                    @*<RadzenNumeric TValue="int" ReadOnly="true" style="width: 100%;" Name="Seq" @bind-Value="@workModel.Seq" />*@
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 align-items-center d-flex">
+                                    <RadzenLabel Text="품목코드"></RadzenLabel>
+                                </div>
+                                <div class="col-sm-5">
+                                    <RadzenTextBox Style="width:100%;" ReadOnly="true" Name="ItemCd" @bind-Value="@workModel.ItemCd"></RadzenTextBox>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 align-items-center d-flex">
+                                    <RadzenLabel Text="품목명"></RadzenLabel>
+                                </div>
+                                <div class="col-sm-5">
+                                    <RadzenTextBox Style="width:100%;" ReadOnly="true" Name="ItemNm" @bind-Value="@workModel.ItemNm"></RadzenTextBox>
+                                </div>
+                            </div>
+                            <div style="margin-top: 60px;">
+                                <div class="text-center" id="btn-print">
+                                    <RadzenButton  style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Secondary" Click="btnPrintClick">출력</RadzenButton>
+                                    <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Light" Click="btnCloseClick">닫기</RadzenButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </RadzenFieldset>
+        </div>
+        
+    </div>
+</div>
+
+
+
+@code {
+    [Parameter] public WorkModel selectedWork { get; set; }
+    [Parameter] public string loginId { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
+    private WorkModel workModel = new WorkModel();
+    private string seq;
+    private string qrcodeStr = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedWork is not null)
+        {
+            workModel = selectedWork;
+            seq = workModel.Seq.ToString(); 
+
+            CreateQRCode(workModel);
+        }
+    }
+
+    void CreateQRCode(WorkModel workModel)
+    {
+        qrcodeStr = "";
+
+        string qrcodeInfo = string.Empty;
+
+        qrcodeInfo = string.Format("작업지시번호:{0}\n실적순번:{1}\n생산일자:{2}\n품목코드:{3}\n품목명:{4}"
+                   , workModel.WorkOrderNo, workModel.Seq, workModel.WorkPerformDt.ToString("yyyy-MM-dd"), workModel.ItemCd, workModel.ItemNm.GetNullToEmpty());
+
+        using (MemoryStream ms = new MemoryStream())
+        {
+            QRCodeGenerator qrCodeGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrCodeGenerator.CreateQrCode(qrcodeInfo, QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            using (Bitmap bitmap = qrCode.GetGraphic(20))
+            {
+                bitmap.Save(ms, ImageFormat.Png);
+                qrcodeStr = "data:image/png;base64," + Convert.ToBase64String(ms.ToArray());
+            }
+        }
+    }
+
+    private void btnPrintClick()
+    {
+        jsRuntime.InvokeVoidAsync("Print");
+    }
+
+    void btnCloseClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+}

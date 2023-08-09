@@ -1,0 +1,203 @@
+﻿@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject IBizUnitData _db
+@inject ICommonCodeData _codeManager
+@inject IJSRuntime jsRuntime
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Style="width:1200px; overflow-x:auto; height:550px; overflow-y:auto;" Data="bizUnitModel">
+    <div class="row">
+        <div class="col-sm">
+            <RadzenFieldset Text="사업장 정보">
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="사업장코드" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenNumeric TValue="string" ReadOnly="true" Placeholder="자동채번" style="width: 100%;" Name="GroupCd" @bind-Value="@bizUnitModel.BizUnit" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="사업장명" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="BizNm" @bind-Value="@bizUnitModel.BizNm"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="사업장위치" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="BizLoc" @bind-Value="@bizUnitModel.BizLoc"></RadzenTextBox>
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="사업장형태" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" Disabled="true"
+                                        AllowFiltering="true" Data=@bizTypeList TextProperty="CodeSubNm" ValueProperty="CodeSeq" @bind-Value="bizUnitModel.BizType" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="대표자명"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="OwnerNm" @bind-Value="@bizUnitModel.OwnerNm"></RadzenTextBox>
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="담당자명"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="PICNm" @bind-Value="@bizUnitModel.PICNm"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="연락처"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="PhoneNo" @bind-Value="@bizUnitModel.PhoneNo"></RadzenTextBox>
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="법인사업자번호"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="LawBusiNo" @bind-Value="@bizUnitModel.LawBusiNo"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="개인사업자번호"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="SoleBusiNo" @bind-Value="@bizUnitModel.SoleBusiNo"></RadzenTextBox>
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="연매출"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="AnnualSales" @bind-Value="@bizUnitModel.AnnualSales"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="은행명"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox TValue="string" Name="BANK" @bind-Value="@bizUnitModel.Bank"></RadzenTextBox>
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="예금주"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox TValue="string" Name="BankNm" @bind-Value="@bizUnitModel.BankNm"></RadzenTextBox>
+                    </div>
+   
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="계좌번호"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox TValue="string" Name="BankNm" @bind-Value="@bizUnitModel.BankNo"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="직원수"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenNumeric TValue="int" Name="EmpNumber" @bind-Value="@bizUnitModel.EmpNumber"></RadzenNumeric>
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="국가"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="Country" @bind-Value="@bizUnitModel.Country"></RadzenTextBox>
+                    </div>
+                </div>
+            </RadzenFieldset>
+
+        </div>
+    </div>
+
+    <div style="width:300px;margin:0 auto;">
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton  style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public BizUnitModel selectedBizUnit { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+    private List<BizUnitModel> bizUnitList;
+    private List<CommonCodeModel> bizTypeList;
+    private BizUnitModel bizUnitModel = new BizUnitModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedBizUnit is not null)
+        {
+            bizUnitList = await _db.GetBizUnit(loginId, selectedBizUnit.BizUnit);
+            bizUnitModel = bizUnitList.FirstOrDefault();
+        }
+
+        bizTypeList = await _codeManager.FindCommonCodeFromName("사업장형태", loginId);
+        bizUnitModel.BizType = 3;
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckBizUnit(bizUnitModel) == true)
+        {
+            if (bizUnitModel.BizUnit.GetNullToEmpty() == string.Empty)
+            {
+                await _db.InsertData(bizUnitModel, loginId);
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+            else
+            {
+                await _db.UpdateData(bizUnitModel, loginId);
+
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "사업장명, 사업장위치, 사업장형태를 입력하여 주십시오.");
+        }
+
+    }
+    bool ValidationCheckBizUnit(BizUnitModel bizUnit)
+    {
+        //필수값 미입력시 false 반환
+        if (bizUnit.BizNm.GetNullToEmpty() == string.Empty || bizUnit.BizType.GetIntNullToZero() == 0 || bizUnit.BizLoc.GetNullToEmpty() == string.Empty)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}

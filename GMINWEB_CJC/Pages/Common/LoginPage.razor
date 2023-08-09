@@ -1,0 +1,172 @@
+﻿@page "/common/login"
+@using DataAccessLibrary.Data
+@using DataAccessLibrary.Model
+@using GMINWEB_Rebuild
+@using GMINWEB_Rebuild.Areas.Identity.Pages.Account;
+@inherits RadzenComponent
+@inject IUserData _db
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+
+
+<RadzenNotification></RadzenNotification>
+<div @attributes="Attributes" class="@GetCssClass()" style="@Style" id="@GetId()">
+    <div class="rz-form">
+        <div class="row form-group">
+            <label class="col-sm-3 col-form-label" for="LoginId">@UserText</label>
+            <div class="col">
+                <RadzenTextBox AutoComplete=@AutoComplete style="display: block" Name="LoginId" @bind-Value=@LoginId />
+                <RadzenRequiredValidator Component="LoginId" Text=@UserRequired style="position: absolute" />
+            </div>
+        </div>
+        <div class="row form-group">
+            <label class="col-sm-3 col-form-label" for="password">@PasswordText</label>
+            <div class="col">
+                <RadzenPassword AutoComplete=@AutoComplete style="display: block" Name="Password" @bind-Value=@Password />
+                <RadzenRequiredValidator Component="Password" Text=@PasswordRequired style="position: absolute" />
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="offset-sm-3 col login-buttons">
+                <RadzenButton Style="background-color:#375E99" ButtonType="ButtonType.Submit" Text=@LoginText Click=@OnLogin />
+                @if (AllowResetPassword)
+                {
+                    <a @onclick=@OnReset>@ResetPasswordText</a>}
+            </div>
+        </div>
+    </div>
+    @if (AllowRegister)
+    {
+        <div class="register">
+            @RegisterMessageText
+            <RadzenButton ButtonType="ButtonType.Button" Style="background-color:#4233A6" Text=@RegisterText Click=@OnRegister />
+        </div>}
+</div>
+
+@code
+{
+    [CascadingParameter] public IModalService Modal { get; set; }
+
+    [Parameter]
+    public bool AutoComplete { get; set; } = true;
+
+    protected override string GetComponentCssClass()
+    {
+        return "login";
+    }
+
+    string _username;
+    [Parameter]
+    public string LoginId
+    {
+        get
+        {
+            return _username;
+        }
+        set
+        {
+            if (_username != value)
+            {
+                _username = value;
+            }
+        }
+    }
+
+    string _password;
+    [Parameter]
+    public string Password
+    {
+        get
+        {
+            return _password;
+        }
+        set
+        {
+            if (_password != value)
+            {
+                _password = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<Radzen.LoginArgs> Login { get; set; }
+
+    [Parameter]
+    public EventCallback Register { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ResetPassword { get; set; }
+
+    [Parameter]
+    public bool AllowRegister { get; set; } = true;
+
+    [Parameter]
+    public bool AllowResetPassword { get; set; } = true;
+
+    [Parameter]
+    public string LoginText { get; set; } = "Login";
+
+    [Parameter]
+    public string RegisterText { get; set; } = "Sign up";
+
+    [Parameter]
+    public string RegisterMessageText { get; set; } = "Don't have an account yet?";
+
+    [Parameter]
+    public string ResetPasswordText { get; set; } = "Forgot password";
+
+    [Parameter]
+    public string UserText { get; set; } = "LoginId";
+
+    [Parameter]
+    public string UserRequired { get; set; } = "LoginId is required";
+
+    [Parameter]
+    public string PasswordText { get; set; } = "Password";
+
+    [Parameter]
+    public string PasswordRequired { get; set; } = "Password is required";
+
+    public List<UserModel> userData { get; set; }
+
+    protected async Task OnLogin()
+    {
+        if (!string.IsNullOrEmpty(LoginId) && !string.IsNullOrEmpty(Password))
+        {
+            UserModel model = new UserModel()
+            {
+                LoginId = LoginId,
+                LoginPw = Password
+            };
+
+            userData = await _db.LoginAsync(model);
+           
+            if (userData.Count > 0)
+            {
+                var user = userData.FirstOrDefault();
+                NavigationManager.NavigateTo("/");
+            }
+        }
+    }
+
+    protected async Task OnReset(EventArgs args)
+    {
+        if (!string.IsNullOrEmpty(LoginId))
+        {
+            await ResetPassword.InvokeAsync(LoginId);
+        }
+    }
+
+    protected async Task OnRegister()
+    {
+        var testRegister = Modal.Show<TestRegister>("Register");
+        var result = await testRegister.Result;
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+
+}

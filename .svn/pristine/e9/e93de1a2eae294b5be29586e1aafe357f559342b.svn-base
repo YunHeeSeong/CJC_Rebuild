@@ -1,0 +1,309 @@
+﻿@page "/bomEdit"
+@page "/bomEdit/{loginId}"
+
+@using GMINWEB_CJC.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+@inject IBOMData _db
+@inject IItemData _itemManager
+@inject IJSRuntime jsRuntime
+
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm">
+        <RadzenFieldset Text="제품리스트">
+            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                            FilterMode="FilterMode.Simple" PageSize="10" AllowPaging="true" AllowSorting="true" Data="@(ItemList)" TItem="ItemModel" ColumnWidth="300px"
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" RowSelect="@RowSelect"
+                            LogicalFilterOperator="LogicalFilterOperator.Or" EmptyText="조회된 제품이 없습니다.">
+                <Columns>
+                    <RadzenDataGridColumn TItem="ItemModel" Property="BizUnitNm" Title="매장명" Width="100px" />
+                    <RadzenDataGridColumn TItem="ItemModel" Property="FactBizUnitNm" Title="공장명" Width="100px" />
+                    <RadzenDataGridColumn TItem="ItemModel" Property="ItemCd" Title="품목코드" Width="100px" />
+                    <RadzenDataGridColumn TItem="ItemModel" Property="ItemNm" Title="품목명" Width="100px" />
+                    <RadzenDataGridColumn TItem="ItemModel" Property="MadeTypeNm" Title="제작방식" Width="100px" />
+                    <RadzenDataGridColumn TItem="ItemModel" Property="Item1ClsNm" Title="대분류" Width="100px" />
+                    <RadzenDataGridColumn TItem="ItemModel" Property="Item2ClsNm" Title="중분류" Width="100px" />
+                    <RadzenDataGridColumn TItem="ItemModel" Property="Item3ClsNm" Title="소분류" Width="100px" />
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenFieldset>
+
+        <RadzenFieldset Text="선택 제품 정보">
+            <div class="row">
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="품목코드"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox TValue="string" style="width: 100%;" Name="ItemCd" ReadOnly="true" @bind-Value="@itemModel.ItemCd"></RadzenTextBox>
+                </div>
+                <div class="col-sm-3 align-items-center d-flex">
+                    <RadzenLabel Text="품목명" Style="color: red"></RadzenLabel>
+                </div>
+                <div class="col-sm-3">
+                    <RadzenTextBox TValue="string" style="width: 100%;" Name="ItemNm" ReadOnly="true" @bind-Value="@itemModel.ItemNm"></RadzenTextBox>
+                </div>
+            </div>
+        </RadzenFieldset>
+
+        <RadzenFieldset Text="BOM 상세 정보">
+            <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="신규" Click="@InsertRow" Disabled=@(bomToInsert != null) />
+            <RadzenDataGrid @ref="detailGrid" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                            Data="@detailModels" TItem="BOMModel" EmptyText="">
+                <Columns>
+                    <RadzenDataGridColumn TItem="BOMModel" Property="BizUnit" Title="매장" Width="70px" Visible="false" />
+                    <RadzenDataGridColumn TItem="BOMModel" Property="FactBizUnit" Title="공장" Width="70px" Visible="false" />
+                    <RadzenDataGridColumn TItem="BOMModel" Property="Seq" Title="순번" Width="70px" CssClass="data_center"/>
+                    <RadzenDataGridColumn TItem="BOMModel" Property="PartCd" Title="자재코드" Width="120px" CssClass="data_center">
+                        <EditTemplate Context="bom">
+                            <RadzenDropDownDataGrid TValue="string" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowFiltering="true" AllowClear="false"
+                                                    Data=@(PartCdList) Style="width: 100%" AllowColumnResize="true" @bind-Value="@bom.PartCd"
+                                                    TextProperty="ItemCd" ValueProperty="ItemCd" AllowFilteringByAllStringColumns="true" SelectedItemChanged="(args =>OnChangePartCd(args))">
+                                <Columns>
+                                    <RadzenDropDownDataGridColumn Property="ItemCd" Title="자재코드" Width="100px" />
+                                    <RadzenDropDownDataGridColumn Property="ItemNm" Title="자재명" Width="200px" />
+                                </Columns>
+                            </RadzenDropDownDataGrid>
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BOMModel" Property="PartNm" Title="자재명" Width="120px">
+                        <EditTemplate Context="bom">
+                            <RadzenTextBox Style="width:100%;" Name="PartNm" @bind-Value=@bom.PartNm ReadOnly="true"></RadzenTextBox>
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BOMModel" Property="ReqQty" Title="대당소요량" Width="120px" FormatString="{0:n0}">
+                        <EditTemplate Context="bom">
+                            <RadzenNumeric TValue="decimal" Name="ReqQty" @bind-Value="@bom.ReqQty" Change="(arg => OnChnageReqQty(arg))"></RadzenNumeric>
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BOMModel" Property="Remk" Title="비고" Width="150px">
+                        <EditTemplate Context="bom">
+                            <RadzenTextBox Style="width:100%;" Name="Remk" @bind-Value=@bom.Remk></RadzenTextBox>
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BOMModel" Context="bom" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                        <Template Context="bom">
+                            <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(bom))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                        </Template>
+                        <EditTemplate Context="bom">
+                            <RadzenButton Text="저장" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(bom))">
+                            </RadzenButton>
+                            <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(bom))">
+                            </RadzenButton>
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="BOMModel" Context="bom" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                        <Template Context="bom">
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(bom))" @onclick:stopPropagation="true">
+                            </RadzenButton>
+                        </Template>
+                        <EditTemplate Context="bom">
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(bom))">
+                            </RadzenButton>
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenFieldset>
+    </div>
+</div>
+
+<div style="width:300px;margin:0 auto; margin-top:50px">
+    <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+    <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Info" Click="btnSaveClick">저장</RadzenButton>
+</div>
+
+<GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+@code{
+    //[Parameter] public string selectedBomCd { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+
+    private List<ItemModel> ItemList;
+    private List<ItemModel> PartCdList;
+    private List<BOMModel> detailModels;
+    //private List<CustomerModel> customerList;
+    //private List<OrderModel> orderList;
+    public BOMModel bomToDelete { get; set; }
+
+    private ItemModel itemModel = new ItemModel();
+    //private BOMModel masterModel = new BOMModel();
+    //private BOMModel detailModel = new BOMModel();
+    RadzenDataGrid<BOMModel> detailGrid;
+
+    private BOMModel bomToInsert;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //코드헬프 - 제품리스트 가져오기
+        ItemList = await _db.GetAllItem(loginId);
+
+        //코드헬프 - 원부자재 리스트 가져오기
+        PartCdList = await _itemManager.GetAllItemCodeHelp(loginId);
+    }
+
+    void btnCancleClick()
+    {
+        navigationManager.NavigateTo("/BomManagement");
+    }
+
+    async Task InsertRow()
+    {
+        if (itemModel.ItemCd.GetNullToEmpty() == string.Empty)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "BOM을 등록할 제품을 먼저 선택하여 주십시오.");
+        }
+        else
+        {
+            bomToInsert = new BOMModel();
+            bomToInsert.ItemCd = itemModel.ItemCd;
+            bomToInsert.BizUnit = itemModel.BizUnit;
+            bomToInsert.FactBizUnit = itemModel.FactBizUnit;
+
+            await detailGrid.InsertRow(bomToInsert);
+        }
+    }
+
+    async Task EditRow(BOMModel bom)
+    {
+        bomToInsert = bom;
+
+        await detailGrid.EditRow(bom);
+    }
+
+    async Task SaveRow(BOMModel bom)
+    {
+        if (bom == bomToInsert)
+        {
+            bomToInsert = null;
+        }
+
+        if (ValidationCheckBom(bom) == true)
+        {
+            if (bom.Seq == 0)
+            {
+                //코드가 채번되기 전이면 INSERT
+                await _db.InsertData(bom, loginId);
+            }
+            else
+            {
+                //코드가 채번된 후
+                await _db.UpdateData(bom, loginId);
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "자재코드와 대당소요량을 입력하여 주십시오.");
+        }
+
+        await detailGrid.UpdateRow(bom);
+
+        detailModels = await _db.GetBOM(itemModel.BizUnit,itemModel.FactBizUnit,itemModel.ItemCd);
+    }
+
+    void CancelEdit(BOMModel bom)
+    {
+        if (bom == bomToInsert)
+        {
+            bomToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(bom);
+    }
+
+    async Task DeleteRow(BOMModel bom)
+    {
+        if (bom == bomToInsert)
+        {
+            bomToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (detailModels.Contains(bom))
+        {
+            bomToDelete = bom;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            detailGrid.CancelEditRow(bom);
+            await detailGrid.Reload();
+        }
+    }
+
+    void btnSaveClick()
+    {
+        navigationManager.NavigateTo("/BomManagement");
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteData(bomToDelete, loginId);
+            detailModels = await _db.GetBOM(itemModel.BizUnit,itemModel.FactBizUnit,itemModel.ItemCd);
+            await detailGrid.Reload();
+        }
+        else
+        {
+            bomToDelete = null;
+        }
+    }
+
+    bool ValidationCheckBom(BOMModel bom)
+    {
+        //필수값 미입력시 false 반환
+        if (bom.ItemCd.GetNullToEmpty() == string.Empty) return false;
+        if (bom.PartCd.GetNullToEmpty() == string.Empty) return false;
+        if (bom.ReqQty.GetDecimalNullToZero() == 0) return false;
+
+        return true;
+    }
+
+    async Task RowSelect(ItemModel selectedItem)
+    {
+        //선택한 품목의 bom이 등록되어 있는지 조회
+        var bomList = await _db.GetBOM(selectedItem.BizUnit,selectedItem.FactBizUnit,selectedItem.ItemCd);
+
+        //등록되어 있다면 상세내역까지 조회
+        detailModels = bomList;
+
+        itemModel.BizUnit = selectedItem.BizUnit;
+        itemModel.FactBizUnit = selectedItem.FactBizUnit;
+        itemModel.ItemCd = selectedItem.ItemCd;
+        itemModel.ItemNm = selectedItem.ItemNm;
+    }
+
+    void OnChangePartCd(object value)
+    {
+        if (value is not null && bomToInsert is not null)
+        {
+            //bomToInsert.PartCd = ((ItemModel)value).ItemCd;
+            bomToInsert.PartNm = ((ItemModel)value).ItemNm;
+        }
+    }
+
+    void OnChnageReqQty(object value)
+    {
+        if (value is not null)
+        {
+            bomToInsert.ReqQty = Convert.ToDecimal(value);
+        }
+    }
+
+
+}

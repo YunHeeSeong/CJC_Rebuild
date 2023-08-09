@@ -1,0 +1,324 @@
+﻿@using GMINWEB_CJC.Model
+@using System.Data
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject ICommonCodeData _codeManager
+@inject IPDItemImageData _imageManager
+@inject NotificationService NotificationService
+@inject IJSRuntime jsRuntime
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Style="width:1200px; overflow-x:auto; height:550px; overflow-y:auto;" Data="selectedPDItem">
+    <div class="row">
+        <div class="col-sm">
+            <RadzenFieldset Text="제품 정보">
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="취급매장"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox TValue="string" ReadOnly="true" style="width: 100%;" Name="BizUnitNm" @bind-Value="@selectedPDItem.BizUnitNm" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="생산사업장"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" ReadOnly="true" Name="FactBizUnitNm" @bind-Value="@selectedPDItem.FactBizUnitNm"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="제품코드"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox TValue="string" ReadOnly="true"  style="width: 100%;" Name="ItemCd" @bind-Value="@selectedPDItem.ItemCd" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="제품명"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" ReadOnly="true" Name="ItemNm" @bind-Value="@selectedPDItem.ItemNm"></RadzenTextBox>
+                    </div>
+                </div>
+            </RadzenFieldset>
+
+            <RadzenFieldset Text="제품 관련 문서">
+                <RadzenButton Icon="add_circle_outline" style="margin-bottom: 10px" Text="신규" Click="@InsertRow" Disabled=@(fileModelToInsert != null) />
+                <RadzenDataGrid @ref="detailGrid" AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" EditMode="Radzen.DataGridEditMode.Single"
+                                Data="@pdItemImageModels" TItem="PDItemImageModel" EmptyText="">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Property="FileNo" Title="파일코드" Width="70px" CssClass="data_center" />
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Property="ItemNm" Title="품목명" Width="200px" CssClass="data_center" />
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Property="FileCls" Title="파일구분" Width="120px" Visible="false">
+                            <EditTemplate Context="file">
+                                <RadzenNumeric Name="FileCls" ReadOnly="true" @bind-Value="file.FileCls"></RadzenNumeric>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Property="FileClsNm" Title="파일구분명" Width="120px">
+
+                            <EditTemplate Context="file">
+                                <RadzenDropDown AllowClear="true" TValue="string" AllowVirtualization="true" Class="w-100"
+                                                AllowFiltering="true" Data=@FileClsNmList TextProperty="CodeSubNm" ValueProperty="CodeSubNm" @bind-Value="file.FileClsNm"
+                                                SelectedItemChanged="@(args => OnChangeDetailCls(args, "파일구분"))" />
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Filterable="false" Title="업로드" Width="220px" CssClass="data_center">
+                            <EditTemplate Context="file">
+                                <BlazorFileUploader.InputFile OnChange="HandleFileSelected"></BlazorFileUploader.InputFile>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Property="FileNm" Title="파일명" Width="200px" />
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Property="FileData" Title="데이터" Width="100px" />
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Property="FileType" Title="파일형식" Width="120px" />
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Title="다운로드" Width="150px" CssClass="data_center">
+                            <Template Context="file">
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Click="()=>btnDownloadFile(file)">다운로드</RadzenButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="120px">
+                            <Template Context="file">
+                                <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(file))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="file">
+                                <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(file))">
+                                </RadzenButton>
+                                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(file))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="PDItemImageModel" Context="file" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="60px">
+                            <Template Context="file">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(file))" @onclick:stopPropagation="true">
+                                </RadzenButton>
+                            </Template>
+                            <EditTemplate Context="file">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Small" Class="m-1" Click="@(args => DeleteRow(file))">
+                                </RadzenButton>
+                            </EditTemplate>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <div style="width:300px;margin:0 auto;">
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">닫기</RadzenButton>
+    </div>
+
+    <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public ItemModel selectedPDItem { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+
+    private List<PDItemImageModel> pdItemImageModels;
+    public PDItemImageModel selectedFile { get; set; }
+
+    RadzenDataGrid<PDItemImageModel> detailGrid;
+    private List<CommonCodeModel> FileClsNmList;
+
+    private PDItemImageModel fileModelToInsert;
+    private PDItemImageModel fileModelToDelete;
+
+    string imgSrc = "";
+    IFileListEntry file = null;
+    byte[] _fileBytes = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (selectedPDItem is not null)
+        {
+            pdItemImageModels = await _imageManager.GetPDItemImage(selectedPDItem);
+        }
+
+        FileClsNmList = await _codeManager.FindCommonCodeFromName("제품관련파일", loginId);
+
+    }
+
+    void OnChangeDetailCls(object value, string name)
+    {
+        if (value is not null && fileModelToInsert is not null)
+        {
+            fileModelToInsert.FileCls = ((CommonCodeModel)value).CodeSeq;
+            fileModelToInsert.FileClsNm = ((CommonCodeModel)value).CodeSubNm;
+        }
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+    async Task InsertRow()
+    {
+        if (selectedPDItem is not null)
+        {
+            fileModelToInsert = new PDItemImageModel();
+            fileModelToInsert.BizUnit = selectedPDItem.BizUnit;
+            fileModelToInsert.FactBizUnit = selectedPDItem.FactBizUnit;
+            fileModelToInsert.ItemCd = selectedPDItem.ItemCd;
+
+            await detailGrid.InsertRow(fileModelToInsert);
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "제품 관련 파일 업로드 오류");
+        }
+    }
+
+    async Task EditRow(PDItemImageModel file)
+    {
+        fileModelToInsert = file;
+
+        await detailGrid.EditRow(file);
+    }
+
+    async Task SaveRow(PDItemImageModel file)
+    {
+        if (file == fileModelToInsert)
+        {
+            fileModelToInsert = null;
+        }
+
+        if (ValidationCheckFile(file) == true)
+        {
+            if (file.FileNo == 0)
+            {
+                //파일넘버가 채번되기 전이면 INSERT
+                var result = await _imageManager.InsertData(file, loginId);
+                if (result.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+                }
+            }
+            else
+            {
+                //파일넘버가 기존에 존재하면 UPDATE
+                var result = await _imageManager.UpdateData(file, loginId);
+                if (result.IsError())
+                {
+                    await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+                }
+            }
+
+            await detailGrid.UpdateRow(file);
+            pdItemImageModels = await _imageManager.GetPDItemImage(selectedPDItem);
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "파일 종류와 파일을 선택하여 주십시오.");
+        }
+    }
+
+    void CancelEdit(PDItemImageModel file)
+    {
+        if (file == fileModelToInsert)
+        {
+            fileModelToInsert = null;
+        }
+
+        detailGrid.CancelEditRow(file);
+    }
+
+    async Task DeleteRow(PDItemImageModel file)
+    {
+        if (file == fileModelToInsert)
+        {
+            fileModelToInsert = null;
+        }
+
+        //저장 후 삭제일 때 DB 에서 DELETE
+        if (pdItemImageModels.Contains(file))
+        {
+            selectedFile = file;
+            DeleteConfirmation.Show("삭제하시겠습니까?");
+        }
+        //저장 전 삭제일 때 GRID UI에서만 삭제
+        else
+        {
+            detailGrid.CancelEditRow(file);
+            await detailGrid.Reload();
+        }
+    }
+
+    public async Task HandleFileSelected(IFileListEntry[] files)
+    {
+        if (files.Count() > 0)
+        {
+            file = files.FirstOrDefault();
+            using (var ms = new MemoryStream())
+            {
+                await file.Data.CopyToAsync(ms);
+                _fileBytes = ms.ToArray();
+
+                fileModelToInsert.FileNm = file.Name;
+                fileModelToInsert.FileType = file.Type;
+                fileModelToInsert.FileData = Convert.ToBase64String(_fileBytes);
+            }
+        }
+    }
+
+
+    void btnDownloadFile(PDItemImageModel file)
+    {
+        var fileArr = Convert.FromBase64String(file.FileData);
+        jsRuntime.InvokeVoidAsync("DownloadAsFile", file.FileNm, file.FileType, fileArr);
+    }
+
+    void ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            var result =  await _imageManager.DeleteData(selectedFile, loginId);
+
+            if (result.IsError())
+            {
+                await jsRuntime.InvokeVoidAsync("alert", result.GetErrorMessages());
+            }
+            else
+            {
+                pdItemImageModels = await _imageManager.GetPDItemImage(selectedPDItem);
+                await detailGrid.Reload();
+            }
+
+        }
+        else
+        {
+            selectedFile = null;
+        }
+    }
+
+    bool ValidationCheckFile(PDItemImageModel file)
+    {
+        //필수값 미입력시 false 반환
+        if (file.FileNm is null || file.FileData is null || file.FileType is null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}

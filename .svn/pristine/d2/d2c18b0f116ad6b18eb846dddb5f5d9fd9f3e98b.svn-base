@@ -1,0 +1,183 @@
+﻿@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject INoticeData _db
+@inject ICommonCodeData _codeManager
+@inject IJSRuntime jsRuntime
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Style="width:1200px; overflow-x:auto; height:550px; overflow-y:auto;" Data="noticeModel">
+    <div class="row">
+        <div class="col-sm">
+            <RadzenFieldset Text="공지사항 내역">
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="공지사항코드" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenNumeric TValue="int" ReadOnly="true" Placeholder="자동채번" style="width: 100%;" Name="NoticeCd" @bind-Value="@noticeModel.NoticeCd" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="제목" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenTextBox Style="width:100%;" Name="Title" @bind-Value="@noticeModel.Title"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="내용" Style="color:red"></RadzenLabel>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 align-items-center d-flex">
+                        <RadzenTextArea @bind-Value="@noticeModel.Contents" Class="w-100" Style="height:250px"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="게시시작일" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenDatePicker @bind-Value=@StartDate DateFormat="yyyy-MM-dd" Change="@(arg=> StartDateChanged(arg))" Class="w-100" />
+                    </div>
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="게시종료일" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenDatePicker @bind-Value=@EndDate DateFormat="yyyy-MM-dd" Change="@(arg=> EndDateChanged(arg))" Class="w-100" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3 align-items-center d-flex">
+                        <RadzenLabel Text="조회권한" Style="color:red"></RadzenLabel>
+                    </div>
+                    <div class="col-sm-3">
+                        <RadzenDropDown AllowClear="true" TValue="int" AllowVirtualization="true" Class="w-100" @bind-Value="@noticeModel.ReadRoleId"
+                                        AllowFiltering="true" Data=@ReadRoleIdList TextProperty="CodeSubNm" ValueProperty="CodeSeq"
+                                        Change=@(args => OnChangeReadRoleId(args, "게시판권한")) />
+                    </div>
+                </div>
+            </RadzenFieldset>
+
+        </div>
+    </div>
+
+    <div style="width:300px;margin:0 auto;">
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+
+</RadzenTemplateForm>
+
+
+@code {
+
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public NoticeModel selectedNoticeCd { get; set; }
+    [Parameter] public string loginId { get; set; }
+
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+
+    private List<NoticeModel> noticeList;
+    private List<CommunityRoleModel> RoleYNList;
+    private List<CommonCodeModel> ReadRoleIdList;
+    private NoticeModel noticeModel = new NoticeModel();
+    private CommunityRoleModel roleModel = new CommunityRoleModel();
+
+    DateTime StartDate;
+    DateTime EndDate;
+
+    IEnumerable<int> checkValues = new int[] { };
+
+    protected override async Task OnInitializedAsync()
+    {
+        //수정일때
+        if (selectedNoticeCd is not null)
+        {
+            noticeList = await _db.GetNotice(loginId, selectedNoticeCd.NoticeCd);
+            noticeModel = noticeList.FirstOrDefault();
+
+            StartDate = Convert.ToDateTime(noticeModel.StartDate);
+            EndDate = Convert.ToDateTime(noticeModel.EndDate);
+        }
+        //신규일때
+        else
+        {
+            StartDate = DateTime.Today;
+            EndDate = DateTime.Today.AddDays(+7);
+            noticeModel.StartDate = DateTime.Today.ToString("yyyy-MM-dd");
+            noticeModel.EndDate = DateTime.Today.ToString("yyyy-MM-dd");
+        }
+
+        ReadRoleIdList = await _codeManager.FindCommonCodeFromName("게시판권한", loginId);
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+
+    async Task btnSaveClick()
+    {
+        //필수값 체크
+        if (ValidationCheckNotice(noticeModel) == true)
+        {
+            if (noticeModel.NoticeCd.GetIntNullToZero() == 0)
+            {
+                await _db.InsertData(noticeModel, loginId);
+
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+            else
+            {
+                await _db.UpdateData(noticeModel, loginId);
+
+                await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+            }
+        }
+        else
+        {
+            await jsRuntime.InvokeVoidAsync("alert", "제목, 내용, 게시시작일, 게시종료일을 입력하여 주십시오.");
+        }
+    }
+    bool ValidationCheckNotice(NoticeModel noticeModel)
+    {
+        //필수값 미입력시 false 반환
+        if (noticeModel.Title.GetNullToEmpty() == string.Empty || noticeModel.Contents.GetNullToEmpty() == string.Empty || noticeModel.StartDate.GetNullToEmpty() == string.Empty || noticeModel.EndDate.GetNullToEmpty() == string.Empty)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void StartDateChanged(DateTime? value)
+    {
+        if (value is not null)
+        {
+            noticeModel.StartDate = ((DateTime)value).ToString("yyyy-MM-dd");
+        }
+    }
+
+    void EndDateChanged(DateTime? value)
+    {
+        if (value is not null)
+        {
+            noticeModel.EndDate = ((DateTime)value).ToString("yyyy-MM-dd");
+        }
+    }
+
+    void OnChangeReadRoleId(object value, string name)
+    {
+        noticeModel.ReadRoleId= (int)value;
+    }
+
+}

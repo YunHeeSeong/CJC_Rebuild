@@ -1,0 +1,9 @@
+﻿<StaticWebAssets Version="1.0">
+  <ContentRoot BasePath="/" Path="D:\작업장\Desktop\개발 솔루션\cjc관련 파일\CJCWEB_Rebuild\CJC\GMINWEB_CJC\obj\Debug\net5.0\scopedcss\bundle\" />
+  <ContentRoot BasePath="/Identity" Path="C:\Users\yhs\.nuget\packages\microsoft.aspnetcore.identity.ui\5.0.8\staticwebassets\V4\" />
+  <ContentRoot BasePath="_content/Blazored.Modal" Path="C:\Users\yhs\.nuget\packages\blazored.modal\6.0.1\build\..\staticwebassets\" />
+  <ContentRoot BasePath="_content/BlazorFileUploader" Path="C:\Users\yhs\.nuget\packages\blazorfileuploader\1.0.0\build\..\staticwebassets\" />
+  <ContentRoot BasePath="_content/DevExpress.Blazor" Path="C:\Users\yhs\.nuget\packages\devexpress.blazor\20.1.11\build\..\staticwebassets\" />
+  <ContentRoot BasePath="_content/DevExpress.Blazor.Reporting" Path="C:\Users\yhs\.nuget\packages\devexpress.blazor.reporting\20.1.13\build\..\staticwebassets\" />
+  <ContentRoot BasePath="_content/Radzen.Blazor" Path="C:\Users\yhs\.nuget\packages\radzen.blazor\3.8.1\build\..\staticwebassets\" />
+</StaticWebAssets>

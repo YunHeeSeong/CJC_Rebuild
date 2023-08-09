@@ -1,0 +1,148 @@
+﻿@page "/ItemManagement"
+
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+@using System.Collections.Generic
+@using System.Security.Claims
+
+@inject IItemData _db
+@inject IRoleData _RoleManager
+@inject IJSRuntime jsRuntime
+@inject NotificationService NotificationService
+@inject Microsoft.AspNetCore.Components.NavigationManager navigationManager
+
+
+<div class="pagelocation" id="menugnb">
+    <i class="fa fa-home"></i>
+    <a href="/">HOME</a>
+    <RadzenLabel Text=" > 품목관리 > " />
+    <strong>품목등록</strong>
+</div>
+
+<br />
+
+<AuthorizeView>
+    <Authorized>
+        @if (RoleYN == "Y")
+        {
+            <div>
+                <div class="info_title">
+                    <h1 class="sub_title">품목 등록</h1>
+                    <div class="post_btn">
+                        <RadzenButton Click="btnNewClick" Style="background-color:black; color:white">신규</RadzenButton>
+                    </div>
+
+                </div>
+
+                <RadzenTabs   RenderMode="TabRenderMode.Client">
+                    <Tabs>
+                        <RadzenTabsItem Text="품목리스트">
+                            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true"
+                                            FilterMode="FilterMode.Simple" PageSize="10" AllowPaging="true" AllowSorting="true" Data="@ItemModels" TItem="ItemModel" ColumnWidth="300px"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            LogicalFilterOperator="LogicalFilterOperator.Or">
+                                <Columns>
+                                    <RadzenDataGridColumn TItem="ItemModel" Property="BizUnitNm" Title="매장명" Width="150px" />
+                                    <RadzenDataGridColumn TItem="ItemModel" Property="ItemCd" Title="품목코드" Width="150px" CssClass="data_center"/>
+                                    <RadzenDataGridColumn TItem="ItemModel" Property="ItemNm" Title="품목명" Width="150px" />
+                                    <RadzenDataGridColumn TItem="ItemModel" Property="ItemClsNm" Title="품목구분" Width="120px" CssClass="data_center"/>
+                                    <RadzenDataGridColumn TItem="ItemModel" Property="Item1ClsNm" Title="대분류" Width="120px" />
+                                    <RadzenDataGridColumn TItem="ItemModel" Property="Item2ClsNm" Title="중분류" Width="120px" />
+                                    <RadzenDataGridColumn TItem="ItemModel" Property="Item3ClsNm" Title="소분류" Width="120px" />
+                                    <RadzenDataGridColumn TItem="ItemModel" Property="Unit" Title="단위" Width="120px" />
+                                    <RadzenDataGridColumn TItem="ItemModel" Property="Price" Title="금액" Width="100px" FormatString="{0:n0}" />
+                                    <RadzenDataGridColumn TItem="ItemModel" Filterable="false" Title="수정 및 삭제" Width="230px" CssClass="data_center">
+                                        <Template Context="Item">
+                                            <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkblue; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Click="()=>btnUpdateClick(Item)">수정</RadzenButton>
+                                            <RadzenButton Style="margin: 0 0.5rem 0 0; color: darkred; font-weight: bold; background-color: transparent; font-size: 20px; padding-left: 15px; padding-right: 15px;" Click="()=>btnDeleteClick(Item)">삭제</RadzenButton>
+                                        </Template>
+                                    </RadzenDataGridColumn>
+                                </Columns>
+                            </RadzenDataGrid>
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+
+                <GMINWEB_CJC.Pages.Common.Confirm ConfirmationChanged="ConfirmDelete_Click" @ref="DeleteConfirmation" />
+
+
+            </div>
+        }
+        else
+        {
+            <p>조회 권한이 없는 사용자입니다.</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>로그인 후 이용하실 수 있습니다.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public ItemModel selectedItem { get; set; }
+    public GMINWEB_CJC.Pages.Common.ConfirmBase DeleteConfirmation { get; set; }
+    public int MenuId = 38;     //품목등록 (제품외 품목)
+
+    ClaimsPrincipal CurrentUser;
+    private List<ItemModel> ItemModels;
+    private string RoleYN;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (authenticationStateTask is not null)
+        {
+            CurrentUser = (await authenticationStateTask).User;
+
+            if (CurrentUser.Identity.Name is not null)
+            {
+                var RoleList = await _RoleManager.GetRoleYN(CurrentUser.Identity.Name, MenuId);
+                RoleYN = RoleList.FirstOrDefault().ReadWrtYN;
+
+                if (RoleYN == "Y")
+                {
+                    ItemModels = await _db.GetAllItem(CurrentUser.Identity.Name);
+                }
+            }
+        }
+    }
+
+    private async Task GetAllDatas()
+    {
+        ItemModels = await _db.GetAllItem(CurrentUser.Identity.Name);
+    }
+
+    void btnNewClick()
+    {
+        navigationManager.NavigateTo("/ItemEdit" + "/" + CurrentUser.Identity.Name);
+    }
+
+
+    void btnUpdateClick(ItemModel ItemModel)
+    {
+        navigationManager.NavigateTo("/ItemEdit" + "/" + CurrentUser.Identity.Name + "/" + ItemModel.ItemCd + "/" + ItemModel.BizUnit);
+    }
+
+    void btnDeleteClick(ItemModel ItemModel)
+    {
+        DeleteConfirmation.Show("정말 삭제하시겠습니까 ?");
+
+        selectedItem = ItemModel;
+    }
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            await _db.DeleteItem(selectedItem, CurrentUser.Identity.Name);
+            await GetAllDatas();
+        }
+        else
+        {
+            selectedItem = null;
+        }
+    }
+
+}

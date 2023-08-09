@@ -1,0 +1,106 @@
+﻿@using GMINWEB_CJC.Model;
+@using DataAccessLibrary.Model
+@using DataAccessLibrary.Data
+
+@inject IWarehouseData _db
+
+<style>
+    form .row {
+        margin-bottom: 16px;
+    }
+</style>
+
+<RadzenTemplateForm Data="newWarehouse">
+    <div class="row">
+        <div class="col-md">
+            <RadzenFieldset Text="창고 정보">
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="창고코드"></RadzenLabel>
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox ReadOnly="true" Placeholder="자동채번" Style="width:100%;" Name="WhCd" @bind-Value="@newWarehouse.WhCd"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="창고명"></RadzenLabel>
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox Style="width:100%;" Name="WhCd" @bind-Value="@newWarehouse.WhNm"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="창고타입"></RadzenLabel>
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox Style="width:100%;" Name="WhCd" @bind-Value="@newWarehouse.WhType"></RadzenTextBox>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 align-items-center d-flex">
+                        <RadzenLabel Text="창고위치"></RadzenLabel>
+                    </div>
+                    <div class="col-md-8">
+                        <RadzenTextBox Style="width:100%;" Name="WhCd" @bind-Value="@newWarehouse.WhLoc"></RadzenTextBox>
+                    </div>
+                </div>
+            </RadzenFieldset>
+        </div>
+    </div>
+
+    <div>
+        <RadzenButton style="margin: 0 1rem 1rem 60px" ButtonStyle="ButtonStyle.Light" Click="btnCancleClick">취소</RadzenButton>
+        <RadzenButton style="margin: 0 1rem 1rem 0" ButtonStyle="ButtonStyle.Secondary" Click="btnSaveClick">저장</RadzenButton>
+    </div>
+</RadzenTemplateForm>
+
+
+@code {
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public WarehouseModel selectedWarehouse { get; set; }
+
+    public Warehouse warehouse { get; set; }
+
+    private DisplayWarehouseModel newWarehouse = new DisplayWarehouseModel();
+
+    protected override void OnInitialized()
+    {
+        if (selectedWarehouse is not null)
+        {
+            newWarehouse.WhCd = selectedWarehouse.WhCd;
+            newWarehouse.WhNm = selectedWarehouse.WhNm;
+            newWarehouse.WhType = selectedWarehouse.WhType;
+            newWarehouse.WhLoc = selectedWarehouse.WhLoc;
+        }
+    }
+
+    async Task btnSaveClick()
+    {
+        WarehouseModel model = new WarehouseModel
+        {
+            WhNm = newWarehouse.WhNm,
+            WhType = newWarehouse.WhType,
+            WhLoc = newWarehouse.WhLoc
+        };
+
+        if (newWarehouse.WhCd is null)
+        {
+            await _db.InsertData(model);
+            await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+        }
+        else
+        {
+            model.WhCd = newWarehouse.WhCd;
+            await _db.UpdateData(model);
+
+            await ModalInstance.CloseAsync(ModalResult.Ok("Form was submitted successfully."));
+        }
+    }
+
+    void btnCancleClick()
+    {
+        ModalInstance.CancelAsync();
+    }
+}
